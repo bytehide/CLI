@@ -1,5 +1,7 @@
 ﻿using MatthiWare.CommandLine.Abstractions.Command;
+using Shield.Client;
 using ShieldCLI.Models;
+using Spectre.Console;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,40 +12,72 @@ namespace ShieldCLI.Commands
 {
     public class GetProjectCommand : Command<GlobalOptions, GetProjectOptions>
     {
+        public ShieldClient ShieldClient { get; set; }
+        public object Ansiconsole { get; private set; }
+
         public override void OnConfigure(ICommandConfigurationBuilder builder)
         {
             builder.Name("project:find").Description("Projects Management");
         }
 
-        public override void OnExecute(GlobalOptions options, GetProjectOptions getoptions)
+        public GetProjectCommand(ShieldClient shieldClient)
         {
-            base.OnExecute(options, getoptions);
+            ShieldClient = shieldClient;
+        }
 
-            var nombre = getoptions.Name;
-            var ke = getoptions.Key;
-            var create = getoptions.Create;
+        public override void OnExecute(GlobalOptions options, GetProjectOptions getprojectoptions)
+        {
+            base.OnExecute(options, getprojectoptions);
 
-            if (nombre !=null)
+            var name =  getprojectoptions.Name;
+            var key = getprojectoptions.Key;
+            var shouldCreated = getprojectoptions.Create;
+
+
+            try
+
             {
+                if (name == null && key == null)
+                {
+                    throw new ArgumentNullException();
+                }
 
 
-                Console.WriteLine("funciona y el nombre es");
+                if (key != null)
+                {
+                    Console.WriteLine("se busca por Key");
+                    return;
+                }
 
-                Console.WriteLine(nombre);
+
+                if (name != null)
+                {
+                    var project = ShieldClient.Project.FindOrCreateExternalProject(name);
+
+                    AnsiConsole.Markup("[lime]Project Found [/]");
+                    Console.WriteLine("");
+
+                    var table = new Table();
+                    // Add some columns
+                    table.AddColumn("[darkorange]Name[/]");
+                    table.AddColumn("[darkorange]ID[/]");
+
+                    // Add some rows
+                    table.AddRow(project.Name, project.Key);
+
+                    // Render the table to the console
+                    AnsiConsole.Render(table);
+                }
+
             }
-            else if (nombre==null && create)
+            catch (ArgumentNullException ex)
             {
-                Console.WriteLine("se crea proyecto");
+                AnsiConsole.Markup("[red]Should insert the name or key of the project to find it.[/]");
+                ;
 
             }
-            else
-            {
-
-                Console.WriteLine("funciona y la key es");
-                Console.WriteLine(ke);
 
 
-            }
 
 
 

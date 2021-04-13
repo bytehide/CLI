@@ -12,8 +12,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Include="..\Shield.Dotnet.Client\Client\Models\API\Application\LoadedApplicationDTO.cs" Link="LoadedApplicationDTO.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="MatthiWare.CommandLineParser" Version="0.6.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="5.0.0" />
     <PackageReference Include="SecureLocalStorage" Version="1.0.0" />
+    <PackageReference Include="Spectre.Console" Version="0.38.0" />
   </ItemGroup>
 
   <ItemGroup>

@@ -4,11 +4,11 @@ using ShieldCLI.Models;
 
 namespace ShieldCLI.Repos
 {
-    internal class KeyManager
+    public class KeyManager
     {
-        internal SecureLocalStorage.SecureLocalStorage Storage { get; set; }
+        private SecureLocalStorage.SecureLocalStorage Storage { get; set; }
 
-        internal UserConfig UserConfig { get; set; }
+        private UserConfig UserConfig { get; set; }
 
         private readonly string _userConfig = "user_config";
 
@@ -28,7 +28,7 @@ namespace ShieldCLI.Repos
         /// Gets if current computer user has any dotnetsafer key stored.
         /// </summary>
         /// <returns></returns>
-        internal bool HasKey() =>
+        public bool HasKey() =>
             !string.IsNullOrEmpty(UserConfig.ApiKey);
 
         /// <summary>
@@ -36,24 +36,24 @@ namespace ShieldCLI.Repos
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        internal bool IsValidKey(string key) => throw new NotImplementedException("TODO: Luis");
+        public bool IsValidKey(string key) => throw new NotImplementedException("TODO: Luis");
 
         /// <summary>
         /// Checks if current computer user has active and valid key.
         /// </summary>
         /// <returns></returns>
-        internal bool HasValidKey() => HasKey() && IsValidKey(UserConfig.ApiKey);
+        public bool HasValidKey() => HasKey() && IsValidKey(UserConfig.ApiKey);
 
         /// <summary>
         /// Gets current user key.
         /// </summary>
-        internal string Key => UserConfig.ApiKey;
+        public string Key => UserConfig.ApiKey;
 
         /// <summary>
         /// Update current computer user dotnetsafer key.
         /// </summary>
         /// <param name="key"></param>
-        internal void UpdateKey(string key)
+        public void UpdateKey(string key)
         {
             UserConfig.ApiKey = key;
             Storage.Set(_userConfig, UserConfig);

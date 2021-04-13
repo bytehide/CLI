@@ -2,7 +2,7 @@
   "profiles": {
     "ShieldCLI": {
       "commandName": "Project",
-      "commandLineArgs": "project:make hola"
+      "commandLineArgs": "project:find --name probandoNombreID123 "
     }
   }
 }

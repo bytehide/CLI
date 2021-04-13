@@ -14,9 +14,15 @@ namespace ShieldCLI.Commands
         {
             builder.Name("project:list").Description("List all projects");
         }
-        
 
-        
+
+        public override void OnExecute(GlobalOptions options)
+        {
+
+           
+        }
+
+
 
 
     }
