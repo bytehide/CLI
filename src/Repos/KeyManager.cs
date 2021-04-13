@@ -1,27 +1,45 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
+using Microsoft.Extensions.Logging;
 using SecureLocalStorage;
+using Shield.Client;
 using ShieldCLI.Models;
 
 namespace ShieldCLI.Repos
 {
-    public class KeyManager
+    public class ClientManager
     {
-        private SecureLocalStorage.SecureLocalStorage Storage { get; set; }
+        private readonly ILogger<Consumer> _iLogger;
+
+        private SecureLocalStorage.SecureLocalStorage Storage { get; }
 
         private UserConfig UserConfig { get; set; }
+
+        public ShieldClient Client { get; set; }
 
         private readonly string _userConfig = "user_config";
 
         /// <summary>
         /// Used for manage local storage user properties such a dotnetsafer api key and account setting.
         /// </summary>
-        public KeyManager()
+        public ClientManager(ILogger<Consumer> iLogger)
         {
+            _iLogger = iLogger;
             Storage = new SecureLocalStorage.SecureLocalStorage(new CustomLocalStorageConfig(null,"dotnetsafer_shield_cli")
                 .WithDefaultKeyBuilder());
 
-            if (Storage.Exists(_userConfig))
-                UserConfig = Storage.Get<UserConfig>(_userConfig) ?? new UserConfig();
+            UserConfig = Storage.Exists(_userConfig) ? Storage.Get<UserConfig>(_userConfig) ?? new UserConfig() : new UserConfig();
+
+            if (string.IsNullOrEmpty(UserConfig.ApiKey)) return;
+
+            try
+            {
+                Client = new ShieldClient(UserConfig.ApiKey, iLogger);
+            }
+            catch (Exception)
+            {
+                Client = null;
+            }
         }
 
         /// <summary>
@@ -36,7 +54,17 @@ namespace ShieldCLI.Repos
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public bool IsValidKey(string key) => throw new NotImplementedException("TODO: Luis");
+        public bool IsValidKey(string key)
+        {
+            try
+            {
+                return ShieldClient.CreateInstance(key) is not null;
+            }
+            catch
+            {
+                return false;
+            }
+        }
 
         /// <summary>
         /// Checks if current computer user has active and valid key.
@@ -50,13 +78,27 @@ namespace ShieldCLI.Repos
         public string Key => UserConfig.ApiKey;
 
         /// <summary>
-        /// Update current computer user dotnetsafer key.
+        /// Update current local user dotnetsafer key and instance client.
         /// </summary>
         /// <param name="key"></param>
         public void UpdateKey(string key)
         {
             UserConfig.ApiKey = key;
             Storage.Set(_userConfig, UserConfig);
+            try
+            {
+                Client = new ShieldClient(UserConfig.ApiKey, _iLogger);
+            }
+            catch (Exception)
+            {
+                Client = null;
+            }
+
         }
+        /// <summary>
+        /// Checks if current local user has a valid client instanced.
+        /// </summary>
+        /// <returns></returns>
+        public bool HasValidClient() => Client is not null && Client.CheckConnection(out _);
     }
 }

@@ -1,12 +1,8 @@
 ﻿using MatthiWare.CommandLine.Abstractions.Command;
 using ShieldCLI.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using ShieldCLI.Models.Config;
 
-namespace ShieldCLI.Commands
+namespace ShieldCLI.Commands.Config
 {
     public class GetConfigCommand : Command<GlobalOptions, GetConfigOptions>
     {

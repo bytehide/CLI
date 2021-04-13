@@ -1,15 +1,10 @@
-﻿using MatthiWare.CommandLine.Abstractions.Command;
-using ShieldCLI.Models;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
+﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+using MatthiWare.CommandLine.Abstractions.Command;
+using ShieldCLI.Models;
+using ShieldCLI.Models.Auth;
 
-namespace ShieldCLI.Commands
+namespace ShieldCLI.Commands.Auth
 {
     public class AuthCommand : Command<GlobalOptions, AuthOptions>
     {

@@ -1,37 +1,34 @@
-﻿using MatthiWare.CommandLine.Abstractions.Command;
+﻿using System;
+using MatthiWare.CommandLine.Abstractions.Command;
 using Shield.Client;
 using ShieldCLI.Models;
+using ShieldCLI.Models.Project;
+using ShieldCLI.Repos;
 using Spectre.Console;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace ShieldCLI.Commands
+namespace ShieldCLI.Commands.Project
 {
     public class GetProjectCommand : Command<GlobalOptions, GetProjectOptions>
     {
-        public ShieldClient ShieldClient { get; set; }
-        public object Ansiconsole { get; private set; }
+        public ClientManager ClientManager { get; set; }
 
         public override void OnConfigure(ICommandConfigurationBuilder builder)
         {
             builder.Name("project:find").Description("Projects Management");
         }
 
-        public GetProjectCommand(ShieldClient shieldClient)
+        public GetProjectCommand(ClientManager clientManager)
         {
-            ShieldClient = shieldClient;
+            ClientManager = clientManager;
         }
 
-        public override void OnExecute(GlobalOptions options, GetProjectOptions getprojectoptions)
+        public override void OnExecute(GlobalOptions options, GetProjectOptions getProjectOptions)
         {
-            base.OnExecute(options, getprojectoptions);
+            base.OnExecute(options, getProjectOptions);
 
-            var name =  getprojectoptions.Name;
-            var key = getprojectoptions.Key;
-            var shouldCreated = getprojectoptions.Create;
+            var name =  getProjectOptions.Name;
+            var key = getProjectOptions.Key;
+            var shouldCreated = getProjectOptions.Create;
 
 
             try
@@ -50,24 +47,23 @@ namespace ShieldCLI.Commands
                 }
 
 
-                if (name != null)
-                {
-                    var project = ShieldClient.Project.FindOrCreateExternalProject(name);
+                
+                var project = ClientManager.Client.Project.FindOrCreateExternalProject(name);
 
-                    AnsiConsole.Markup("[lime]Project Found [/]");
-                    Console.WriteLine("");
+                AnsiConsole.Markup("[lime]Project Found [/]");
+                Console.WriteLine("");
 
-                    var table = new Table();
-                    // Add some columns
-                    table.AddColumn("[darkorange]Name[/]");
-                    table.AddColumn("[darkorange]ID[/]");
+                var table = new Table();
+                // Add some columns
+                table.AddColumn("[darkorange]Name[/]");
+                table.AddColumn("[darkorange]ID[/]");
 
-                    // Add some rows
-                    table.AddRow(project.Name, project.Key);
+                // Add some rows
+                table.AddRow(project.Name, project.Key);
 
-                    // Render the table to the console
-                    AnsiConsole.Render(table);
-                }
+                // Render the table to the console
+                AnsiConsole.Render(table);
+            
 
             }
             catch (ArgumentNullException ex)

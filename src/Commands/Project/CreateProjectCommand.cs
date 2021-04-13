@@ -1,39 +1,32 @@
-﻿using MatthiWare.CommandLine.Abstractions.Command;
-using MatthiWare.CommandLine.Abstractions.Parsing;
-using Shield.Client;
+﻿using System;
+using MatthiWare.CommandLine.Abstractions.Command;
 using ShieldCLI.Models;
+using ShieldCLI.Models.Project;
 using ShieldCLI.Repos;
 using Spectre.Console;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace ShieldCLI.Commands
+namespace ShieldCLI.Commands.Project
 {
     public class CreateProjectCommand : Command<GlobalOptions, CreateProjectOptions>
     {
-        private ShieldClient ShieldClient { get; set; }
-        private KeyManager KeyManager { get; set; }
+        private ClientManager KeyManager { get; set; }
         public override void OnConfigure(ICommandConfigurationBuilder builder)
         {
             builder.Name("project:make").Description("Create project");
         }
 
-        public CreateProjectCommand(ShieldClient shieldClient, KeyManager keyManager)
+        public CreateProjectCommand(ClientManager keyManager)
         {
-            ShieldClient = shieldClient;
             KeyManager = keyManager;
         }
 
-        public override void OnExecute(GlobalOptions options, CreateProjectOptions createoptions)
+        public override void OnExecute(GlobalOptions options, CreateProjectOptions createOptions)
         {
-            base.OnExecute(options, createoptions);
+            base.OnExecute(options, createOptions);
 
             try
             {
-                var createdProject= ShieldClient.Project.FindOrCreateExternalProject(createoptions.Name);
+                var createdProject = KeyManager.Client.Project.FindOrCreateExternalProject(createOptions.Name);
                 AnsiConsole.Markup("[lime]Project " + createdProject.Name + " created. [/]");
                 Console.WriteLine();
                 var table = new Table();

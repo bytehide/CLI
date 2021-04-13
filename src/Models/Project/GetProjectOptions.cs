@@ -1,12 +1,6 @@
 ﻿using MatthiWare.CommandLine.Core.Attributes;
-using System;
-using System.Collections.Generic;
 
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ShieldCLI.Models
+namespace ShieldCLI.Models.Project
 {
     public class GetProjectOptions
     {

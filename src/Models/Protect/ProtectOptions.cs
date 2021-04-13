@@ -1,6 +1,6 @@
 ﻿using MatthiWare.CommandLine.Core.Attributes;
 
-namespace ShieldCLI.Commands
+namespace ShieldCLI.Models.Protect
 {
     public class ProtectOptions
     {

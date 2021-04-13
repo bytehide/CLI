@@ -1,6 +1,6 @@
 ﻿using MatthiWare.CommandLine.Core.Attributes;
 
-namespace ShieldCLI.Commands
+namespace ShieldCLI.Models.Config
 {
     public class GetConfigOptions
     {
