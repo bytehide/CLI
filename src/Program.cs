@@ -1,12 +1,10 @@
 ﻿using MatthiWare.CommandLine;
-using ShieldCLI.Commands;
 using ShieldCLI.Models;
 using System;
 using System.Reflection;
 using System.Threading.Tasks;
 using MatthiWare.CommandLine.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
-using SecureLocalStorage;
 using ShieldCLI.Repos;
 
 namespace ShieldCLI
@@ -19,7 +17,7 @@ namespace ShieldCLI
             {
                 AppName = "ds"
             };
-
+            
             var services = new ServiceCollection();
 
             services.AddScoped<KeyManager>();

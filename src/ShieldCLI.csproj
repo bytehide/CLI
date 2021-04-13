@@ -16,4 +16,8 @@
     <PackageReference Include="SecureLocalStorage" Version="1.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Shield.Dotnet.Client\Client\Shield.Client.csproj" />
+  </ItemGroup>
+
 </Project>
