@@ -9,15 +9,15 @@ namespace ShieldCLI.Commands.Project
 {
     public class CreateProjectCommand : Command<GlobalOptions, CreateProjectOptions>
     {
-        private ClientManager KeyManager { get; set; }
+        private ClientManager ClientManager { get; set; }
         public override void OnConfigure(ICommandConfigurationBuilder builder)
         {
             builder.Name("project:make").Description("Create project");
         }
 
-        public CreateProjectCommand(ClientManager keyManager)
+        public CreateProjectCommand(ClientManager clientManager)
         {
-            KeyManager = keyManager;
+            ClientManager = clientManager;
         }
 
         public override void OnExecute(GlobalOptions options, CreateProjectOptions createOptions)
@@ -26,7 +26,7 @@ namespace ShieldCLI.Commands.Project
 
             try
             {
-                var createdProject = KeyManager.Client.Project.FindOrCreateExternalProject(createOptions.Name);
+                var createdProject = ClientManager.Client.Project.FindOrCreateExternalProject(createOptions.Name);
                 AnsiConsole.Markup("[lime]Project " + createdProject.Name + " created. [/]");
                 Console.WriteLine();
                 var table = new Table();
