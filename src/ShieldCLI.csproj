@@ -6,12 +6,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="MatthiWare.CommandLineParser" Version="0.6.0" />
-    <PackageReference Include="SecureLocalStorage" Version="1.0.0" />
+    <Compile Remove="System\**" />
+    <EmbeddedResource Remove="System\**" />
+    <None Remove="System\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="System\Windows\" />
+    <PackageReference Include="MatthiWare.CommandLineParser" Version="0.6.0" />
+    <PackageReference Include="SecureLocalStorage" Version="1.0.0" />
   </ItemGroup>
 
 </Project>
