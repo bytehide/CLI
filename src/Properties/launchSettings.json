@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ShieldCLI": {
+      "commandName": "Project",
+      "commandLineArgs": "project:make hola"
+    }
+  }
+}
