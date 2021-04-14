@@ -26,17 +26,25 @@ namespace ShieldCLI.Commands.Project
 
             try
             {
+                if (!ClientManager.HasValidClient())
+                {
+
+                    AnsiConsole.Markup("[red]NOT logged in. \nYou must be logged in to use .[/]");
+                    return;
+                };
+
                 var createdProject = ClientManager.Client.Project.FindOrCreateExternalProject(createOptions.Name);
+
                 AnsiConsole.Markup("[lime]Project " + createdProject.Name + " created. [/]");
                 Console.WriteLine();
                 var table = new Table();
 
                 // Add some columns
-                table.AddColumn("Key");
                 table.AddColumn("Name");
+                table.AddColumn("Key");
 
                 // Add some rows
-                table.AddRow(createdProject.Key, createdProject.Name);
+                table.AddRow(createdProject.Name, createdProject.Key);
              
 
                 // Render the table to the console

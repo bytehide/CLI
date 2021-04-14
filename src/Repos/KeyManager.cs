@@ -83,17 +83,23 @@ namespace ShieldCLI.Repos
         /// <param name="key"></param>
         public void UpdateKey(string key)
         {
-            UserConfig.ApiKey = key;
-            Storage.Set(_userConfig, UserConfig);
             try
             {
-                Client = new ShieldClient(UserConfig.ApiKey, _iLogger);
+                Client = new ShieldClient(key, _iLogger);
+                UserConfig.ApiKey = key;
+                Storage.Set(_userConfig, UserConfig);
             }
             catch (Exception)
             {
                 Client = null;
             }
 
+        }
+        public void ClearClient()
+        {
+            UserConfig.ApiKey = null;
+            Storage.Set(_userConfig, UserConfig);
+            Client = null;
         }
         /// <summary>
         /// Checks if current local user has a valid client instanced.

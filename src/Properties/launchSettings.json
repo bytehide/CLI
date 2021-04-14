@@ -2,7 +2,8 @@
   "profiles": {
     "ShieldCLI": {
       "commandName": "Project",
-      "commandLineArgs": "project:find --name probandoNombreID123 "
+      "commandLineArgs": "auth --check"
     }
+  
   }
 }
