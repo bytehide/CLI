@@ -1,6 +1,7 @@
 ﻿using System;
 using MatthiWare.CommandLine.Abstractions.Command;
 using Shield.Client;
+using Shield.Client.Models.API.Project;
 using ShieldCLI.Models;
 using ShieldCLI.Models.Project;
 using ShieldCLI.Repos;
@@ -26,14 +27,13 @@ namespace ShieldCLI.Commands.Project
         {
             base.OnExecute(options, getProjectOptions);
 
-            var name =  getProjectOptions.Name;
-            var key = getProjectOptions.Key;
-            var shouldCreated = getProjectOptions.Create;
-
-
             try
 
             {
+                var name = getProjectOptions.Name;
+                var key = getProjectOptions.Key;
+                ProjectDto project = null;
+
                 if (name == null && key == null)
                 {
                     throw new ArgumentNullException();
@@ -42,15 +42,15 @@ namespace ShieldCLI.Commands.Project
 
                 if (key != null)
                 {
-                    Console.WriteLine("se busca por Key");
-                    return;
+                    project = ClientManager.Client.Project.FindByIdOrCreateExternalProject(name ?? "default", key);
+                    AnsiConsole.Markup("[lime]Project Found [/]");
+                }
+                else
+                {
+                    project = ClientManager.Client.Project.FindOrCreateExternalProject(name);
+                    AnsiConsole.Markup("[lime]Project Found [/]");
                 }
 
-
-                
-                var project = ClientManager.Client.Project.FindOrCreateExternalProject(name);
-
-                AnsiConsole.Markup("[lime]Project Found [/]");
                 Console.WriteLine("");
 
                 var table = new Table();
@@ -63,7 +63,7 @@ namespace ShieldCLI.Commands.Project
 
                 // Render the table to the console
                 AnsiConsole.Render(table);
-            
+
 
             }
             catch (ArgumentNullException ex)

@@ -32,11 +32,6 @@ namespace ShieldCLI
             {
                 return;
             }
-
-            if (result.Result.Verbose)
-            {
-                Console.WriteLine("Verbose specified!");
-            }
         }
     }
 }

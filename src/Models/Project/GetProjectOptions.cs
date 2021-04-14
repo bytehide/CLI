@@ -8,8 +8,8 @@ namespace ShieldCLI.Models.Project
         public string Name { get; set; }
         [Name("k", "key"), Description("Get a project by key")]
         public string Key { get; set; }
-        [Name("","or-create"),DefaultValue(false), Description("Create a project if not exists")]
-        public bool Create { get; set; }
+        //[Name("","or-create"),DefaultValue(false), Description("Create a project if not exists")]
+        //public bool Create { get; set; }
 
     }
 }

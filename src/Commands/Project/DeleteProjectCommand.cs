@@ -10,6 +10,8 @@ namespace ShieldCLI.Commands.Project
             builder.Name("project:delete").Description("Delete project");
         }
 
+
+        //TODO @Sr-l  method to delete projects in client
     }
 
 }
