@@ -25,7 +25,7 @@ namespace ShieldCLI.Repos
         public ClientManager(ILogger<Consumer> iLogger)
         {
             _iLogger = iLogger;
-            Storage = new SecureLocalStorage.SecureLocalStorage(new CustomLocalStorageConfig(null,"dotnetsafer_shield_cli")
+            Storage = new SecureLocalStorage.SecureLocalStorage(new CustomLocalStorageConfig(null, "dotnetsafer_shield_cli")
                 .WithDefaultKeyBuilder());
 
             UserConfig = Storage.Exists(_userConfig) ? Storage.Get<UserConfig>(_userConfig) ?? new UserConfig() : new UserConfig();
