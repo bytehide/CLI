@@ -4,7 +4,11 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using ShieldCLI.Repos;
 using Microsoft.Extensions.Logging;
+
 using ShieldCLI.Helpers;
+
+using ShieldCLI.Commands.Project;
+using ShieldCLI.Commands;
 
 namespace ShieldCLI
 {
@@ -16,7 +20,7 @@ namespace ShieldCLI
             {
                 AppName = "ds"
             };
-           
+
             var services = new ServiceCollection();
 
             services.AddSingleton<NugetResolver>();
@@ -28,12 +32,15 @@ namespace ShieldCLI
 
             services.AddSingleton<ClientManager>();
 
+            services.AddSingleton<ShieldCommands>();
+
             services.AddCommandLineParser<GlobalOptions>(options);
+
 
             await using var provider = services.BuildServiceProvider();
 
             var app = provider.GetService<Consumer>();
-          
+
             await app!.Run(args);
         }
     }

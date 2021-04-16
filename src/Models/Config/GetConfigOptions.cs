@@ -4,15 +4,15 @@ namespace ShieldCLI.Models.Config
 {
     public class GetConfigOptions
     {
-        [Name("d", "directory"), Required, Description("Path of the protection config file")]
+        [Name("p", "path"), Required, Description("Path of the protection config file")]
         public string Path { get; set; }
         [Name("t", "type"), Required, Description("Type of protection ( project or application")]
         public string Type { get; set; }
 
-        [Name("f", "file"), Description("Name of the protection config file")]
-        public string File { get; set; }
+        [Name("n", "name"), DefaultValue("*"), Description("Name of the protection config file")]
+        public string Name { get; set; }
 
-        [Name("","default"),DefaultValue(true), Description("Create a default config file")]
-        public bool Def { get; set; }
+        [Name("", "or-create"), DefaultValue(false), Description("Create a default config file")]
+        public bool Create { get; set; }
     }
 }

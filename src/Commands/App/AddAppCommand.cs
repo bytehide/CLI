@@ -1,7 +1,9 @@
+
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using MatthiWare.CommandLine.Abstractions.Command;
+using ShieldCLI.Commands;
+
 using ShieldCLI.Models;
 using ShieldCLI.Models.App;
 using ShieldCLI.Repos;
@@ -9,6 +11,10 @@ using Spectre.Console;
 using System.Linq;
 using System.Threading.Tasks;
 using ShieldCLI.Helpers;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace ShieldCLI.Commands.App
 {
@@ -16,12 +22,12 @@ namespace ShieldCLI.Commands.App
     {
         private ClientManager ClientManager { get; set; }
 
-        private DependenciesResolver DependenciesResolver { get; set; }
+        private ShieldCommands ShieldCommands { get; set; }
 
-        public AddAppCommand(ClientManager clientManager, DependenciesResolver dependenciesResolver)
+        public AddAppCommand(ClientManager clientManager, ShieldCommands shieldCommands)
         {
             ClientManager = clientManager;
-            DependenciesResolver = dependenciesResolver;
+            ShieldCommands = shieldCommands;
         }
         public override void OnConfigure(ICommandConfigurationBuilder builder)
         {
@@ -46,6 +52,7 @@ namespace ShieldCLI.Commands.App
 
                     if (!isValid)
                         throw new Exception("Invalid .NET Assembly");
+
 
                     var requiredDep = requiredDependencies.ToList();
 
@@ -92,7 +99,7 @@ namespace ShieldCLI.Commands.App
                         var table = new Table();
 
                         table.AddColumn("Name").AddColumn("Version");
-                        ç
+                        
                         table.Border(TableBorder.Rounded);
 
                         var userPath = new List<string>();
@@ -106,9 +113,26 @@ namespace ShieldCLI.Commands.App
 
                         unresolved.ForEach(dep => userPath.Add(AnsiConsole.Ask<string>($"Enter the path of the [yellow]{Utils.SplitAssemblyInfo(dep.Item1).name}[/] library:")));
 
+            //try
+            //{
+            //    var keyproject = options.KeyProject;
+            //    var path = options.Path;
+            //    List<string> dependenciesPaths = Directory.GetFiles(Path.GetDirectoryName(path)).ToList();
+
+            //    ShieldCommands.saludoShield();
+
+            //    var appUpload = ClientManager.Client.Application.UploadApplicationDirectly(keyproject, path, dependenciesPaths);
+
+            //}
+            //catch
+            //{
+            //    AnsiConsole.Write("Error");
+            //}
+
                         _ = DependenciesResolver.GetUnresolved(module,
                             createdContext, requiredDep, userPath.Select(Path.GetDirectoryName).ToArray());
                     }
+
 
                     return requiredDep;
                 });
@@ -121,6 +145,9 @@ namespace ShieldCLI.Commands.App
             }
 
         }
+
+
+        
         //TODO: @jespanag  Create method to get projects on Client
     }
 

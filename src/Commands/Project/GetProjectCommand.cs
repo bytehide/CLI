@@ -56,7 +56,7 @@ namespace ShieldCLI.Commands.Project
                 var table = new Table();
                 // Add some columns
                 table.AddColumn("[darkorange]Name[/]");
-                table.AddColumn("[darkorange]ID[/]");
+                table.AddColumn("[darkorange]Key[/]");
 
                 // Add some rows
                 table.AddRow(project.Name, project.Key);
