@@ -11,7 +11,7 @@ namespace ShieldCLI.Models.Config
         [Name("n", "name"), Required, Description("Name of the protection config file")]
         public string Name { get; set; }
 
-        [Name("ps", "preset"), DefaultValue("luis"), Description("Choose a preset for the proteccion config file")]
+        [Name("ps", "preset"),("Choose a preset for the proteccion config file")]
         public string Preset { get; set; }
 
     }

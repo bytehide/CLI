@@ -11,10 +11,12 @@ namespace ShieldCLI.Commands.Config
     {
 
         private ClientManager ClientManager { get; set; }
+        public ShieldCommands ShieldCommands { get; set; }
 
-        public GetConfigCommand(ClientManager clientManager)
+        public GetConfigCommand(ClientManager clientManager, ShieldCommands shieldCommands)
         {
             ClientManager = clientManager;
+            ShieldCommands = shieldCommands;
         }
         public override void OnConfigure(ICommandConfigurationBuilder builder)
         {
@@ -23,47 +25,12 @@ namespace ShieldCLI.Commands.Config
 
         public override void OnExecute(GlobalOptions option, GetConfigOptions options)
         {
+            ShieldCommands.AuthHasCredentials();
 
+            // falta hacer un check de que el archivo existe o no existe 
 
+            ShieldCommands.ConfigGetFile(options.Type, options.Path, options.Name);
 
-            if (!ClientManager.HasValidClient())
-            {
-
-                AnsiConsole.Markup("[red]NOT logged in. \nYou must be logged in to use .[/]");
-                return;
-            };
-
-            try
-            {
-                var type = options.Type;
-                var path = options.Path;
-                var name = "*.";
-
-
-                if (options.Name != null)
-                {
-
-                    name = $"{options.Name}.";
-                }
-
-                if (type != "application" && type != "project")
-                {
-                    type = AnsiConsole.Prompt(
-                             new SelectionPrompt<string>()
-                             .Title("[white]Please choose the type of protection[/]?")
-                             .PageSize(3)
-                             .AddChoice("project")
-                             .AddChoice("application"));
-                }
-                var fullFilePath = $"{path}/shield.{type}.{name}json";
-
-                //TODO check this file JSON . 
-            }
-            catch
-            {
-
-
-            }
 
 
         }

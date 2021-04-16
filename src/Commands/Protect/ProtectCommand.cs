@@ -6,6 +6,7 @@ using ShieldCLI.Models.Protect;
 using ShieldCLI.Repos;
 using Spectre.Console;
 using Shield.Client.Extensions;
+using ShieldCLI.Commands.Project;
 
 namespace ShieldCLI.Commands.Protect
 {
@@ -47,12 +48,16 @@ namespace ShieldCLI.Commands.Protect
 
             var appConfig = ClientManager.Client.Configuration.LoadApplicationConfigurationFromFile(config);
 
+
+
+
             var connection = ClientManager.Client.Connector.CreateHubConnection();
             var hub = ClientManager.Client.Connector.InstanceHubConnectorAsync(connection).Result;
 
             hub.StartAsync().Wait();
 
             var result = ClientManager.Client.Tasks.ProtectSingleFile("projectKety", "appKey", connection, appConfig);
+
 
 
             result.OnSuccess(hub, (a) =>

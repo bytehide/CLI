@@ -1,4 +1,5 @@
 ﻿using MatthiWare.CommandLine.Abstractions.Command;
+using ShieldCLI.Commands;
 using ShieldCLI.Models;
 using ShieldCLI.Models.App;
 using ShieldCLI.Repos;
@@ -6,6 +7,7 @@ using Spectre.Console;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace ShieldCLI.Commands.App
 {
@@ -13,9 +15,12 @@ namespace ShieldCLI.Commands.App
     {
         private ClientManager ClientManager { get; set; }
 
-        public AddAppCommand(ClientManager clientManager)
+        private ShieldCommands ShieldCommands { get; set; }
+
+        public AddAppCommand(ClientManager clientManager, ShieldCommands shieldCommands)
         {
             ClientManager = clientManager;
+            ShieldCommands = shieldCommands;
         }
         public override void OnConfigure(ICommandConfigurationBuilder builder)
         {
@@ -34,21 +39,28 @@ namespace ShieldCLI.Commands.App
                 return;
             };
 
-            try
-            {
-                var keyproject = options.KeyProject;
-                var path = options.Path;
-                List<string> dependenciesPaths = Directory.GetFiles(Path.GetDirectoryName(path)).ToList();
 
-                var appUpload = ClientManager.Client.Application.UploadApplicationDirectly(keyproject, path, dependenciesPaths);
+            //try
+            //{
+            //    var keyproject = options.KeyProject;
+            //    var path = options.Path;
+            //    List<string> dependenciesPaths = Directory.GetFiles(Path.GetDirectoryName(path)).ToList();
 
-            }
-            catch
-            {
-                AnsiConsole.Write("Errora sdfasdf");
-            }
+            //    ShieldCommands.saludoShield();
+
+            //    var appUpload = ClientManager.Client.Application.UploadApplicationDirectly(keyproject, path, dependenciesPaths);
+
+            //}
+            //catch
+            //{
+            //    AnsiConsole.Write("Error");
+            //}
+
+
+
 
         }
+
         //TODO: @jespanag  Create method to get projects on Client
     }
 

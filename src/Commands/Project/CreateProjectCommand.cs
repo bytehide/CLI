@@ -45,7 +45,7 @@ namespace ShieldCLI.Commands.Project
 
                 // Add some rows
                 table.AddRow(createdProject.Name, createdProject.Key);
-             
+
 
                 // Render the table to the console
                 AnsiConsole.Render(table);
@@ -56,7 +56,13 @@ namespace ShieldCLI.Commands.Project
             {
                 //AnsiConsole.Markup("[red]"+ ex.Message +"[/]");
             }
-            
+
+        }
+
+
+        public void saludo()
+        {
+            AnsiConsole.Markup("[fuchsia] este es el saludo de Create[/]");
         }
     }
 }

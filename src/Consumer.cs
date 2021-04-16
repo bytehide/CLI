@@ -24,7 +24,7 @@ namespace ShieldCLI
         internal async Task Run(string[] args)
         {
 
-            CommandLineParser.DiscoverCommands(Assembly.GetExecutingAssembly());
+            //CommandLineParser.DiscoverCommands(Assembly.GetExecutingAssembly());
 
             var result = await CommandLineParser.ParseAsync(args);
 
