@@ -14,6 +14,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using Shield.Client.Extensions;
+using ShieldCLI.Helpers;
 
 namespace ShieldCLI.Commands
 {
@@ -22,10 +23,12 @@ namespace ShieldCLI.Commands
 
     {
         private ClientManager ClientManager { get; set; }
+        private DependenciesResolver DependenciesResolver { get; set; }
 
-        public ShieldCommands(ClientManager clientManager)
+        public ShieldCommands(ClientManager clientManager, DependenciesResolver dependenciesResolver)
         {
             ClientManager = clientManager;
+            DependenciesResolver = dependenciesResolver;
         }
 
         //public void saludoShield()
@@ -41,9 +44,9 @@ namespace ShieldCLI.Commands
         /// </summary>
         public void AuthRegister()
         {
-            ClientManager.Client.Configuration.
+            //ClientManager.Client.Configuration.
 
-            OpenBrowser("https://my.dotnetsafer.com/register");
+            this.OpenBrowser("https://my.dotnetsafer.com/register");
             return;
 
         }
@@ -142,7 +145,7 @@ namespace ShieldCLI.Commands
         /// <param name="path"></param>
         /// <param name="name"></param>
 
-        public ConfigGetFile(string type, string path, string name, bool create)
+        public void ConfigGetFile(string type, string path, string name, bool create)
         {
 
 
@@ -162,7 +165,7 @@ namespace ShieldCLI.Commands
             if (type == "application")
             {
                 ClientManager.Client.Configuration.LoadApplicationConfigurationFromFileOrDefault(fullFilePath);
-                if (!File.Exists(fullFilePath))
+                //if (!File.Exists(fullFilePath))
                //     SaveToFile(path, name);
 
 
@@ -176,8 +179,78 @@ namespace ShieldCLI.Commands
 
         }
 
+        internal async Task<List<(string, string)>> ResolveDependenciesAsync(string applicationPath)
+        {
+            var (isValid, requiredDependencies, (module, createdContext)) =
+                        await DependenciesResolver.GetAssemblyInfoAsync(applicationPath ?? string.Empty);
 
+            if (!isValid)
+                throw new Exception("Invalid .NET Assembly");
 
+            var requiredDep = requiredDependencies.ToList();
+
+            var dependencies = DependenciesResolver.GetUnresolved(module,
+                createdContext, requiredDep).ToList();
+
+            var length = dependencies.Count;
+
+            await AnsiConsole.Progress().Columns(
+                    new ProgressColumn[]
+                    {
+                                new TaskDescriptionColumn(),
+                                new ProgressBarColumn(),
+                                new PercentageColumn(),
+                                new RemainingTimeColumn()
+                    }
+                )
+                .StartAsync(async context =>
+                {
+                    var task1 = context.AddTask("[green]Resolving dependencies[/]");
+
+                    task1.MaxValue = length;
+
+                    foreach (var (assembly, _) in requiredDep.Where(dep => dep.Item2 is null).ToList())
+                    {
+                        var info = Utils.SplitAssemblyInfo(assembly);
+
+                        await DependenciesResolver.GetUnresolvedWithNuget(
+                                module,
+                                createdContext, requiredDep, info.name,
+                                info.version);
+
+                        task1.Increment(1);
+                    }
+                });
+
+            while (requiredDep.ToList().Any(dep => string.IsNullOrEmpty(dep.Item2)))
+            {
+                var unresolved = requiredDep.Where(dep => string.IsNullOrEmpty(dep.Item2)).ToList();
+
+                AnsiConsole.Markup($"The following dependencies [red]({unresolved.Count})[/] are required to process the application:");
+                AnsiConsole.WriteLine();
+
+                var table = new Table();
+
+                table.AddColumn("Name").AddColumn("Version");
+
+                table.Border(TableBorder.Rounded);
+
+                var userPath = new List<string>();
+
+                unresolved.ForEach(dep =>
+                    table.AddRow(
+                        $"[yellow]{Utils.SplitAssemblyInfo(dep.Item1).name}[/]",
+                        $"[yellow]{Utils.SplitAssemblyInfo(dep.Item1).version}[/]"));
+
+                AnsiConsole.Render(table);
+
+                unresolved.ForEach(dep => userPath.Add(AnsiConsole.Ask<string>($"Enter the path of the [yellow]{Utils.SplitAssemblyInfo(dep.Item1).name}[/] library:")));
+
+                _ = DependenciesResolver.GetUnresolved(module,
+                    createdContext, requiredDep, userPath.Select(Path.GetDirectoryName).ToArray());
+            }
+            return requiredDep;
+        }
 
         /// <summary>
         /// Make a config file 
