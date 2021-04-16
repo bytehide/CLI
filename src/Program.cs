@@ -1,12 +1,10 @@
 ﻿using MatthiWare.CommandLine;
 using ShieldCLI.Models;
-using System;
-using System.Reflection;
 using System.Threading.Tasks;
-using MatthiWare.CommandLine.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 using ShieldCLI.Repos;
 using Microsoft.Extensions.Logging;
+using ShieldCLI.Helpers;
 
 namespace ShieldCLI
 {
@@ -20,6 +18,10 @@ namespace ShieldCLI
             };
            
             var services = new ServiceCollection();
+
+            services.AddSingleton<NugetResolver>();
+
+            services.AddSingleton<DependenciesResolver>();
 
             services.AddLogging(configure => configure.AddConsole().SetMinimumLevel(LogLevel.Debug))
                 .AddTransient<Consumer>();

@@ -2,7 +2,7 @@
   "profiles": {
     "ShieldCLI": {
       "commandName": "Project",
-      "commandLineArgs": "auth --check"
+      "commandLineArgs": "application:add --path C:\\Users\\juana\\source\\repos\\ShieldVSExtension\\bin\\Debug\\ShieldVSExtension.dll -k d"
     }
   
   }
