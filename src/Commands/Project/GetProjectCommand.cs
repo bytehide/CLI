@@ -1,6 +1,5 @@
 ﻿using System;
 using MatthiWare.CommandLine.Abstractions.Command;
-using Shield.Client;
 using Shield.Client.Models.API.Project;
 using ShieldCLI.Models;
 using ShieldCLI.Models.Project;

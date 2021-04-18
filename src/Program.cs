@@ -6,8 +6,6 @@ using ShieldCLI.Repos;
 using Microsoft.Extensions.Logging;
 
 using ShieldCLI.Helpers;
-
-using ShieldCLI.Commands.Project;
 using ShieldCLI.Commands;
 
 namespace ShieldCLI
@@ -35,7 +33,6 @@ namespace ShieldCLI
             services.AddSingleton<ShieldCommands>();
 
             services.AddCommandLineParser<GlobalOptions>(options);
-
 
             await using var provider = services.BuildServiceProvider();
 

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Runtime.CompilerServices;
 using Microsoft.Extensions.Logging;
 using SecureLocalStorage;
 using Shield.Client;

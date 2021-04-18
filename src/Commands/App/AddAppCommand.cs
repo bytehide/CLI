@@ -1,14 +1,10 @@
-using System;
 using ShieldCLI.Models;
 using ShieldCLI.Models.App;
 using ShieldCLI.Repos;
-using Spectre.Console;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using ShieldCLI.Helpers;
-
- using MatthiWare.CommandLine.Abstractions.Command;
+using MatthiWare.CommandLine.Abstractions.Command;
 
  namespace ShieldCLI.Commands.App
 {

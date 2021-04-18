@@ -1,6 +1,4 @@
-﻿using MatthiWare.CommandLine.Core.Attributes;
-using ShieldCLI.Commands;
-using ShieldCLI.Commands.App;
+﻿using ShieldCLI.Commands.App;
 using ShieldCLI.Commands.Auth;
 using ShieldCLI.Commands.Config;
 using ShieldCLI.Commands.Project;

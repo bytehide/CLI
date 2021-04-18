@@ -1,19 +1,7 @@
 ﻿using MatthiWare.CommandLine.Abstractions.Command;
-using Shield.Client;
-using Shield.Client.Extensions;
-using Shield.Client.Models;
-using Shield.Client.Models.API;
-using Shield.Client.Models.API.Application;
-using Shield.Client.Models.API.Project;
 using ShieldCLI.Models;
 using ShieldCLI.Models.Config;
 using ShieldCLI.Repos;
-using Spectre.Console;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ShieldCLI.Commands.Config
 {

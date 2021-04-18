@@ -2,7 +2,6 @@
 using ShieldCLI.Models;
 using ShieldCLI.Models.Config;
 using ShieldCLI.Repos;
-using Spectre.Console;
 
 namespace ShieldCLI.Commands.Config
 {
