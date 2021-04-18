@@ -29,7 +29,7 @@ namespace ShieldCLI.Commands.Config
 
             // falta hacer un check de que el archivo existe o no existe 
 
-            ShieldCommands.ConfigGetFile(options.Type, options.Path, options.Name);
+           // ShieldCommands.ConfigGetFile(options.Type, options.Path, options.Name);
 
 
 

@@ -28,4 +28,6 @@
     <ProjectReference Include="..\Shield.Dotnet.Client\Client\Shield.Client.csproj" />
   </ItemGroup>
 
+  <ProjectExtensions><VisualStudio><UserProperties properties_4launchsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
+
 </Project>

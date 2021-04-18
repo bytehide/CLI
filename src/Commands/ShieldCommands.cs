@@ -144,7 +144,7 @@ namespace ShieldCLI.Commands
         /// <param name="type"></param>
         /// <param name="path"></param>
         /// <param name="name"></param>
-
+        /// <param name="create"></param>
         public void ConfigGetFile(string type, string path, string name, bool create)
         {
 
@@ -159,7 +159,7 @@ namespace ShieldCLI.Commands
                          .AddChoice("application"));
             }
 
-            string fullFilePath = $"{path}/shield.{type}.{name}.json";
+            var fullFilePath = $"{path}/shield.{type}.{name}.json";
 
 
             if (type == "application")
@@ -189,6 +189,9 @@ namespace ShieldCLI.Commands
 
             var requiredDep = requiredDependencies.ToList();
 
+            AnsiConsole.Markup($"[green]Resolving dependencies locally...[/]");
+            AnsiConsole.WriteLine();
+
             var dependencies = DependenciesResolver.GetUnresolved(module,
                 createdContext, requiredDep).ToList();
 
@@ -205,9 +208,9 @@ namespace ShieldCLI.Commands
                 )
                 .StartAsync(async context =>
                 {
-                    var task1 = context.AddTask("[green]Resolving dependencies[/]");
+                    var resolverTask = context.AddTask("[green]Resolving dependencies with nuget...[/]");
 
-                    task1.MaxValue = length;
+                    resolverTask.MaxValue = length;
 
                     foreach (var (assembly, _) in requiredDep.Where(dep => dep.Item2 is null).ToList())
                     {
@@ -218,7 +221,7 @@ namespace ShieldCLI.Commands
                                 createdContext, requiredDep, info.name,
                                 info.version);
 
-                        task1.Increment(1);
+                        resolverTask.Increment(1);
                     }
                 });
 
@@ -263,6 +266,7 @@ namespace ShieldCLI.Commands
 
         {
             string[] presets = { "maximum", "balance", "custom", "optimized" };
+
             string[] protectionsId = { "protrection1", "protection2" };
 
             if (type != "application" && type != "project")
@@ -275,37 +279,29 @@ namespace ShieldCLI.Commands
                          .AddChoice("application"));
             }
 
-
-            if (!Array.Exists(presets, element => element == preset))
+            if (presets.All(pr => pr != preset))
             {
                 preset = AnsiConsole.Prompt(
-                           new SelectionPrompt<string>()
-                            .Title("[white]Please choose the preset for the protection of protection[/]?")
-                             .PageSize(4)
-                            .AddChoice("maximum")
-                            .AddChoice("balance")
-                        .AddChoice("optimized")
-                        .AddChoice("custom"));
+                    new SelectionPrompt<string>()
+                        .Title("[white]Please choose the preset for the protection of protection[/]?")
+                        .PageSize(4)
+                        .AddChoices(presets));
 
             }
 
-            ProjectConfigurationDto projectConfig;
-            ApplicationConfigurationDto applicationConfig;
-
             if (type == "application")
             {
-                applicationConfig = preset.Equals("custom") ? ClientManager.Client.Configuration.MakeApplicationCustomConfiguration(protectionsId) :
-                ClientManager.Client.Configuration.MakeApplicationConfiguration(ShieldConfigurationPresets.ToPreset(preset));
+                var applicationConfig = preset.Equals("custom") ? ClientManager.Client.Configuration.MakeApplicationCustomConfiguration(protectionsId) :
+                    ClientManager.Client.Configuration.MakeApplicationConfiguration(preset.ToPreset());
 
                 applicationConfig.SaveToFile(path, name);
             }
             else
             {
-                projectConfig = preset.Equals("custom") ? ClientManager.Client.Configuration.MakeProjectCustomConfiguration(protectionsId) :
-                ClientManager.Client.Configuration.MakeProjectConfiguration(ShieldConfigurationPresets.ToPreset(preset));
+                var projectConfig = preset.Equals("custom") ? ClientManager.Client.Configuration.MakeProjectCustomConfiguration(protectionsId) :
+                    ClientManager.Client.Configuration.MakeProjectConfiguration(preset.ToPreset());
 
                 projectConfig.SaveToFile(path, name);
-
             }
 
 

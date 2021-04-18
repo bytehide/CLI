@@ -4,6 +4,7 @@ using ShieldCLI.Models.App;
 using ShieldCLI.Repos;
 using Spectre.Console;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using ShieldCLI.Helpers;
 
@@ -29,32 +30,39 @@ using ShieldCLI.Helpers;
             builder.Name("application:add").Description("Add an application to a project");
         }
 
-
-        public override void OnExecute(GlobalOptions option, AddAppOptions options)
+        public override async Task OnExecuteAsync(GlobalOptions option, AddAppOptions options, CancellationToken cancellationToken)
         {
-            if (!ClientManager.HasValidClient())
-            {
-                AnsiConsole.Markup("[red]NOT logged in. \nYou must be logged in to use .[/]");
-                return;
-            };
+            var dependencies = await ShieldCommands.ResolveDependenciesAsync(options.Path);
 
-            try
-            {
-                var run = Task.Run(async () =>
-                {
-                     var dependencies = await ShieldCommands.ResolveDependenciesAsync(options.Path);
+            await ClientManager.Client.Application.UploadApplicationDirectlyAsync(options.KeyProject,
+                options.Path, dependencies.Select(dep => dep.Item2).ToList());
+        } 
 
-                     return await ClientManager.Client.Application.UploadApplicationDirectlyAsync(options.KeyProject,
-                         options.Path, dependencies.Select(dep => dep.Item2).ToList());
-                });
+        //public override void OnExecute(GlobalOptions option, AddAppOptions options)
+        //{
+        //    if (!ClientManager.HasValidClient())
+        //    {
+        //        AnsiConsole.Markup("[red]NOT logged in. \nYou must be logged in to use .[/]");
+        //        return;
+        //    };
 
-                var resolved = AsyncHelpers.RunSync(() => Task.FromResult(run));
-            }
-            catch (Exception ex)
-            {
-                AnsiConsole.WriteException(ex);
-            }
+        //    try
+        //    {
+        //        var run = Task.Run(async () =>
+        //        {
+        //             var dependencies = await ShieldCommands.ResolveDependenciesAsync(options.Path);
 
-        }
+        //             return await ClientManager.Client.Application.UploadApplicationDirectlyAsync(options.KeyProject,
+        //                 options.Path, dependencies.Select(dep => dep.Item2).ToList());
+        //        });
+
+        //        var resolved = AsyncHelpers.RunSync(() => Task.FromResult(run));
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        AnsiConsole.WriteException(ex);
+        //    }
+
+        //}
     }
 }

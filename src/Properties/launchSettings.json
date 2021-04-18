@@ -2,7 +2,8 @@
   "profiles": {
     "ShieldCLI": {
       "commandName": "Project",
-      "commandLineArgs": "application:add --path C:\\Users\\juana\\source\\repos\\ShieldVSExtension\\bin\\Debug\\ShieldVSExtension.dll -k d"
+      "commandLineArgs": "config:make --type application -n hola -p C:\\Users\\juana\\source\\repos\\test.json"
+      //"commandLineArgs": "application:add --path C:\\Users\\juana\\source\\repos\\SecureApplication\\bin\\Debug\\netcoreapp3.1\\SecureApplication.dll -k d"
     }
   
   }
