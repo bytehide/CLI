@@ -2,6 +2,9 @@
 using ShieldCLI.Models;
 using ShieldCLI.Models.Config;
 using ShieldCLI.Repos;
+using Spectre.Console;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace ShieldCLI.Commands.Config
 {
@@ -25,9 +28,20 @@ namespace ShieldCLI.Commands.Config
 
             ShieldCommands.AuthHasCredentials();
 
-            ShieldCommands.ConfigMakeFile(options.Type, options.Path, options.Preset, options.Name);
+            var type = ShieldCommands.ChooseType(options.Type);
+            var preset = ShieldCommands.ChoosePreset(options.Preset);
+
+            if (type == "application")
+            {
+                var config = ShieldCommands.ConfigApplicationMakeFile(options.Path, preset, options.Name);
+            }
+            else
+            {
+                var config = ShieldCommands.ConfigProjectMakeFile(options.Path, preset, options.Name);
+            }
 
         }
+
 
     }
 }

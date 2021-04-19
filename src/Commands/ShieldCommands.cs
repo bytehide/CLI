@@ -7,6 +7,8 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Shield.Client.Extensions;
 using Shield.Client.Models;
+using Shield.Client.Models.API.Application;
+using Shield.Client.Models.API.Project;
 using ShieldCLI.Helpers;
 using ShieldCLI.Repos;
 using Spectre.Console;
@@ -47,11 +49,15 @@ namespace ShieldCLI.Commands
         public void OpenBrowser(string url)
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                Process.Start(new ProcessStartInfo(url) {UseShellExecute = true}); // Works ok on windows
+                Process.Start(new ProcessStartInfo(url) { UseShellExecute = true }); // Works ok on windows
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
                 Process.Start("xdg-open", url); // Works ok on linux
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) Process.Start("open", url); // Not tested
         }
+
+
+
+
 
         /// <summary>
         ///     Log in the current user whit an apiKey.
@@ -115,27 +121,37 @@ namespace ShieldCLI.Commands
         /// <param name="path"></param>
         /// <param name="name"></param>
         /// <param name="create"></param>
-        public void ConfigGetFile(string type, string path, string name, bool create)
+        public ApplicationConfigurationDto ConfigApplicationGetFile(string path, string name, bool create)
         {
-            if (type != "application" && type != "project")
-                type = AnsiConsole.Prompt(
-                    new SelectionPrompt<string>()
-                        .Title("[white]Please choose the type of protection[/]?")
-                        .PageSize(3)
-                        .AddChoice("project")
-                        .AddChoice("application"));
+            var fullFilePath = $"{path}/shield.project.{name}.json";
 
-            var fullFilePath = $"{path}/shield.{type}.{name}.json";
+            ApplicationConfigurationDto projectConfig = null;
 
+            if (File.Exists(fullFilePath))
+                projectConfig = ClientManager.Client.Configuration.LoadApplicationConfigurationFromFileOrDefault(fullFilePath);
 
-            if (type == "application")
-                ClientManager.Client.Configuration.LoadApplicationConfigurationFromFileOrDefault(fullFilePath);
-            //if (!File.Exists(fullFilePath))
-            //     SaveToFile(path, name);
-            else
-                ClientManager.Client.Configuration.LoadProjectConfigurationFromFileOrDefault(fullFilePath);
+            if ((!File.Exists(fullFilePath)) && create)
+                projectConfig = ConfigApplicationMakeFile(path, "balance", name);
+
+            return projectConfig;
+
         }
 
+        public ProjectConfigurationDto ConfigProjectGetFile(string path, string name, bool create)
+        {
+            var fullFilePath = $"{path}/shield.project.${name}.json";
+
+            ProjectConfigurationDto projectConfig = null;
+
+            if (File.Exists(fullFilePath))
+                projectConfig = ClientManager.Client.Configuration.LoadProjectConfigurationFromFileOrDefault(fullFilePath);
+
+            if ((!File.Exists(fullFilePath)) && create)
+                projectConfig = ConfigProjectMakeFile(path, "balance", name);
+
+            return projectConfig;
+
+        }
         internal async Task<List<(string, string)>> ResolveDependenciesAsync(string applicationPath)
         {
             var (isValid, requiredDependencies, (module, createdContext)) =
@@ -223,20 +239,10 @@ namespace ShieldCLI.Commands
         /// <param name="path">Path were config file is created</param>
         /// <param name="preset">Shield preset to de protection of application or project</param>
         /// <param name="name">Name of the file</param>
-        public void ConfigMakeFile(string type, string path, string preset, string name)
 
+        public string ChoosePreset(string preset)
         {
-            string[] presets = {"maximum", "balance", "custom", "optimized"};
-
-            string[] protectionsId = {"protrection1", "protection2"};
-
-            if (type != "application" && type != "project")
-                type = AnsiConsole.Prompt(
-                    new SelectionPrompt<string>()
-                        .Title("[white]Please choose the type of protection[/]?")
-                        .PageSize(3)
-                        .AddChoice("project")
-                        .AddChoice("application"));
+            string[] presets = { "maximum", "balance", "custom", "optimized" };
 
             if (presets.All(pr => pr != preset))
                 preset = AnsiConsole.Prompt(
@@ -245,25 +251,129 @@ namespace ShieldCLI.Commands
                         .PageSize(4)
                         .AddChoices(presets));
 
-            if (type == "application")
-            {
-                var applicationConfig = preset.Equals("custom")
-                    ? ClientManager.Client.Configuration.MakeApplicationCustomConfiguration(protectionsId)
-                    : ClientManager.Client.Configuration.MakeApplicationConfiguration(preset.ToPreset());
+            return preset;
 
-                applicationConfig.SaveToFile(path, name);
-            }
-            else
-            {
-                var projectConfig = preset.Equals("custom")
-                    ? ClientManager.Client.Configuration.MakeProjectCustomConfiguration(protectionsId)
-                    : ClientManager.Client.Configuration.MakeProjectConfiguration(preset.ToPreset());
+        }
 
-                projectConfig.SaveToFile(path, name);
-            }
+        public string ChooseType(string type)
+        {
 
+            if (type != "application" && type != "project")
+                type = AnsiConsole.Prompt(
+                     new SelectionPrompt<string>()
+                         .Title("[white]Protection type must be application or propect.Please choose the type of protection[/]?")
+                         .PageSize(3)
+                         .AddChoice("project")
+                         .AddChoice("application"));
+            return type;
+
+        }
+
+        public string ChooseProtections()
+        {
+            var value = AnsiConsole.Prompt(
+              new SelectionPrompt<string>()
+                .Title("Choose the source of protection to use")
+                .PageSize(3)
+                .AddChoice("Load from a config file")
+                .AddChoice("Use a preset")
+                .AddChoice("Make a custom")
+
+        );
+
+            return value;
+        }
+        public ApplicationConfigurationDto ConfigApplicationMakeFile(string path, string preset, string name)
+
+        {
+            string[] protectionsId = { "protrection1", "protection2" };
+
+            var applicationConfig = preset.Equals("custom")
+                ? ClientManager.Client.Configuration.MakeApplicationCustomConfiguration(protectionsId)
+                : ClientManager.Client.Configuration.MakeApplicationConfiguration(preset.ToPreset());
+
+            applicationConfig.SaveToFile(path, name);
 
             AnsiConsole.Markup("[lime]Configuration file created sucessfully.[/]");
+
+            return applicationConfig;
+
         }
+
+        public ProjectConfigurationDto ConfigProjectMakeFile(string path, string preset, string name)
+
+        {
+            string[] protectionsId = { "protrection1", "protection2" };
+
+            var projectConfig = preset.Equals("custom")
+                ? ClientManager.Client.Configuration.MakeProjectCustomConfiguration(protectionsId)
+                : ClientManager.Client.Configuration.MakeProjectConfiguration(preset.ToPreset());
+
+            AnsiConsole.Markup("[lime]Configuration file created sucessfully.[/]");
+            projectConfig.SaveToFile(path, name);
+
+            return projectConfig;
+        }
+
+        public ProjectDto ProjectFindOrCreateByName(string name)
+        {
+            ProjectDto project = ClientManager.Client.Project.FindOrCreateExternalProject(name);
+            AnsiConsole.Markup("[lime]Project Found [/]");
+
+            return project;
+        }
+
+        public ProjectDto ProjectFindOrCreateById(string name, string key)
+        {
+            var project = ClientManager.Client.Project.FindByIdOrCreateExternalProject(name ?? "default", key);
+            AnsiConsole.Markup("[lime]Project Found [/]");
+
+            return project;
+        }
+
+        public async Task<ProjectDto> ProjectFindOrCreateByNameAsync(string name)
+        {
+            ProjectDto project = await ClientManager.Client.Project.FindOrCreateExternalProjectAsync(name);
+            AnsiConsole.Markup("[lime]Project Found [/]");
+
+            return project;
+        }
+        public async Task<ProjectDto> ProjectFindOrCreateByIdAsync(string name, string key)
+        {
+            var project = await ClientManager.Client.Project.FindByIdOrCreateExternalProjectAsync(name ?? "default", key);
+            AnsiConsole.Markup("[lime]Project Found [/]");
+
+            return project;
+        }
+
+        public async Task<DirectUploadDto> UploadApplicationAsync(string path, string keyProject)
+
+        {
+
+            var dependencies = await ResolveDependenciesAsync(path);
+
+            var appUpload = await ClientManager.Client.Application.UploadApplicationDirectlyAsync(keyProject,
+                 path, dependencies.Select(dep => dep.Item2).ToList());
+
+            return appUpload;
+        }
+
+
+        public void ShowTable(string name, string key)
+        {
+            Console.WriteLine("");
+            var table = new Table();
+
+            // Add some columns
+            table.AddColumn("[darkorange]Name[/]");
+            table.AddColumn("[darkorange]Key[/]");
+            // Add some rows
+            table.AddRow(name, key);
+            // Render the table to the console
+            AnsiConsole.Render(table);
+
+        }
+
+
     }
 }

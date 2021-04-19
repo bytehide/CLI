@@ -1,7 +1,10 @@
 ﻿using MatthiWare.CommandLine.Abstractions.Command;
+using Shield.Client.Models.API.Application;
+using Shield.Client.Models.API.Project;
 using ShieldCLI.Models;
 using ShieldCLI.Models.Config;
 using ShieldCLI.Repos;
+using System;
 
 namespace ShieldCLI.Commands.Config
 {
@@ -26,9 +29,23 @@ namespace ShieldCLI.Commands.Config
         {
             ShieldCommands.AuthHasCredentials();
 
-            // falta hacer un check de que el archivo existe o no existe 
 
-           // ShieldCommands.ConfigGetFile(options.Type, options.Path, options.Name);
+
+            var type = ShieldCommands.ChooseType(options.Type);
+
+
+            if (type == "project")
+            {
+                ProjectConfigurationDto config = ShieldCommands.ConfigProjectGetFile(options.Path, options.Name, options.Create);
+
+            }
+            else
+            {
+                ApplicationConfigurationDto config = ShieldCommands.ConfigApplicationGetFile(options.Path, options.Name, options.Create);
+
+            }
+
+
 
 
 

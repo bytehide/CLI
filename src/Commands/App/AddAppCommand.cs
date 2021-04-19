@@ -5,8 +5,10 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MatthiWare.CommandLine.Abstractions.Command;
+using System;
+using Spectre.Console;
 
- namespace ShieldCLI.Commands.App
+namespace ShieldCLI.Commands.App
 {
     public class AddAppCommand : Command<GlobalOptions, AddAppOptions>
     {
@@ -28,19 +30,21 @@ using MatthiWare.CommandLine.Abstractions.Command;
 
         public override async Task OnExecuteAsync(GlobalOptions option, AddAppOptions options, CancellationToken cancellationToken)
         {
-            var dependencies = await ShieldCommands.ResolveDependenciesAsync(options.Path);
+            ShieldCommands.AuthHasCredentials();
 
-            await ClientManager.Client.Application.UploadApplicationDirectlyAsync(options.KeyProject,
-                options.Path, dependencies.Select(dep => dep.Item2).ToList());
-        } 
+            await ShieldCommands.UploadApplicationAsync(options.Path, options.KeyProject);
+
+
+            //var dependencies = await ShieldCommands.ResolveDependenciesAsync(options.Path);
+
+            //await ClientManager.Client.Application.UploadApplicationDirectlyAsync(options.KeyProject,
+            //    options.Path, dependencies.Select(dep => dep.Item2).ToList());
+
+        }
 
         //public override void OnExecute(GlobalOptions option, AddAppOptions options)
         //{
-        //    if (!ClientManager.HasValidClient())
-        //    {
-        //        AnsiConsole.Markup("[red]NOT logged in. \nYou must be logged in to use .[/]");
-        //        return;
-        //    };
+        //   
 
         //    try
         //    {

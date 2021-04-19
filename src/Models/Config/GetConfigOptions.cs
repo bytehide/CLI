@@ -9,7 +9,7 @@ namespace ShieldCLI.Models.Config
         [Name("t", "type"), Required, Description("Type of protection ( project or application")]
         public string Type { get; set; }
 
-        [Name("n", "name"), DefaultValue("*"), Description("Name of the protection config file")]
+        [Name("n", "name"), Required, Description("Name of the protection config file")]
         public string Name { get; set; }
 
         [Name("", "or-create"), DefaultValue(false), Description("Create a default config file")]

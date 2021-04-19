@@ -135,8 +135,8 @@ namespace ShieldCLI.Helpers
         static char ToHexChar(int val, bool upper)
         {
             if (0 <= val && val <= 9)
-                return (char) (val + (int) '0');
-            return (char) (val - 10 + (upper ? (int) 'A' : (int) 'a'));
+                return (char)(val + (int)'0');
+            return (char)(val - 10 + (upper ? (int)'A' : (int)'a'));
         }
 
         /// <summary>
@@ -158,7 +158,7 @@ namespace ShieldCLI.Helpers
                     int lower = TryParseHexChar(hexString[i + 1]);
                     if (upper < 0 || lower < 0)
                         return null;
-                    bytes[i / 2] = (byte) ((upper << 4) | lower);
+                    bytes[i / 2] = (byte)((upper << 4) | lower);
                 }
 
                 return bytes;
@@ -178,11 +178,11 @@ namespace ShieldCLI.Helpers
         static int TryParseHexChar(char c)
         {
             if ('0' <= c && c <= '9')
-                return (ushort) c - (ushort) '0';
+                return (ushort)c - (ushort)'0';
             if ('a' <= c && c <= 'f')
-                return 10 + (ushort) c - (ushort) 'a';
+                return 10 + (ushort)c - (ushort)'a';
             if ('A' <= c && c <= 'F')
-                return 10 + (ushort) c - (ushort) 'A';
+                return 10 + (ushort)c - (ushort)'A';
             return -1;
         }
 
@@ -252,11 +252,11 @@ namespace ShieldCLI.Helpers
             uint hash = 0;
             for (int i = 0, j = a.Length - 1; i < count; i++, j--)
             {
-                hash ^= a[i] | ((uint) a[j] << 8);
+                hash ^= a[i] | ((uint)a[j] << 8);
                 hash = (hash << 13) | (hash >> 19);
             }
 
-            return (int) hash;
+            return (int)hash;
         }
 
         /// <summary>
@@ -391,7 +391,7 @@ namespace ShieldCLI.Helpers
         /// </summary>
         /// <param name="v">Value</param>
         /// <param name="alignment">Alignment</param>
-        public static int AlignUp(int v, uint alignment) => (int) AlignUp((uint) v, alignment);
+        public static int AlignUp(int v, uint alignment) => (int)AlignUp((uint)v, alignment);
     }
 
     internal class CustomResolver : IAssemblyResolver
@@ -399,8 +399,8 @@ namespace ShieldCLI.Helpers
         static readonly ModuleDef nullModule = new ModuleDefUser();
 
         // DLL files are searched before EXE files
-        static readonly string[] assemblyExtensions = {".dll", ".exe"};
-        static readonly string[] winMDAssemblyExtensions = {".winmd"};
+        static readonly string[] assemblyExtensions = { ".dll", ".exe" };
+        static readonly string[] winMDAssemblyExtensions = { ".winmd" };
 
         static readonly List<GacInfo> gacInfos;
         static readonly string[] extraMonoPaths;
@@ -481,7 +481,7 @@ namespace ShieldCLI.Helpers
                     foreach (var verDir in monoVerDirs)
                     {
                         var dir2 = dir;
-                        foreach (var d in verDir.Split(new char[] {'\\'}))
+                        foreach (var d in verDir.Split(new char[] { '\\' }))
                             dir2 = Path.Combine(dir2, d);
                         if (Directory.Exists(dir2))
                             extraMonoPathsList.Add(dir2);
@@ -1340,7 +1340,7 @@ namespace ShieldCLI.Helpers
             }
 
             if (baseDir is not null)
-                return new List<string> {baseDir};
+                return new List<string> { baseDir };
             return Array.Empty<string>();
         }
 
@@ -1365,13 +1365,13 @@ namespace ShieldCLI.Helpers
                     if (string.IsNullOrEmpty(privatePath))
                         continue;
                     searchPaths.AddRange(from tmp2 in privatePath.Split(';')
-                        select tmp2.Trim()
+                                         select tmp2.Trim()
                         into path
-                        where path != ""
-                        select Path.GetFullPath(Path.Combine(dirName, path.Replace('\\', Path.DirectorySeparatorChar)))
+                                         where path != ""
+                                         select Path.GetFullPath(Path.Combine(dirName, path.Replace('\\', Path.DirectorySeparatorChar)))
                         into newPath
-                        where Directory.Exists(newPath) && newPath.StartsWith(baseDir + Path.DirectorySeparatorChar)
-                        select newPath);
+                                         where Directory.Exists(newPath) && newPath.StartsWith(baseDir + Path.DirectorySeparatorChar)
+                                         select newPath);
                 }
             }
             catch (ArgumentException)
@@ -1433,12 +1433,12 @@ namespace ShieldCLI.Helpers
                 var context = new ModuleContext
                 {
                     AssemblyResolver = new CustomResolver
-                        {FindExactMatch = false, PreSearchPaths = {Path.GetDirectoryName(assemblyPath)}}
+                    { FindExactMatch = false, PreSearchPaths = { Path.GetDirectoryName(assemblyPath) } }
                 };
                 var asm = ModuleDefMD.Load(file, context);
 
                 var requiredDependencies = asm.GetAssemblyRefs()
-                    .Select(assemblyRef => ((string, string)) (assemblyRef.FullName, null)).ToList();
+                    .Select(assemblyRef => ((string, string))(assemblyRef.FullName, null)).ToList();
 
                 return (true, requiredDependencies, (asm, context));
             }
@@ -1468,7 +1468,7 @@ namespace ShieldCLI.Helpers
 
                 var enumerable = dirs.ToList();
 
-                enumerable.ForEach(((CustomResolver) context.AssemblyResolver).AddPreSearchPath);
+                enumerable.ForEach(((CustomResolver)context.AssemblyResolver).AddPreSearchPath);
             }
 
             foreach (var (dependency, _) in requiredDependencies.Where(dep => dep.path is null).ToList())
@@ -1489,7 +1489,7 @@ namespace ShieldCLI.Helpers
                 if (assemblyRef is null)
                     continue; //Not necessary
 
-                var resolved = ((CustomResolver) context.AssemblyResolver).Resolve(assemblyRef, module, out var path);
+                var resolved = ((CustomResolver)context.AssemblyResolver).Resolve(assemblyRef, module, out var path);
 
                 if (resolved is null)
                 {

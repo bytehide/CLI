@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
 using MatthiWare.CommandLine.Abstractions.Command;
+using Microsoft.VisualBasic.CompilerServices;
 using Shield.Client.Models.API.Project;
 using ShieldCLI.Models;
 using ShieldCLI.Models.Project;
@@ -10,76 +13,33 @@ namespace ShieldCLI.Commands.Project
 {
     public class GetProjectCommand : Command<GlobalOptions, GetProjectOptions>
     {
-        public ClientManager ClientManager { get; set; }
+        private ClientManager ClientManager { get; set; }
+        public ShieldCommands ShieldCommands { get; set; }
+
+        public GetProjectCommand(ClientManager clientManager, ShieldCommands shieldCommands)
+        {
+            ClientManager = clientManager;
+            ShieldCommands = shieldCommands;
+        }
 
         public override void OnConfigure(ICommandConfigurationBuilder builder)
         {
             builder.Name("project:find").Description("Projects Management");
         }
-
-        public GetProjectCommand(ClientManager clientManager)
+        public override async Task OnExecuteAsync(GlobalOptions option, GetProjectOptions getProjectOptions, CancellationToken cancellationToken)
         {
-            ClientManager = clientManager;
-        }
-
-        public override void OnExecute(GlobalOptions options, GetProjectOptions getProjectOptions)
-        {
-            base.OnExecute(options, getProjectOptions);
-
-            try
-
+            if (!ClientManager.HasValidClient())
             {
-                var name = getProjectOptions.Name;
-                var key = getProjectOptions.Key;
-                ProjectDto project = null;
-
-                if (name == null && key == null)
-                {
-                    throw new ArgumentNullException();
-                }
+                AnsiConsole.Markup("[red]NOT logged in. \nYou must be logged in to use .[/]");
+                return;
+            };
 
 
-                if (key != null)
-                {
-                    project = ClientManager.Client.Project.FindByIdOrCreateExternalProject(name ?? "default", key);
-                    AnsiConsole.Markup("[lime]Project Found [/]");
-                }
-                else
-                {
-                    project = ClientManager.Client.Project.FindOrCreateExternalProject(name);
-                    AnsiConsole.Markup("[lime]Project Found [/]");
-                }
+            var project = getProjectOptions.Key != null ?
+                await ShieldCommands.ProjectFindOrCreateByIdAsync(getProjectOptions.Name, getProjectOptions.Key)
+                : await ShieldCommands.ProjectFindOrCreateByNameAsync(getProjectOptions.Name);
 
-                Console.WriteLine("");
-
-                var table = new Table();
-                // Add some columns
-                table.AddColumn("[darkorange]Name[/]");
-                table.AddColumn("[darkorange]Key[/]");
-
-                // Add some rows
-                table.AddRow(project.Name, project.Key);
-
-                // Render the table to the console
-                AnsiConsole.Render(table);
-
-
-            }
-            catch (ArgumentNullException ex)
-            {
-                AnsiConsole.Markup("[red]Should insert the name or key of the project to find it.[/]");
-                ;
-
-            }
-
-
-
-
-
-
-
+            ShieldCommands.ShowTable(project.Name, project.Key);
         }
-
-
     }
 }
