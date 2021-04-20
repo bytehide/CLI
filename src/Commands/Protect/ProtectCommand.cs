@@ -11,10 +11,12 @@ namespace ShieldCLI.Commands.Protect
     {
 
         private ClientManager ClientManager { get; set; }
+        public ShieldCommands ShieldCommands { get; set; }
 
-        public ProtectCommand(ClientManager clientManager)
+        public ProtectCommand(ClientManager clientManager, ShieldCommands shieldCommands)
         {
             ClientManager = clientManager;
+            ShieldCommands = shieldCommands;
         }
 
         public override void OnConfigure(ICommandConfigurationBuilder builder)
@@ -27,15 +29,8 @@ namespace ShieldCLI.Commands.Protect
 
         public override void OnExecute(GlobalOptions option, ProtectOptions options)
         {
+            ShieldCommands.AuthHasCredentials();
 
-
-
-            if (!ClientManager.HasValidClient())
-            {
-
-                AnsiConsole.Markup("[red]NOT logged in. \nYou must be logged in to use .[/]");
-                return;
-            };
 
 
             var projectKey = options.ProjectKey;

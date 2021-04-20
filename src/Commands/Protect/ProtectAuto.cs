@@ -1,4 +1,5 @@
 ﻿using MatthiWare.CommandLine.Abstractions.Command;
+using Shield.Client.Models.API.Application;
 using Shield.Client.Models.API.Project;
 using ShieldCLI.Models;
 using ShieldCLI.Models.Protect;
@@ -55,30 +56,35 @@ namespace ShieldCLI.Commands.Protect
 
 
             string protection = ShieldCommands.ChooseProtections();
-            string configname = AnsiConsole.Ask<string>("Enter a name for the config file");
-
+            string configname = AnsiConsole.Ask<string>("Enter the config file name");
+            ApplicationConfigurationDto config = null;
 
             if (protection == "Load from a config file")
             {
                 string apppath = AnsiConsole.Ask<string>("Config File Path?");
-                ShieldCommands.ConfigApplicationGetFile(apppath, configname, false);
+                config = ShieldCommands.ConfigApplicationGetFile(apppath, configname, false);
 
-                AnsiConsole.Markup("[lime]Archivo Cargado[/]");
             }
 
             if (protection == "Use a preset")
 
             {
+                string[] protectionsId = { };
                 var preset = ShieldCommands.ChoosePreset("default");
-                ShieldCommands.ConfigApplicationMakeFile(Path.GetDirectoryName(path), preset, configname);
+                if (preset == "custom")
+                    protectionsId = ShieldCommands.ChooseCustomProtections(project.Key);
+                config = ShieldCommands.ConfigApplicationMakeFile(Path.GetDirectoryName(path), preset, configname, protectionsId);
 
             }
             if (protection == "Make a custom")
             {
-
-                var preset = ShieldCommands.ChoosePreset("custom");
-                ShieldCommands.ConfigApplicationMakeFile(Path.GetDirectoryName(path), preset, configname);
+                var preset = "custom";
+                var protectionsId = ShieldCommands.ChooseCustomProtections(project.Key);
+                config = ShieldCommands.ConfigApplicationMakeFile(Path.GetDirectoryName(path), preset, configname, protectionsId);
             }
+
+            await ShieldCommands.ProtectApplicationAsync(project.Key, appUpload.ApplicationBlob, config);
+
         }
 
 

@@ -31,13 +31,15 @@ namespace ShieldCLI.Commands.Config
             var type = ShieldCommands.ChooseType(options.Type);
             var preset = ShieldCommands.ChoosePreset(options.Preset);
 
+            var protectionsId = ShieldCommands.ChooseCustomProtections("ad955664-b28b-46a4-86d1-489eb7306f6e");
+
             if (type == "application")
             {
-                var config = ShieldCommands.ConfigApplicationMakeFile(options.Path, preset, options.Name);
+                var config = ShieldCommands.ConfigApplicationMakeFile(options.Path, preset, options.Name, protectionsId);
             }
             else
             {
-                var config = ShieldCommands.ConfigProjectMakeFile(options.Path, preset, options.Name);
+                var config = ShieldCommands.ConfigProjectMakeFile(options.Path, preset, options.Name, protectionsId);
             }
 
         }

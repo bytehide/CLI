@@ -4,7 +4,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.SignalR.Client;
 using Shield.Client.Extensions;
 using Shield.Client.Models;
 using Shield.Client.Models.API.Application;
@@ -125,15 +127,15 @@ namespace ShieldCLI.Commands
         {
             var fullFilePath = $"{path}/shield.project.{name}.json";
 
-            ApplicationConfigurationDto projectConfig = null;
+            ApplicationConfigurationDto applicationConfig = null;
 
             if (File.Exists(fullFilePath))
-                projectConfig = ClientManager.Client.Configuration.LoadApplicationConfigurationFromFileOrDefault(fullFilePath);
+                applicationConfig = ClientManager.Client.Configuration.LoadApplicationConfigurationFromFileOrDefault(fullFilePath);
 
             if ((!File.Exists(fullFilePath)) && create)
-                projectConfig = ConfigApplicationMakeFile(path, "balance", name);
+                applicationConfig = ConfigApplicationMakeFile(path, "balance", name, null);
 
-            return projectConfig;
+            return applicationConfig;
 
         }
 
@@ -147,7 +149,7 @@ namespace ShieldCLI.Commands
                 projectConfig = ClientManager.Client.Configuration.LoadProjectConfigurationFromFileOrDefault(fullFilePath);
 
             if ((!File.Exists(fullFilePath)) && create)
-                projectConfig = ConfigProjectMakeFile(path, "balance", name);
+                projectConfig = ConfigProjectMakeFile(path, "balance", name, null);
 
             return projectConfig;
 
@@ -283,10 +285,27 @@ namespace ShieldCLI.Commands
 
             return value;
         }
-        public ApplicationConfigurationDto ConfigApplicationMakeFile(string path, string preset, string name)
+        public string[] ChooseCustomProtections(string projectKey)
+        {
+            var protections = ClientManager.Client.Protections.GetProtections(projectKey);
+            var allNames = protections.Select(p => p.Name).ToList();
+            var choices = AnsiConsole.Prompt(
+                     new MultiSelectionPrompt<string>()
+             .Title("Choose custom protections?")
+             .PageSize(12)
+             .AddChoices(allNames));
+
+            var elegidos = choices.ToArray();
+            var idsElegidos = protections.Where(p => elegidos.Contains(p.Name)).Select(p => p.Id).ToArray();
+
+            return idsElegidos;
+
+
+        }
+
+        public ApplicationConfigurationDto ConfigApplicationMakeFile(string path, string preset, string name, string[] protectionsId)
 
         {
-            string[] protectionsId = { "protrection1", "protection2" };
 
             var applicationConfig = preset.Equals("custom")
                 ? ClientManager.Client.Configuration.MakeApplicationCustomConfiguration(protectionsId)
@@ -300,14 +319,14 @@ namespace ShieldCLI.Commands
 
         }
 
-        public ProjectConfigurationDto ConfigProjectMakeFile(string path, string preset, string name)
+        public ProjectConfigurationDto ConfigProjectMakeFile(string path, string preset, string name, string[] protectionsId)
 
         {
-            string[] protectionsId = { "protrection1", "protection2" };
 
-            var projectConfig = preset.Equals("custom")
-                ? ClientManager.Client.Configuration.MakeProjectCustomConfiguration(protectionsId)
+
+            var projectConfig = preset.Equals("custom") ? ClientManager.Client.Configuration.MakeProjectCustomConfiguration(protectionsId)
                 : ClientManager.Client.Configuration.MakeProjectConfiguration(preset.ToPreset());
+
 
             AnsiConsole.Markup("[lime]Configuration file created sucessfully.[/]");
             projectConfig.SaveToFile(path, name);
@@ -373,6 +392,37 @@ namespace ShieldCLI.Commands
             AnsiConsole.Render(table);
 
         }
+
+        public async Task ProtectApplicationAsync(string projectKey, string fileBlob, ApplicationConfigurationDto config)
+        {
+            var connection = ClientManager.Client.Connector.CreateHubConnection();
+            var hub = await ClientManager.Client.Connector.InstanceHubConnectorWithLoggerAsync(connection);
+            await hub.StartAsync();
+
+            var result = await ClientManager.Client.Tasks.ProtectSingleFileAsync(projectKey, fileBlob, connection, config);
+
+            result.OnSuccess(hub, async (application) =>
+                {
+                    AnsiConsole.Markup($"[lime]{application.Name} application has been protected SUCESSFULLY with {application.Preset} protection. [/]");
+                    string path = AnsiConsole.Ask<string>("Where you want de protected application? Enter a path.");
+                    var downloaded = await ClientManager.Client.Application.DownloadApplicationAsStreamAsync(application);
+                    await downloaded.SaveOnAsync(path, true);
+                }
+             );
+
+            var semaphore = new Semaphore(0, 1);
+
+            result.OnError(hub, AnsiConsole.Write);
+
+            result.OnClose(hub, (s) =>
+            {
+                semaphore.Release();
+                AnsiConsole.Markup($"[lime]{s} [/]");
+            });
+
+            semaphore.WaitOne();
+        }
+
 
 
     }
