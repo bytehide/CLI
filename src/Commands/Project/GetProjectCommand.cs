@@ -39,7 +39,7 @@ namespace ShieldCLI.Commands.Project
                 await ShieldCommands.ProjectFindOrCreateByIdAsync(getProjectOptions.Name, getProjectOptions.Key)
                 : await ShieldCommands.ProjectFindOrCreateByNameAsync(getProjectOptions.Name);
 
-            ShieldCommands.ShowTable(project.Name, project.Key);
+            ShieldCommands.ProjectTable(project.Name, project.Key);
         }
     }
 }

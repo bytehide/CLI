@@ -36,6 +36,7 @@ namespace ShieldCLI.Commands.Auth
             if (auth.Check)
                 if (ShieldCommands.AuthHasCredentials())
                     AnsiConsole.MarkupLine("[lime]You are logged in correctly[/]");
+            AnsiConsole.MarkupLine("");
 
             if (auth.Login != null)
                 ShieldCommands.AuthDoLogin(auth.Login);

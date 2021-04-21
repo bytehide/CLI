@@ -28,7 +28,7 @@ namespace ShieldCLI.Commands.Protect
 
         public override void OnConfigure(ICommandConfigurationBuilder builder)
         {
-            builder.Name("protect:auto").Description("Protect an application or project.");
+            builder.Name("protect:auto").Description("Protect an application.");
 
 
 
@@ -37,51 +37,50 @@ namespace ShieldCLI.Commands.Protect
         public override async Task OnExecuteAsync(GlobalOptions option, ProtectAutoOptions options, CancellationToken cancellationToken)
         {
 
+
             ShieldCommands.AuthHasCredentials();
 
-            string name = AnsiConsole.Ask<string>("Project Name?");
+            string name = AnsiConsole.Ask<string>("[bold dodgerblue3]Enter the project Name[/]");
 
             var project = await ShieldCommands.ProjectFindOrCreateByNameAsync(name);
 
-            ShieldCommands.ShowTable(project.Name, project.Key);
+            ShieldCommands.ProjectTable(project.Name, project.Key);
+
+            string path = AnsiConsole.Ask<string>("[dodgerblue3]Enter the path of the application:[/]");
 
 
-
-            string path = AnsiConsole.Ask<string>("Application Path?");
 
             var appUpload = await ShieldCommands.UploadApplicationAsync(path, project.Key);
 
+
             Console.WriteLine("");
-            ShieldCommands.ShowTable(Path.GetFileName(path), appUpload.ApplicationBlob);
+            AnsiConsole.MarkupLine("[lime]Application Uploaded Succesfully[/]");
 
+            ShieldCommands.ApplicationtTable(Path.GetFileName(path), appUpload.ApplicationBlob, project.Key);
 
-            string protection = ShieldCommands.ChooseProtections();
-            string configname = AnsiConsole.Ask<string>("Enter the config file name");
+            var directory = Path.GetDirectoryName(path);
+            var filename = Path.GetFileNameWithoutExtension(path);
+
+            var autoconfig = ClientManager.Client.Configuration.FindApplicationConfiguration(directory, filename);
+
             ApplicationConfigurationDto config = null;
 
-            if (protection == "Load from a config file")
+            if (autoconfig is not null)
             {
-                string apppath = AnsiConsole.Ask<string>("Config File Path?");
-                config = ShieldCommands.ConfigApplicationGetFile(apppath, configname, false);
+                AnsiConsole.MarkupLine("[darkorange]We detected an application config file[/]");
+                if (!AnsiConsole.Confirm("Do you want to use it? "))
+                {
+                    config = ShieldCommands.CreateConfigFile(project.Key, directory);
+                }
+
+                config = autoconfig;
 
             }
-
-            if (protection == "Use a preset")
-
+            else
             {
-                string[] protectionsId = { };
-                var preset = ShieldCommands.ChoosePreset("default");
-                if (preset == "custom")
-                    protectionsId = ShieldCommands.ChooseCustomProtections(project.Key);
-                config = ShieldCommands.ConfigApplicationMakeFile(Path.GetDirectoryName(path), preset, configname, protectionsId);
+                config = ShieldCommands.CreateConfigFile(project.Key, directory);
+            }
 
-            }
-            if (protection == "Make a custom")
-            {
-                var preset = "custom";
-                var protectionsId = ShieldCommands.ChooseCustomProtections(project.Key);
-                config = ShieldCommands.ConfigApplicationMakeFile(Path.GetDirectoryName(path), preset, configname, protectionsId);
-            }
 
             await ShieldCommands.ProtectApplicationAsync(project.Key, appUpload.ApplicationBlob, config);
 

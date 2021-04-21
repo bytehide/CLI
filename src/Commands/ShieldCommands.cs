@@ -273,9 +273,11 @@ namespace ShieldCLI.Commands
 
         public string ChooseProtections()
         {
+            AnsiConsole.WriteLine();
             var value = AnsiConsole.Prompt(
               new SelectionPrompt<string>()
-                .Title("Choose the source of protection to use")
+
+                .Title("[dodgerblue3]Choose the source of protection to use[/]")
                 .PageSize(3)
                 .AddChoice("Load from a config file")
                 .AddChoice("Use a preset")
@@ -297,7 +299,6 @@ namespace ShieldCLI.Commands
 
             var elegidos = choices.ToArray();
             var idsElegidos = protections.Where(p => elegidos.Contains(p.Name)).Select(p => p.Id).ToArray();
-
             return idsElegidos;
 
 
@@ -338,7 +339,6 @@ namespace ShieldCLI.Commands
         {
             ProjectDto project = ClientManager.Client.Project.FindOrCreateExternalProject(name);
             AnsiConsole.Markup("[lime]Project Found [/]");
-
             return project;
         }
 
@@ -353,7 +353,7 @@ namespace ShieldCLI.Commands
         public async Task<ProjectDto> ProjectFindOrCreateByNameAsync(string name)
         {
             ProjectDto project = await ClientManager.Client.Project.FindOrCreateExternalProjectAsync(name);
-            AnsiConsole.Markup("[lime]Project Found [/]");
+            //AnsiConsole.Markup("[lime]Project Found [/]");
 
             return project;
         }
@@ -378,20 +378,39 @@ namespace ShieldCLI.Commands
         }
 
 
-        public void ShowTable(string name, string key)
+        public void ProjectTable(string name, string key)
         {
             Console.WriteLine("");
             var table = new Table();
 
             // Add some columns
-            table.AddColumn("[darkorange]Name[/]");
-            table.AddColumn("[darkorange]Key[/]");
+            table.AddColumn("[darkorange]Project Name[/]");
+            table.AddColumn("[darkorange]Project Key[/]");
             // Add some rows
             table.AddRow(name, key);
             // Render the table to the console
             AnsiConsole.Render(table);
 
         }
+
+        public void ApplicationtTable(string name, string key, string projectKey)
+        {
+            Console.WriteLine("");
+            var table = new Table();
+
+            // Add some columns
+            table.AddColumn("[darkorange]Application Name[/]");
+            table.AddColumn("[darkorange]Application Key[/]");
+            table.AddColumn("[darkorange]Project Key[/]");
+
+            // Add some rows
+            table.AddRow(name, key, projectKey);
+            // Render the table to the console
+            AnsiConsole.Render(table);
+
+        }
+
+
 
         public async Task ProtectApplicationAsync(string projectKey, string fileBlob, ApplicationConfigurationDto config)
         {
@@ -403,10 +422,21 @@ namespace ShieldCLI.Commands
 
             result.OnSuccess(hub, async (application) =>
                 {
-                    AnsiConsole.Markup($"[lime]{application.Name} application has been protected SUCESSFULLY with {application.Preset} protection. [/]");
-                    string path = AnsiConsole.Ask<string>("Where you want de protected application? Enter a path.");
-                    var downloaded = await ClientManager.Client.Application.DownloadApplicationAsStreamAsync(application);
+                    AnsiConsole.MarkupLine($"[lime]The application has been protected SUCESSFULLY with {application.Preset} protection. [/]");
+                    AnsiConsole.WriteLine("");
+                    string path = AnsiConsole.Ask<string>("[dodgerblue3]Enter a path where protected app will be saved[/]");
+
+
+
+
+
+
+
+                    var downloaded = await ClientManager.Client.Application.DownloadApplicationAsArrayAsync(application);
+
+
                     await downloaded.SaveOnAsync(path, true);
+                    AnsiConsole.MarkupLine("[lime]Application SAVED SUCESSFULLY[/]");
                 }
              );
 
@@ -424,6 +454,44 @@ namespace ShieldCLI.Commands
         }
 
 
+        public ApplicationConfigurationDto CreateConfigFile(string projectKey, string path)
+        {
+            ApplicationConfigurationDto configurationDto = null;
+
+            string protection = ChooseProtections();
+            string configname = AnsiConsole.Ask<string>("Enter the config file name");
+            AnsiConsole.WriteLine("");
+
+            if (protection == "Load from a config file")
+
+            {
+
+                var configPath = AnsiConsole.Ask<string>("Config File Path?");
+
+
+                configurationDto = ConfigApplicationGetFile(configPath, configname, false);
+
+            }
+
+            if (protection == "Use a preset")
+
+            {
+                string[] protectionsId = { };
+                var preset = ChoosePreset("default");
+                if (preset == "custom")
+                    protectionsId = ChooseCustomProtections(projectKey);
+                configurationDto = ConfigApplicationMakeFile(path, preset, configname, protectionsId);
+
+            }
+            if (protection == "Make a custom")
+            {
+                var preset = "custom";
+                var protectionsId = ChooseCustomProtections(projectKey);
+                configurationDto = ConfigApplicationMakeFile(path, preset, configname, protectionsId);
+            }
+
+            return configurationDto;
+        }
 
     }
 }
