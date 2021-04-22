@@ -290,16 +290,40 @@ namespace ShieldCLI.Commands
         public string[] ChooseCustomProtections(string projectKey)
         {
             var protections = ClientManager.Client.Protections.GetProtections(projectKey);
+
+            var allAviableNames = protections.Where(p => p.Available).Select(p => p.Name).ToList();
+            var allNotAvailableNames = protections.Where(p => !p.Available).Select(p => $"[[PRO]] {p.Name}").ToList();
+
             var allNames = protections.Select(p => p.Name).ToList();
             var choices = AnsiConsole.Prompt(
                      new MultiSelectionPrompt<string>()
              .Title("Choose custom protections?")
              .PageSize(12)
-             .AddChoices(allNames));
+             .AddChoices(allAviableNames)
+             .AddChoices(allNotAvailableNames)
+             );
+            var elected = choices.ToArray();
 
-            var elegidos = choices.ToArray();
-            var idsElegidos = protections.Where(p => elegidos.Contains(p.Name)).Select(p => p.Id).ToArray();
-            return idsElegidos;
+            var electedAndAviable = allAviableNames.Where(p => elected.Contains(p));
+            var electedAndNotAviable = allNotAvailableNames.Where(p => elected.Contains(p)).ToArray();
+
+
+            if (electedAndNotAviable.Length > 0)
+            {
+                AnsiConsole.MarkupLine("[darkorange]Following protections selected will not be aply because they are not in your Shield Edition.[/]");
+                AnsiConsole.MarkupLine("[darkorange]Please Upgrade your edition if you want to use the protections[/]");
+                AnsiConsole.MarkupLine("");
+                foreach (string elegido in electedAndNotAviable)
+
+                {
+                    AnsiConsole.MarkupLine($"[red]{elegido}[/]");
+                }
+            }
+            Thread.Sleep(1500);
+
+            var idsElectedAndAviable = protections.Where(p => electedAndAviable.Contains(p.Name)).Select(p => p.Id).ToArray();
+
+            return idsElectedAndAviable;
 
 
         }
@@ -409,51 +433,6 @@ namespace ShieldCLI.Commands
             AnsiConsole.Render(table);
 
         }
-
-
-
-        public async Task ProtectApplicationAsync(string projectKey, string fileBlob, ApplicationConfigurationDto config)
-        {
-            var connection = ClientManager.Client.Connector.CreateHubConnection();
-            var hub = await ClientManager.Client.Connector.InstanceHubConnectorWithLoggerAsync(connection);
-            await hub.StartAsync();
-
-            var result = await ClientManager.Client.Tasks.ProtectSingleFileAsync(projectKey, fileBlob, connection, config);
-
-            result.OnSuccess(hub, async (application) =>
-                {
-                    AnsiConsole.MarkupLine($"[lime]The application has been protected SUCESSFULLY with {application.Preset} protection. [/]");
-                    AnsiConsole.WriteLine("");
-                    string path = AnsiConsole.Ask<string>("[dodgerblue3]Enter a path where protected app will be saved[/]");
-
-
-
-
-
-
-
-                    var downloaded = await ClientManager.Client.Application.DownloadApplicationAsArrayAsync(application);
-
-
-                    await downloaded.SaveOnAsync(path, true);
-                    AnsiConsole.MarkupLine("[lime]Application SAVED SUCESSFULLY[/]");
-                }
-             );
-
-            var semaphore = new Semaphore(0, 1);
-
-            result.OnError(hub, AnsiConsole.Write);
-
-            result.OnClose(hub, (s) =>
-            {
-                semaphore.Release();
-                AnsiConsole.Markup($"[lime]{s} [/]");
-            });
-
-            semaphore.WaitOne();
-        }
-
-
         public ApplicationConfigurationDto CreateConfigFile(string projectKey, string path)
         {
             ApplicationConfigurationDto configurationDto = null;
@@ -492,6 +471,56 @@ namespace ShieldCLI.Commands
 
             return configurationDto;
         }
+
+
+
+        public async Task ProtectApplicationAsync(string projectKey, string fileBlob, ApplicationConfigurationDto config)
+        {
+            var connection = ClientManager.Client.Connector.CreateHubConnection();
+            var hub = await ClientManager.Client.Connector.InstanceHubConnectorWithLoggerAsync(connection);
+            await hub.StartAsync();
+
+            //hub.OnLog(connection.OnLogger, (string s, string s1, string s2) =>
+            //{
+
+            //});
+
+            var result = await ClientManager.Client.Tasks.ProtectSingleFileAsync(projectKey, fileBlob, connection, config);
+
+            result.OnSuccess(hub, async (application) =>
+                {
+                    AnsiConsole.MarkupLine($"[lime]The application has been protected SUCESSFULLY with {application.Preset} protection. [/]");
+                    AnsiConsole.WriteLine("");
+                    string path = AnsiConsole.Ask<string>("[darkorange]Enter a path where protected app will be saved[/]");
+
+
+
+
+
+
+
+                    var downloaded = await ClientManager.Client.Application.DownloadApplicationAsArrayAsync(application);
+
+
+                    downloaded.SaveOn(path, true);
+                    AnsiConsole.MarkupLine("[lime]Application SAVED SUCESSFULLY[/]");
+                }
+             );
+
+            var semaphore = new Semaphore(0, 1);
+
+            result.OnError(hub, AnsiConsole.Write);
+
+            result.OnClose(hub, (s) =>
+            {
+                semaphore.Release();
+                AnsiConsole.Markup($"[lime]{s} [/]");
+            });
+
+            semaphore.WaitOne();
+        }
+
+
 
     }
 }

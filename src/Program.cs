@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 
 using ShieldCLI.Helpers;
 using ShieldCLI.Commands;
+using Spectre.Console;
 
 namespace ShieldCLI
 {
@@ -14,6 +15,13 @@ namespace ShieldCLI
     {
         private static async Task Main(string[] args)
         {
+            var font = FigletFont.Load("starwars.flf");
+            AnsiConsole.Render(
+    new FigletText(font, "Shield CLI")
+        .LeftAligned()
+        .Color(Color.Lime));
+
+
             var options = new CommandLineParserOptions
             {
                 AppName = "ds"
@@ -25,7 +33,7 @@ namespace ShieldCLI
 
             services.AddSingleton<DependenciesResolver>();
 
-            services.AddLogging(configure => configure.AddConsole().SetMinimumLevel(LogLevel.Debug))
+            services.AddLogging(configure => configure.AddConsole().SetMinimumLevel(LogLevel.Information))
                 .AddTransient<Consumer>();
 
             services.AddSingleton<ClientManager>();
@@ -37,6 +45,8 @@ namespace ShieldCLI
             await using var provider = services.BuildServiceProvider();
 
             var app = provider.GetService<Consumer>();
+
+
 
             await app!.Run(args);
         }

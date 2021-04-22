@@ -4,6 +4,7 @@ using ShieldCLI.Models.Protect;
 using ShieldCLI.Repos;
 using Spectre.Console;
 using Shield.Client.Extensions;
+using System.Threading;
 
 namespace ShieldCLI.Commands.Protect
 {
@@ -29,41 +30,6 @@ namespace ShieldCLI.Commands.Protect
 
         public override void OnExecute(GlobalOptions option, ProtectOptions options)
         {
-            ShieldCommands.AuthHasCredentials();
-
-
-
-            var projectKey = options.ProjectKey;
-            var appKey = options.AppKey;
-            var config = options.Config;
-            var output = options.Output;
-
-            var appConfig = ClientManager.Client.Configuration.LoadApplicationConfigurationFromFile(config);
-
-
-
-
-            var connection = ClientManager.Client.Connector.CreateHubConnection();
-            var hub = ClientManager.Client.Connector.InstanceHubConnectorAsync(connection).Result;
-
-            hub.StartAsync().Wait();
-
-            var result = ClientManager.Client.Tasks.ProtectSingleFile("projectKety", "appKey", connection, appConfig);
-
-
-
-            result.OnSuccess(hub, (a) =>
-            {
-
-                AnsiConsole.Markup($"[lime]{a.Name} application has been protected SUCESSFULLY. [/]");
-            }
-            );
-
-            result.OnError(hub, AnsiConsole.Write);
-            result.OnClose(hub, (s) =>
-            {
-                AnsiConsole.Markup($"[lime]{s} [/]");
-            });
         }
     }
 

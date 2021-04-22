@@ -40,13 +40,13 @@ namespace ShieldCLI.Commands.Protect
 
             ShieldCommands.AuthHasCredentials();
 
-            string name = AnsiConsole.Ask<string>("[bold dodgerblue3]Enter the project Name[/]");
+            string name = AnsiConsole.Ask<string>("[darkorange]Enter the project Name[/]");
 
             var project = await ShieldCommands.ProjectFindOrCreateByNameAsync(name);
 
             ShieldCommands.ProjectTable(project.Name, project.Key);
 
-            string path = AnsiConsole.Ask<string>("[dodgerblue3]Enter the path of the application:[/]");
+            string path = AnsiConsole.Ask<string>("[darkorange]Enter the path of the application:[/]");
 
 
 
