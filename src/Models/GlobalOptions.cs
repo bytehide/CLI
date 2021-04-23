@@ -25,7 +25,7 @@ namespace ShieldCLI.Models
         //public AddAppCommand AddAppCommand { get; set; }
         //public GetConfigCommand GetConfigCommand { get; set; }
         //public MakeConfigCommand MakeConfigCommand { get; set; }
-        //public ProtectCommand ProtectCommand { get; set; }
+        public ProtectCommand ProtectCommand { get; set; }
         public ProtectAuto protectAuto { get; set; }
 
 

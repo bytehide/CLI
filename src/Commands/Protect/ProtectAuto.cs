@@ -45,7 +45,7 @@ namespace ShieldCLI.Commands.Protect
             var project = await ShieldCommands.ProjectFindOrCreateByNameAsync(name);
 
             ShieldCommands.ProjectTable(project.Name, project.Key);
-
+            AnsiConsole.MarkupLine("");
             string path = AnsiConsole.Ask<string>("[darkorange]Enter the path of the application:[/]");
 
 
@@ -80,54 +80,17 @@ namespace ShieldCLI.Commands.Protect
             {
                 config = ShieldCommands.CreateConfigFile(project.Key, directory);
             }
+            AnsiConsole.WriteLine("");
+
+            string savePath = AnsiConsole.Ask<string>("[darkorange]Enter a path where protected app will be saved[/]");
 
 
-            await ShieldCommands.ProtectApplicationAsync(project.Key, appUpload.ApplicationBlob, config);
+
+
+
+            await ShieldCommands.ProtectApplicationAsync(project.Key, appUpload.ApplicationBlob, config, savePath);
 
         }
-
-
-
-
-
-
-
-
-
-
-
-
-        //var projectKey = options.ProjectKey;
-        //var appKey = options.AppKey;
-        //var config = options.Config;
-        //var output = options.Output;
-
-        //var appConfig = ClientManager.Client.Configuration.LoadApplicationConfigurationFromFile(config);
-
-
-
-
-        //var connection = ClientManager.Client.Connector.CreateHubConnection();
-        //var hub = ClientManager.Client.Connector.InstanceHubConnectorAsync(connection).Result;
-
-        //hub.StartAsync().Wait();
-
-        //var result = ClientManager.Client.Tasks.ProtectSingleFile("projectKety", "appKey", connection, appConfig);
-
-
-
-        //result.OnSuccess(hub, (a) =>
-        //{
-
-        //    AnsiConsole.Markup($"[lime]{a.Name} application has been protected SUCESSFULLY. [/]");
-        //}
-        //);
-
-        //result.OnError(hub, AnsiConsole.Write);
-        //result.OnClose(hub, (s) =>
-        //{
-        //    AnsiConsole.Markup($"[lime]{s} [/]");
-        //});
     }
 }
 

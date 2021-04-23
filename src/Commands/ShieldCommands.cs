@@ -119,13 +119,14 @@ namespace ShieldCLI.Commands
         /// <summary>
         ///     Find the config files in a paht
         /// </summary>
-        /// <param name="type"></param>
+        /// 
         /// <param name="path"></param>
         /// <param name="name"></param>
         /// <param name="create"></param>
         public ApplicationConfigurationDto ConfigApplicationGetFile(string path, string name, bool create)
         {
-            var fullFilePath = $"{path}/shield.project.{name}.json";
+            var configName = $"Shield.Application.{name}.json";
+            var fullFilePath = Path.Combine(Path.GetDirectoryName(path), configName);
 
             ApplicationConfigurationDto applicationConfig = null;
 
@@ -283,7 +284,7 @@ namespace ShieldCLI.Commands
                 .AddChoice("Use a preset")
                 .AddChoice("Make a custom")
 
-        );
+              );
 
             return value;
         }
@@ -474,36 +475,38 @@ namespace ShieldCLI.Commands
 
 
 
-        public async Task ProtectApplicationAsync(string projectKey, string fileBlob, ApplicationConfigurationDto config)
+        public async Task ProtectApplicationAsync(string projectKey, string fileBlob, ApplicationConfigurationDto config, string path)
         {
             var connection = ClientManager.Client.Connector.CreateHubConnection();
             var hub = await ClientManager.Client.Connector.InstanceHubConnectorWithLoggerAsync(connection);
             await hub.StartAsync();
 
-            //hub.OnLog(connection.OnLogger, (string s, string s1, string s2) =>
-            //{
+            ProtectionResult result = null;
 
-            //});
+            await AnsiConsole.Status()
+                .Spinner(Spinner.Known.Balloon2).StartAsync("We are protecting your application...", async ctx =>
+                         {
 
-            var result = await ClientManager.Client.Tasks.ProtectSingleFileAsync(projectKey, fileBlob, connection, config);
+
+                             result = await ClientManager.Client.Tasks.ProtectSingleFileAsync(projectKey, fileBlob, connection, config);
+
+
+
+                             //hub.OnLog(connection.OnLogger, (string s, string s1, string s2) =>
+                             //{
+                             //    AnsiConsole.WriteLine(s2);
+
+                             //});
+                         });
 
             result.OnSuccess(hub, async (application) =>
                 {
-                    AnsiConsole.MarkupLine($"[lime]The application has been protected SUCESSFULLY with {application.Preset} protection. [/]");
-                    AnsiConsole.WriteLine("");
-                    string path = AnsiConsole.Ask<string>("[darkorange]Enter a path where protected app will be saved[/]");
-
-
-
-
-
-
-
+                    AnsiConsole.MarkupLine($"[lime]The application has been PROTECTED SUCESSFULLY with {application.Preset} protection. [/]");
+                    AnsiConsole.MarkupLine("");
                     var downloaded = await ClientManager.Client.Application.DownloadApplicationAsArrayAsync(application);
-
-
                     downloaded.SaveOn(path, true);
-                    AnsiConsole.MarkupLine("[lime]Application SAVED SUCESSFULLY[/]");
+                    var savedDir = Path.GetDirectoryName(path);
+                    AnsiConsole.MarkupLine($"[lime]Application SAVED SUCESSFULLY in [/][darkorange]{savedDir}[/]");
                 }
              );
 

@@ -15,12 +15,16 @@ namespace ShieldCLI
     {
         private static async Task Main(string[] args)
         {
-            var font = FigletFont.Load("starwars.flf");
-            AnsiConsole.Render(
-    new FigletText(font, "Shield CLI")
-        .LeftAligned()
-        .Color(Color.Lime));
 
+
+
+            //var font = FigletFont.Load("starwars.flf");
+            //AnsiConsole.Render(
+            //new FigletText(font, "Shield CLI")
+            //.LeftAligned()
+            //.Color(Color.Lime));
+
+            //AnsiConsole.MarkupLine("[bold white][/]");
 
             var options = new CommandLineParserOptions
             {
