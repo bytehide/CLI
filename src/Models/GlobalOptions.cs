@@ -1,7 +1,4 @@
-﻿using ShieldCLI.Commands.App;
-using ShieldCLI.Commands.Auth;
-using ShieldCLI.Commands.Config;
-using ShieldCLI.Commands.Project;
+﻿using ShieldCLI.Commands.Auth;
 using ShieldCLI.Commands.Protect;
 
 namespace ShieldCLI.Models

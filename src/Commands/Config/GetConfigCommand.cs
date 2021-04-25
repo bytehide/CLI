@@ -4,7 +4,6 @@ using Shield.Client.Models.API.Project;
 using ShieldCLI.Models;
 using ShieldCLI.Models.Config;
 using ShieldCLI.Repos;
-using System;
 
 namespace ShieldCLI.Commands.Config
 {

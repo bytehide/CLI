@@ -2,7 +2,7 @@
   "profiles": {
     "ShieldCLI": {
       "commandName": "Project",
-      "commandLineArgs": "config:make --type application -n hola -p C:\\Users\\juana\\source\\repos\\test.json"
+      "commandLineArgs": "protect:auto"
       //"commandLineArgs": "application:add --path C:\\Users\\juana\\source\\repos\\SecureApplication\\bin\\Debug\\netcoreapp3.1\\SecureApplication.dll -k d"
     }
   

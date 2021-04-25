@@ -3,7 +3,6 @@ using ShieldCLI.Models;
 using ShieldCLI.Models.Protect;
 using ShieldCLI.Repos;
 using Spectre.Console;
-using Shield.Client.Extensions;
 using System.Threading;
 using System.IO;
 using System.Threading.Tasks;

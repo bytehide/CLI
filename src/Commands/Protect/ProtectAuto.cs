@@ -1,15 +1,10 @@
 ﻿using MatthiWare.CommandLine.Abstractions.Command;
 using Shield.Client.Models.API.Application;
-using Shield.Client.Models.API.Project;
 using ShieldCLI.Models;
-using ShieldCLI.Models.Protect;
 using ShieldCLI.Repos;
 using Spectre.Console;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 

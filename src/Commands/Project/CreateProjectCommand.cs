@@ -1,11 +1,9 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using MatthiWare.CommandLine.Abstractions.Command;
 using ShieldCLI.Models;
 using ShieldCLI.Models.Project;
 using ShieldCLI.Repos;
-using Spectre.Console;
 
 
 namespace ShieldCLI.Commands.Project

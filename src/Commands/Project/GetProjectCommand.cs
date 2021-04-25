@@ -1,9 +1,6 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using MatthiWare.CommandLine.Abstractions.Command;
-using Microsoft.VisualBasic.CompilerServices;
-using Shield.Client.Models.API.Project;
 using ShieldCLI.Models;
 using ShieldCLI.Models.Project;
 using ShieldCLI.Repos;

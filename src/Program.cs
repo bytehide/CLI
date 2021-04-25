@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 
 using ShieldCLI.Helpers;
 using ShieldCLI.Commands;
-using Spectre.Console;
 
 namespace ShieldCLI
 {
