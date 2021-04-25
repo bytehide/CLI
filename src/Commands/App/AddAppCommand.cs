@@ -1,6 +1,5 @@
 using ShieldCLI.Models;
 using ShieldCLI.Models.App;
-using ShieldCLI.Repos;
 using System.Threading;
 using System.Threading.Tasks;
 using MatthiWare.CommandLine.Abstractions.Command;

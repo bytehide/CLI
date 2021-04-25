@@ -1,7 +1,5 @@
 ﻿using MatthiWare.CommandLine.Abstractions.Command;
 using ShieldCLI.Models;
-using ShieldCLI.Repos;
-using Spectre.Console;
 
 namespace ShieldCLI.Commands.Project
 {

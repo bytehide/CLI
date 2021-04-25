@@ -1,7 +1,6 @@
 ﻿using MatthiWare.CommandLine.Abstractions.Command;
 using ShieldCLI.Models;
 using ShieldCLI.Models.Config;
-using ShieldCLI.Repos;
 
 namespace ShieldCLI.Commands.Config
 {

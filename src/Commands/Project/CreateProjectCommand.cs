@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using MatthiWare.CommandLine.Abstractions.Command;
 using ShieldCLI.Models;
 using ShieldCLI.Models.Project;
-using ShieldCLI.Repos;
 
 
 namespace ShieldCLI.Commands.Project
