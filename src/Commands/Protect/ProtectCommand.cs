@@ -49,7 +49,7 @@ namespace ShieldCLI.Commands.Protect
 
             if (projectName != "default")
             {
-                project = await ShieldCommands.ProjectFindOrCreateByNameAsync(projectName);
+                project = await ShieldCommands.FindOrCreateProjectByNameAsync(projectName);
                 projectKey = project.Key;
 
             }
@@ -67,7 +67,7 @@ namespace ShieldCLI.Commands.Protect
 
 
 
-            var config = ShieldCommands.ConfigApplicationGetFile(configDirectory, configName, true);
+            var config = ShieldCommands.GetApplicationConfiguration(configDirectory, configName, true);
 
             await ShieldCommands.ProtectApplicationAsync(projectKey, appUpload.ApplicationBlob, config, pathOutput);
 

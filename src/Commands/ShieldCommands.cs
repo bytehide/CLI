@@ -29,59 +29,37 @@ namespace ShieldCLI.Commands
         private ClientManager ClientManager { get; }
         private DependenciesResolver DependenciesResolver { get; }
 
-        //public void saludoShield()
-        //{
-
-        //    AnsiConsole.Markup("[fuchsia]Este es el método en ShiedCommands[/]");
-
-        //}
-
-
         /// <summary>
         ///     Open DotnetSafer web to register a new user
         /// </summary>
         public void AuthRegister()
-        {
-            //ClientManager.Client.Configuration.
 
-            OpenBrowser("https://my.dotnetsafer.com/register");
-        }
-
-        public void OpenBrowser(string url)
-        {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-                Process.Start(new ProcessStartInfo(url) { UseShellExecute = true }); // Works ok on windows
-            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-                Process.Start("xdg-open", url); // Works ok on linux
-            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) Process.Start("open", url); // Not tested
-        }
-
-
-
+            => UsefulHelpers.OpenBrowser("https://my.dotnetsafer.com/register");
 
 
         /// <summary>
         ///     Log in the current user whit an apiKey.
         /// </summary>
-        /// <param name="apiKey">APIKEY of Dotnetsafer to use the CLI</param>
-        public void AuthDoLogin(string apiKey)
+        /// <param name="apiKey">Dotnetsafer Personal Api Token (required to use the CLI)</param>
+        /// <see cref="https://dotnetsafer.com/docs/shield-cli/authentication"/>
+        public bool AuthLogin(string apiKey)
         {
-            if (apiKey == null)
+            if (apiKey is null)
             {
                 AnsiConsole.MarkupLine("[blue]Insert your API Key[/]");
                 apiKey = Console.ReadLine();
             }
 
-
             if (ClientManager.IsValidKey(apiKey))
             {
                 ClientManager.UpdateKey(apiKey);
                 AnsiConsole.Markup("[lime]Logged in Correctly [/]");
+                return true;
             }
-            else
-            {
-                AnsiConsole.Markup("[red]NOT logged in. Please review the API Key[/]");
-            }
+
+            //TODO: Sr-l show help to user
+            AnsiConsole.Markup("[red]NOT logged in. Please review the API Key[/]");
+            return false;
         }
 
         /// <summary>
@@ -98,9 +76,7 @@ namespace ShieldCLI.Commands
                 return false;
 
             Console.WriteLine("");
-            AuthDoLogin(null);
-
-            return true;
+            return AuthLogin(null);
         }
 
         /// <summary>
@@ -111,49 +87,67 @@ namespace ShieldCLI.Commands
             if (!AnsiConsole.Confirm("[red]This action will DELETE your credentials. Are you sure? [/]")) return;
             ClientManager.ClearClient();
             Console.WriteLine("");
-            AnsiConsole.Markup("[red]Credentials deleted. You must to loggin again to use ShieldCLI [/]");
+            AnsiConsole.Markup("[red]Credentials deleted. You must to login again to use ShieldCLI [/]");
         }
 
 
         /// <summary>
-        ///     Find the config files in a paht
+        ///     Gets the configuration file of an application, or creates if <param name="create">create</param> is true.
         /// </summary>
         /// 
-        /// <param name="path"></param>
-        /// <param name="name"></param>
-        /// <param name="create"></param>
-        public ApplicationConfigurationDto ConfigApplicationGetFile(string path, string name, bool create)
+        /// <param name="path">Directory path of config file</param>
+        /// <param name="name">Name of the application</param>
+        /// <param name="create">If <value>true</value> creates the configuration file is not exists</param>
+        public ApplicationConfigurationDto GetApplicationConfiguration(string path, string name, bool create)
         {
             var configName = $"Shield.Application.{name}.json";
-            var fullFilePath = Path.Combine(Path.GetDirectoryName(path), configName);
+            var fullFilePath =
+                Path.Combine(
+                    Path.GetDirectoryName(path) ??
+                    throw new InvalidOperationException("The provided directory path doesn't exists."), configName);
 
             ApplicationConfigurationDto applicationConfig = null;
 
             if (File.Exists(fullFilePath))
-                applicationConfig = ClientManager.Client.Configuration.LoadApplicationConfigurationFromFileOrDefault(fullFilePath);
+                applicationConfig =
+                    ClientManager.Client.Configuration.LoadApplicationConfigurationFromFileOrDefault(fullFilePath);
 
-            if ((!File.Exists(fullFilePath)) && create)
-                applicationConfig = ConfigApplicationMakeFile(path, "balance", name, null);
+            else if (create)
+                applicationConfig = MakeApplicationConfiguration(path, "balance", name, null);
 
             return applicationConfig;
 
         }
 
-        public ProjectConfigurationDto ConfigProjectGetFile(string path, string name, bool create)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="name"></param>
+        /// <param name="create"></param>
+        /// <returns></returns>
+        public ProjectConfigurationDto GetProjectConfiguration(string path, string name, bool create)
         {
             var fullFilePath = $"{path}/shield.project.${name}.json";
 
             ProjectConfigurationDto projectConfig = null;
 
             if (File.Exists(fullFilePath))
-                projectConfig = ClientManager.Client.Configuration.LoadProjectConfigurationFromFileOrDefault(fullFilePath);
+                projectConfig =
+                    ClientManager.Client.Configuration.LoadProjectConfigurationFromFileOrDefault(fullFilePath);
 
             if ((!File.Exists(fullFilePath)) && create)
-                projectConfig = ConfigProjectMakeFile(path, "balance", name, null);
+                projectConfig = MakeProjectConfiguration(path, "balance", name, null);
 
             return projectConfig;
 
         }
+
+        /// <summary>
+        /// Resolves an application required dependencies by his path.
+        /// </summary>
+        /// <param name="applicationPath">Application path</param>
+        /// <returns></returns>
         internal async Task<List<(string, string)>> ResolveDependenciesAsync(string applicationPath)
         {
             var (isValid, requiredDependencies, (module, createdContext)) =
@@ -187,14 +181,14 @@ namespace ShieldCLI.Commands
 
                     resolverTask.MaxValue = length;
 
-                    foreach (var (assembly, _) in requiredDep.Where(dep => dep.Item2 is null).ToList())
+                    foreach (var (name, version, _) in from string assembly in requiredDep
+                            .Where(dep => dep.Item2 is null).ToList()
+                        select Utils.SplitAssemblyInfo(assembly))
                     {
-                        var info = Utils.SplitAssemblyInfo(assembly);
-
                         await DependenciesResolver.GetUnresolvedWithNuget(
                             module,
-                            createdContext, requiredDep, info.name,
-                            info.version);
+                            createdContext, requiredDep, name,
+                            version);
 
                         resolverTask.Increment(1);
                     }
@@ -234,101 +228,114 @@ namespace ShieldCLI.Commands
             return requiredDep;
         }
 
-        /// <summary>
-        ///     Make a config file
-        /// </summary>
-        /// <param name="type">type of the config file : application or project</param>
-        /// <param name="path">Path were config file is created</param>
-        /// <param name="preset">Shield preset to de protection of application or project</param>
-        /// <param name="name">Name of the file</param>
 
-        public string ChoosePreset(string preset)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="preset"></param>
+        /// <returns></returns>
+        public string ChooseProtectionPreset(string preset)
         {
-            string[] presets = { "maximum", "balance", "custom", "optimized" };
+            string[] presets = {"maximum", "balance", "custom", "optimized"};
 
             if (presets.All(pr => pr != preset))
                 preset = AnsiConsole.Prompt(
                     new SelectionPrompt<string>()
-                        .Title("[white]Please choose the preset for the protection of protection[/]?")
+                        .Title("[white]Please choose the preset for the protection of protection[/]")
                         .PageSize(4)
                         .AddChoices(presets));
 
             return preset;
-
         }
 
-        public string ChooseType(string type)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public string ChooseConfigurationType(string type)
         {
 
             if (type != "application" && type != "project")
                 type = AnsiConsole.Prompt(
-                     new SelectionPrompt<string>()
-                         .Title("[white]Protection type must be application or propect.Please choose the type of protection[/]?")
-                         .PageSize(3)
-                         .AddChoice("project")
-                         .AddChoice("application"));
+                    new SelectionPrompt<string>()
+                        .Title(
+                            "[white]Protection type must be application or propect.Please choose the type of protection[/]?")
+                        .PageSize(3)
+                        .AddChoice("project")
+                        .AddChoice("application"));
             return type;
 
         }
 
-        public string ChooseProtections()
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public string ChooseConfigurationSource()
         {
             AnsiConsole.WriteLine();
             var value = AnsiConsole.Prompt(
-              new SelectionPrompt<string>()
+                new SelectionPrompt<string>()
 
-                .Title("[dodgerblue3]Choose the source of protection to use[/]")
-                .PageSize(3)
-                .AddChoice("Load from a config file")
-                .AddChoice("Use a preset")
-                .AddChoice("Make a custom")
+                    .Title("[dodgerblue3]Choose the source of protection to use[/]")
+                    .PageSize(3)
+                    .AddChoice("Load from a config file")
+                    .AddChoice("Use a preset")
+                    .AddChoice("Make a custom")
 
-              );
+            );
 
             return value;
         }
+
         public string[] ChooseCustomProtections(string projectKey)
         {
             var protections = ClientManager.Client.Protections.GetProtections(projectKey);
 
-            var allAviableNames = protections.Where(p => p.Available).Select(p => p.Name).ToList();
-            var allNotAvailableNames = protections.Where(p => !p.Available).Select(p => $"[[PRO]] {p.Name}").ToList();
+            var availableNames = protections.Where(p => p.Available).Select(p => p.Name).ToList();
+            var notAvailableNames = protections.Where(p => !p.Available).Select(p => $"[[PRO]] {p.Name}").ToList();
 
-            var allNames = protections.Select(p => p.Name).ToList();
             var choices = AnsiConsole.Prompt(
-                     new MultiSelectionPrompt<string>()
-             .Title("Choose custom protections?")
-             .PageSize(12)
-             .AddChoices(allAviableNames)
-             .AddChoices(allNotAvailableNames)
-             );
-            var elected = choices.ToArray();
+                new MultiSelectionPrompt<string>()
+                    .Title("Choose custom protections")
+                    .PageSize(12)
+                    .AddChoices(availableNames)
+                    .AddChoices(notAvailableNames)
+            );
 
-            var electedAndAviable = allAviableNames.Where(p => elected.Contains(p));
-            var electedAndNotAviable = allNotAvailableNames.Where(p => elected.Contains(p)).ToArray();
+            var selected = choices.ToArray();
+
+            var available = availableNames.Where(p => selected.Contains(p));
+            var notAvailable = notAvailableNames.Where(p => selected.Contains(p)).ToArray();
 
 
-            if (electedAndNotAviable.Length > 0)
+            if (notAvailable.Length > 0)
             {
-                AnsiConsole.MarkupLine("[darkorange]Following protections selected will not be aply because they are not in your Shield Edition.[/]");
+                AnsiConsole.MarkupLine(
+                    "[darkorange]Following protections selected will not be apply because they are not in your Shield Edition.[/]");
                 AnsiConsole.MarkupLine("[darkorange]Please Upgrade your edition if you want to use the protections[/]");
                 AnsiConsole.MarkupLine("");
-                foreach (string elegido in electedAndNotAviable)
+                foreach (var invalid in notAvailable)
+                    AnsiConsole.MarkupLine($"[red]{invalid}[/]");
 
-                {
-                    AnsiConsole.MarkupLine($"[red]{elegido}[/]");
-                }
             }
-            Thread.Sleep(1500);
 
-            var idsElectedAndAviable = protections.Where(p => electedAndAviable.Contains(p.Name)).Select(p => p.Id).ToArray();
+            var selectedIds = protections.Where(p => available.Contains(p.Name)).Select(p => p.Id).ToArray();
 
-            return idsElectedAndAviable;
-
-
+            return selectedIds;
         }
 
-        public ApplicationConfigurationDto ConfigApplicationMakeFile(string path, string preset, string name, string[] protectionsId)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="preset"></param>
+        /// <param name="name"></param>
+        /// <param name="protectionsId"></param>
+        /// <returns></returns>
+        public ApplicationConfigurationDto MakeApplicationConfiguration(string path, string preset, string name,
+            string[] protectionsId)
 
         {
 
@@ -344,12 +351,14 @@ namespace ShieldCLI.Commands
 
         }
 
-        public ProjectConfigurationDto ConfigProjectMakeFile(string path, string preset, string name, string[] protectionsId)
+        public ProjectConfigurationDto MakeProjectConfiguration(string path, string preset, string name,
+            string[] protectionsId)
 
         {
 
 
-            var projectConfig = preset.Equals("custom") ? ClientManager.Client.Configuration.MakeProjectCustomConfiguration(protectionsId)
+            var projectConfig = preset.Equals("custom")
+                ? ClientManager.Client.Configuration.MakeProjectCustomConfiguration(protectionsId)
                 : ClientManager.Client.Configuration.MakeProjectConfiguration(preset.ToPreset());
 
 
@@ -359,14 +368,14 @@ namespace ShieldCLI.Commands
             return projectConfig;
         }
 
-        public ProjectDto ProjectFindOrCreateByName(string name)
+        public ProjectDto FindOrCreateProjectByName(string name)
         {
-            ProjectDto project = ClientManager.Client.Project.FindOrCreateExternalProject(name);
+            var project = ClientManager.Client.Project.FindOrCreateExternalProject(name);
             AnsiConsole.Markup("[lime]Project Found [/]");
             return project;
         }
 
-        public ProjectDto ProjectFindOrCreateById(string name, string key)
+        public ProjectDto FindOrCreateProjectById(string name, string key)
         {
             var project = ClientManager.Client.Project.FindByIdOrCreateExternalProject(name ?? "default", key);
             AnsiConsole.Markup("[lime]Project Found [/]");
@@ -374,21 +383,25 @@ namespace ShieldCLI.Commands
             return project;
         }
 
-        public async Task<ProjectDto> ProjectFindOrCreateByNameAsync(string name)
-        {
-            ProjectDto project = await ClientManager.Client.Project.FindOrCreateExternalProjectAsync(name);
-            //AnsiConsole.Markup("[lime]Project Found [/]");
+        public async Task<ProjectDto> FindOrCreateProjectByNameAsync(string name)
+            => await ClientManager.Client.Project.FindOrCreateExternalProjectAsync(name);
 
-            return project;
-        }
-        public async Task<ProjectDto> ProjectFindOrCreateByIdAsync(string name, string key)
+
+        public async Task<ProjectDto> FindOrCreateProjectByIdAsync(string name, string key)
         {
-            var project = await ClientManager.Client.Project.FindByIdOrCreateExternalProjectAsync(name ?? "default", key);
+            var project =
+                await ClientManager.Client.Project.FindByIdOrCreateExternalProjectAsync(name ?? "default", key);
             AnsiConsole.Markup("[lime]Project Found [/]");
 
             return project;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="path"></param>
+        /// <param name="keyProject"></param>
+        /// <returns></returns>
         public async Task<DirectUploadDto> UploadApplicationAsync(string path, string keyProject)
 
         {
@@ -396,85 +409,94 @@ namespace ShieldCLI.Commands
             var dependencies = await ResolveDependenciesAsync(path);
 
             var appUpload = await ClientManager.Client.Application.UploadApplicationDirectlyAsync(keyProject,
-                 path, dependencies.Select(dep => dep.Item2).ToList());
+                path, dependencies.Select(dep => dep.Item2).ToList());
 
             return appUpload;
         }
 
 
-        public void ProjectTable(string name, string key)
+        public void PrintProject(string name, string key)
         {
             Console.WriteLine("");
             var table = new Table();
 
-            // Add some columns
             table.AddColumn("[darkorange]Project Name[/]");
             table.AddColumn("[darkorange]Project Key[/]");
-            // Add some rows
             table.AddRow(name, key);
-            // Render the table to the console
             AnsiConsole.Render(table);
 
         }
 
-        public void ApplicationtTable(string name, string key, string projectKey)
+        public void PrintApplication(string name, string key, string projectKey)
         {
             Console.WriteLine("");
             var table = new Table();
 
-            // Add some columns
             table.AddColumn("[darkorange]Application Name[/]");
             table.AddColumn("[darkorange]Application Key[/]");
             table.AddColumn("[darkorange]Project Key[/]");
 
-            // Add some rows
             table.AddRow(name, key, projectKey);
-            // Render the table to the console
             AnsiConsole.Render(table);
 
         }
-        public ApplicationConfigurationDto CreateConfigFile(string projectKey, string path)
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="projectKey"></param>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public ApplicationConfigurationDto CreateConfigurationFile(string projectKey, string path)
         {
             ApplicationConfigurationDto configurationDto = null;
 
-            string protection = ChooseProtections();
-            string configname = AnsiConsole.Ask<string>("Enter the config file name");
+            var protection = ChooseConfigurationSource();
+            var configName = AnsiConsole.Ask<string>("Enter the config file name");
             AnsiConsole.WriteLine("");
 
-            if (protection == "Load from a config file")
-
+            switch (protection)
             {
+                case "Load from a config file":
+                {
+                    var configPath = AnsiConsole.Ask<string>("Config File Path?");
 
-                var configPath = AnsiConsole.Ask<string>("Config File Path?");
 
-
-                configurationDto = ConfigApplicationGetFile(configPath, configname, false);
-
-            }
-
-            if (protection == "Use a preset")
-
-            {
-                string[] protectionsId = { };
-                var preset = ChoosePreset("default");
-                if (preset == "custom")
-                    protectionsId = ChooseCustomProtections(projectKey);
-                configurationDto = ConfigApplicationMakeFile(path, preset, configname, protectionsId);
-
-            }
-            if (protection == "Make a custom")
-            {
-                var preset = "custom";
-                var protectionsId = ChooseCustomProtections(projectKey);
-                configurationDto = ConfigApplicationMakeFile(path, preset, configname, protectionsId);
+                    configurationDto = GetApplicationConfiguration(configPath, configName, false);
+                    break;
+                }
+                case "Use a preset":
+                {
+                    string[] protectionsId = { };
+                    var preset = ChooseProtectionPreset("default");
+                    if (preset == "custom")
+                        protectionsId = ChooseCustomProtections(projectKey);
+                    configurationDto = MakeApplicationConfiguration(path, preset, configName, protectionsId);
+                    break;
+                }
+                case "Make a custom":
+                {
+                    const string preset = "custom";
+                    var protectionsId = ChooseCustomProtections(projectKey);
+                    configurationDto = MakeApplicationConfiguration(path, preset, configName, protectionsId);
+                    break;
+                }
             }
 
             return configurationDto;
         }
 
 
-
-        public async Task ProtectApplicationAsync(string projectKey, string fileBlob, ApplicationConfigurationDto config, string path)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="projectKey"></param>
+        /// <param name="fileBlob"></param>
+        /// <param name="config"></param>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public async Task ProtectApplicationAsync(string projectKey, string fileBlob,
+            ApplicationConfigurationDto config, string path)
         {
             var connection = ClientManager.Client.Connector.CreateHubConnection();
             var hub = await ClientManager.Client.Connector.InstanceHubConnectorWithLoggerAsync(connection);
@@ -484,30 +506,33 @@ namespace ShieldCLI.Commands
 
             await AnsiConsole.Status()
                 .Spinner(Spinner.Known.Balloon2).StartAsync("We are protecting your application...", async ctx =>
-                         {
+                {
 
 
-                             result = await ClientManager.Client.Tasks.ProtectSingleFileAsync(projectKey, fileBlob, connection, config);
+                    result = await ClientManager.Client.Tasks.ProtectSingleFileAsync(projectKey, fileBlob, connection,
+                        config);
 
 
 
-                             //hub.OnLog(connection.OnLogger, (string s, string s1, string s2) =>
-                             //{
-                             //    AnsiConsole.WriteLine(s2);
+                    //hub.OnLog(connection.OnLogger, (string s, string s1, string s2) =>
+                    //{
+                    //    AnsiConsole.WriteLine(s2);
 
-                             //});
-                         });
+                    //});
+                });
 
             result.OnSuccess(hub, async (application) =>
                 {
-                    AnsiConsole.MarkupLine($"[lime]The application has been PROTECTED SUCESSFULLY with {application.Preset} protection. [/]");
+                    AnsiConsole.MarkupLine(
+                        $"[lime]The application has been PROTECTED SUCESSFULLY with {application.Preset} protection. [/]");
                     AnsiConsole.MarkupLine("");
-                    var downloaded = await ClientManager.Client.Application.DownloadApplicationAsArrayAsync(application);
+                    var downloaded =
+                        await ClientManager.Client.Application.DownloadApplicationAsArrayAsync(application);
                     downloaded.SaveOn(path, true);
                     var savedDir = Path.GetDirectoryName(path);
                     AnsiConsole.MarkupLine($"[lime]Application SAVED SUCESSFULLY in [/][darkorange]{savedDir}[/]");
                 }
-             );
+            );
 
             var semaphore = new Semaphore(0, 1);
 
@@ -521,8 +546,5 @@ namespace ShieldCLI.Commands
 
             semaphore.WaitOne();
         }
-
-
-
     }
 }

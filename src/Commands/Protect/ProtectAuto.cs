@@ -23,12 +23,9 @@ namespace ShieldCLI.Commands.Protect
         }
 
         public override void OnConfigure(ICommandConfigurationBuilder builder)
-        {
-            builder.Name("protect:auto").Description("Protect an application.");
-
-
-
-        }
+        
+        =>    builder.Name("protect:auto").Description("Protect an application.");
+        
 
         public override async Task OnExecuteAsync(GlobalOptions option, ProtectAutoOptions options, CancellationToken cancellationToken)
         {
@@ -36,13 +33,13 @@ namespace ShieldCLI.Commands.Protect
 
             ShieldCommands.AuthHasCredentials();
 
-            string name = AnsiConsole.Ask<string>("[darkorange]Enter the project Name[/]");
+            var name = AnsiConsole.Ask<string>("[darkorange]Enter the project Name[/]");
 
-            var project = await ShieldCommands.ProjectFindOrCreateByNameAsync(name);
+            var project = await ShieldCommands.FindOrCreateProjectByNameAsync(name);
 
-            ShieldCommands.ProjectTable(project.Name, project.Key);
+            ShieldCommands.PrintProject(project.Name, project.Key);
             AnsiConsole.MarkupLine("");
-            string path = AnsiConsole.Ask<string>("[darkorange]Enter the path of the application:[/]");
+            var path = AnsiConsole.Ask<string>("[darkorange]Enter the path of the application:[/]");
 
 
 
@@ -52,7 +49,7 @@ namespace ShieldCLI.Commands.Protect
             Console.WriteLine("");
             AnsiConsole.MarkupLine("[lime]Application Uploaded Succesfully[/]");
 
-            ShieldCommands.ApplicationtTable(Path.GetFileName(path), appUpload.ApplicationBlob, project.Key);
+            ShieldCommands.PrintApplication(Path.GetFileName(path), appUpload.ApplicationBlob, project.Key);
 
             var directory = Path.GetDirectoryName(path);
             var filename = Path.GetFileNameWithoutExtension(path);
@@ -66,7 +63,7 @@ namespace ShieldCLI.Commands.Protect
                 AnsiConsole.MarkupLine("[darkorange]We detected an application config file[/]");
                 if (!AnsiConsole.Confirm("Do you want to use it? "))
                 {
-                    config = ShieldCommands.CreateConfigFile(project.Key, directory);
+                    config = ShieldCommands.CreateConfigurationFile(project.Key, directory);
                 }
 
                 config = autoconfig;
@@ -74,11 +71,11 @@ namespace ShieldCLI.Commands.Protect
             }
             else
             {
-                config = ShieldCommands.CreateConfigFile(project.Key, directory);
+                config = ShieldCommands.CreateConfigurationFile(project.Key, directory);
             }
             AnsiConsole.WriteLine("");
 
-            string savePath = AnsiConsole.Ask<string>("[darkorange]Enter a path where protected app will be saved[/]");
+            var savePath = AnsiConsole.Ask<string>("[darkorange]Enter a path where protected app will be saved[/]");
 
 
 

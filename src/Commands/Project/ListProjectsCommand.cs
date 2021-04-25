@@ -7,35 +7,22 @@ namespace ShieldCLI.Commands.Project
 {
     public class ListProjectsCommand : Command<GlobalOptions>
     {
-        private ClientManager ClientManager { get; set; }
+        private ShieldCommands ShieldCommands { get; }
 
-        public ListProjectsCommand(ClientManager clientManager)
+        public ListProjectsCommand(ShieldCommands shieldCommands)
         {
-            ClientManager = clientManager;
+            ShieldCommands = shieldCommands;
         }
         public override void OnConfigure(ICommandConfigurationBuilder builder)
         {
             builder.Name("project:list").Description("List all projects");
         }
 
-
         public override void OnExecute(GlobalOptions options)
         {
+            ShieldCommands.AuthHasCredentials();
 
-
-            if (!ClientManager.HasValidClient())
-            {
-
-                AnsiConsole.Markup("[red]NOT logged in. \nYou must be logged in to use .[/]");
-                return;
-            };
-
-            //TODO: @jespanag  Create method to get projects on +Client
+            //TODO: @jespanag  Create method to get projects on Client
         }
-
-
-
-
-
     }
 }

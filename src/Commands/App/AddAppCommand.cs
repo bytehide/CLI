@@ -9,16 +9,13 @@ namespace ShieldCLI.Commands.App
 {
     public class AddAppCommand : Command<GlobalOptions, AddAppOptions>
     {
-        private ClientManager ClientManager { get; set; }
 
-        private ShieldCommands ShieldCommands { get; set; }
+        private ShieldCommands ShieldCommands { get; }
 
 
-        public AddAppCommand(ClientManager clientManager, ShieldCommands shieldCommands)
-        {
-            ClientManager = clientManager;
-            ShieldCommands = shieldCommands;
-        }
+        public AddAppCommand(ShieldCommands shieldCommands)
+        
+        => ShieldCommands = shieldCommands;
 
         public override void OnConfigure(ICommandConfigurationBuilder builder)
         {
@@ -30,7 +27,6 @@ namespace ShieldCLI.Commands.App
             ShieldCommands.AuthHasCredentials();
 
             await ShieldCommands.UploadApplicationAsync(options.Path, options.KeyProject);
-
         }
     }
 }

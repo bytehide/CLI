@@ -10,11 +10,9 @@ namespace ShieldCLI.Commands.Project
 {
     public class CreateProjectCommand : Command<GlobalOptions, CreateProjectOptions>
     {
-        private ClientManager ClientManager { get; set; }
         public ShieldCommands ShieldCommands { get; set; }
-        public CreateProjectCommand(ClientManager clientManager, ShieldCommands shieldCommands)
+        public CreateProjectCommand(ShieldCommands shieldCommands)
         {
-            ClientManager = clientManager;
             ShieldCommands = shieldCommands;
         }
 
@@ -28,10 +26,9 @@ namespace ShieldCLI.Commands.Project
         {
             ShieldCommands.AuthHasCredentials();
 
+            var project = await ShieldCommands.FindOrCreateProjectByNameAsync(createOptions.Name);
 
-            var project = await ShieldCommands.ProjectFindOrCreateByNameAsync(createOptions.Name);
-
-            ShieldCommands.ProjectTable(project.Name, project.Key);
+            ShieldCommands.PrintProject(project.Name, project.Key);
         }
 
     }

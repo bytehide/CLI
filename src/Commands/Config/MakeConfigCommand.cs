@@ -25,18 +25,18 @@ namespace ShieldCLI.Commands.Config
 
             ShieldCommands.AuthHasCredentials();
 
-            var type = ShieldCommands.ChooseType(options.Type);
-            var preset = ShieldCommands.ChoosePreset(options.Preset);
+            var type = ShieldCommands.ChooseConfigurationType(options.Type);
+            var preset = ShieldCommands.ChooseProtectionPreset(options.Preset);
 
             var protectionsId = ShieldCommands.ChooseCustomProtections("ad955664-b28b-46a4-86d1-489eb7306f6e");
 
             if (type == "application")
             {
-                var config = ShieldCommands.ConfigApplicationMakeFile(options.Path, preset, options.Name, protectionsId);
+                var config = ShieldCommands.MakeApplicationConfiguration(options.Path, preset, options.Name, protectionsId);
             }
             else
             {
-                var config = ShieldCommands.ConfigProjectMakeFile(options.Path, preset, options.Name, protectionsId);
+                var config = ShieldCommands.MakeProjectConfiguration(options.Path, preset, options.Name, protectionsId);
             }
 
         }
