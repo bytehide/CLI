@@ -1,4 +1,4 @@
-﻿namespace ShieldCLI.Commands.Protect
+﻿namespace ShieldCLI.Models.Protect
 {
     public class ProtectAutoOptions
     {
