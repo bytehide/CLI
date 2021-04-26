@@ -557,7 +557,7 @@ namespace ShieldCLI.Commands
             ApplicationConfigurationDto config, string path)
         {
             await AnsiConsole.Status()
-                .Spinner(Spinner.Known.Balloon2).StartAsync("The application is being protected...", async ctx =>
+                .Spinner(Spinner.Known.Dots2).StartAsync("The application is being protected...", async ctx =>
                 {
                     var connection = ClientManager.Client.Connector.CreateHubConnection();
                     var hub = await ClientManager.Client.Connector.InstanceHubConnectorWithLoggerAsync(connection);
@@ -592,26 +592,35 @@ namespace ShieldCLI.Commands
 
                     result.OnSuccess(hub, async (application) =>
                         {
-                            AnsiConsole.MarkupLine(
-                                $"[lime]The application has been PROTECTED SUCESSFULLY with {application.Preset} protection. [/]");
                             AnsiConsole.MarkupLine("");
-                            var downloaded =
+                            AnsiConsole.MarkupLine(
+                                $"[lime] > The application has been protected successfully with {application.Preset} protection.[/]");
+                            AnsiConsole.MarkupLine("");
+                             var downloaded =
                                 await ClientManager.Client.Application.DownloadApplicationAsArrayAsync(application);
                             downloaded.SaveOn(path, true);
                             var savedDir = Path.GetDirectoryName(path);
                             AnsiConsole.MarkupLine(
-                                $"[lime]Application SAVED SUCESSFULLY in [/][darkorange]{savedDir}[/]");
+                                $"[lime]Application saved successfully in [/][darkorange]{savedDir}[/]");
                         }
                     );
 
                     var semaphore = new Semaphore(0, 1);
 
-                    result.OnError(hub, AnsiConsole.Write);
-
-                    result.OnClose(hub, (s) =>
+                    result.OnError(hub, (error) =>
                     {
+                        AnsiConsole.MarkupLine("");
+                        AnsiConsole.MarkupLine("[red]An error occurred during the protection process:[/]");
+                        AnsiConsole.MarkupLine("[darkorange] > {0}[/]", error.EscapeMarkup());
+                        AnsiConsole.MarkupLine("[darkorange] > The process is still active but may not finish successfully.[/]");
+                        AnsiConsole.MarkupLine("[blue] > The error has been reported and notified to our team, you will soon receive news about the solution.[/]");
+                    });
+
+                    result.OnClose(hub, _ =>
+                    {
+                        AnsiConsole.MarkupLine("");
+                        AnsiConsole.MarkupLine("[lime]Protection has ended. [/]");
                         semaphore.Release();
-                        AnsiConsole.Markup($"[lime]{s} [/]");
                     });
 
                     semaphore.WaitOne();

@@ -10,10 +10,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using ShieldCLI.Helpers;
 using ShieldCLI.Models.Protect;
+using Spectre.Console.Cli;
 
 namespace ShieldCLI.Commands.Protect
 {
-    public class ProtectAuto : Command<GlobalOptions, ProtectAutoOptions>
+    public class ProtectAuto : Command<GlobalOptions, OldProtectAutoOptions>
     {
         private ClientManager ClientManager { get; set; }
         public ShieldCommands ShieldCommands { get; set; }
@@ -29,7 +30,7 @@ namespace ShieldCLI.Commands.Protect
         =>    builder.Name("protect:auto").Description("Protect an application.");
         
 
-        public override async Task OnExecuteAsync(GlobalOptions option, ProtectAutoOptions options, CancellationToken cancellationToken)
+        public override async Task OnExecuteAsync(GlobalOptions option, OldProtectAutoOptions options, CancellationToken cancellationToken)
         {
             try
             {
@@ -78,6 +79,16 @@ namespace ShieldCLI.Commands.Protect
             {
                 ExceptionHelpers.ProcessException(ex);
             }
+        }
+
+        public ValidationResult Validate(CommandContext context, CommandSettings settings)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<int> Execute(CommandContext context, CommandSettings settings)
+        {
+            throw new NotImplementedException();
         }
     }
 }

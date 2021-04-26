@@ -4,6 +4,7 @@ using ShieldCLI.Commands.Protect;
 namespace ShieldCLI.Models
 
 {
+    //TODO: REMOVE
     public class GlobalOptions
     {
 
@@ -13,7 +14,7 @@ namespace ShieldCLI.Models
 
         //En vez de utilizar discover(que los ordena por orden alfabetico puedo usar esta manera que los ordeno yo. 
         //public DeleteProjectCommand DeleteProjectCommand { get; set; }
-        public AuthCommand AuthCommand { get; set; }
+        public OldAuthCommand AuthCommand { get; set; }
         //public ListProjectsCommand ListProjectsCommand { get; set; }
 
         //public CreateProjectCommand CreateProjectCommand { get; set; }
@@ -22,7 +23,7 @@ namespace ShieldCLI.Models
         //public AddAppCommand AddAppCommand { get; set; }
         //public GetConfigCommand GetConfigCommand { get; set; }
         //public MakeConfigCommand MakeConfigCommand { get; set; }
-        public ProtectCommand ProtectCommand { get; set; }
+        public OldProtectCommand ProtectCommand { get; set; }
         public ProtectAuto protectAuto { get; set; }
 
 

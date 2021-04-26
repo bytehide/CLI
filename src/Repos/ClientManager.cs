@@ -8,7 +8,7 @@ namespace ShieldCLI.Repos
 {
     public class ClientManager
     {
-        private readonly ILogger<Consumer> _iLogger;
+        private readonly ILogger<Program> _iLogger;
 
         private SecureLocalStorage.SecureLocalStorage Storage { get; }
 
@@ -21,7 +21,7 @@ namespace ShieldCLI.Repos
         /// <summary>
         /// Used for manage local storage user properties such a dotnetsafer api key and account setting.
         /// </summary>
-        public ClientManager(ILogger<Consumer> iLogger)
+        public ClientManager(ILogger<Program> iLogger)
         {
             _iLogger = iLogger;
             Storage = new SecureLocalStorage.SecureLocalStorage(new CustomLocalStorageConfig(null, "dotnetsafer_shield_cli")

@@ -1,78 +1,48 @@
-﻿using MatthiWare.CommandLine.Abstractions.Command;
-using ShieldCLI.Models;
-using ShieldCLI.Models.Protect;
-using ShieldCLI.Repos;
-using Spectre.Console;
-using System.Threading;
-using System.IO;
+﻿using System.IO;
 using System.Threading.Tasks;
-using Shield.Client.Models.API.Project;
+using ShieldCLI.Branches;
+using ShieldCLI.Models.Protect;
+using Spectre.Console.Cli;
 
 namespace ShieldCLI.Commands.Protect
 {
-    public class ProtectCommand : Command<GlobalOptions, ProtectOptions>
+    internal class ProtectCommand : AsyncCommand<ProtectCommandSettings>, ICommandLimiter<ShieldSettings>
     {
+        public ShieldCommands ShieldCommands { get; }
 
-        private ClientManager ClientManager { get; set; }
-        public ShieldCommands ShieldCommands { get; set; }
-
-        public ProtectCommand(ClientManager clientManager, ShieldCommands shieldCommands)
+        public ProtectCommand(ShieldCommands shieldCommands)
         {
-            ClientManager = clientManager;
             ShieldCommands = shieldCommands;
         }
 
-        public override void OnConfigure(ICommandConfigurationBuilder builder)
+        public override async Task<int> ExecuteAsync(CommandContext context, ProtectCommandSettings settings)
         {
-            builder.Name("protect").Description("Protect an application or project.");
+            var projectKey = settings.Project;
+            var pathApp = settings.ApplicationPath;
+            var configName = Path.GetFileName(settings.ConfigurationPath);
+            var configDirectory = Path.GetDirectoryName(settings.ConfigurationPath);
+            var pathOutput = settings.OutputPath;
 
-
-
-        }
-
-        public override async Task OnExecuteAsync(GlobalOptions option, ProtectOptions options, CancellationToken cancellationToken)
-        {
-            var projectName = options.ProjectName;
-            var projectKey = options.ProjectKey;
-            var pathApp = options.PathApp;
-            var configName = Path.GetFileName(options.Config);
-            var configDirectory = Path.GetDirectoryName(options.Config);
-            var pathOutput = options.Output;
-
-
-            ProjectDto project = null;
-            if (projectKey == "default" && projectName == "default")
+            if (!settings.IsProjectKey)
             {
-                AnsiConsole.MarkupLine("[red]Need a KEY or a NAME of a project to protect the application[/]");
-                return;
-            }
-
-            if (projectName != "default")
-            {
-                project = await ShieldCommands.FindOrCreateProjectByNameAsync(projectName);
+                var project = await ShieldCommands.FindOrCreateProjectByIdAsync("default", projectKey);
                 projectKey = project.Key;
-
             }
 
-
-
-            if (Path.GetDirectoryName(options.Config) == "")
+            if (Path.GetDirectoryName(settings.ConfigurationPath) == "")
             {
-                configName = $"Shield.Application.{options.Config}.json";
+                configName = $"Shield.Application.{settings.ConfigurationPath}.json";
                 configDirectory = Path.GetDirectoryName(pathApp);
             }
 
-
             var appUpload = await ShieldCommands.UploadApplicationAsync(pathApp, projectKey);
-
-
 
             var config = ShieldCommands.GetApplicationConfiguration(configDirectory, configName, true);
 
             await ShieldCommands.ProtectApplicationAsync(projectKey, appUpload.ApplicationBlob, config, pathOutput);
 
-
+            return 0;
         }
-    }
 
+    }
 }

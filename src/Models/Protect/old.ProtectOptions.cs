@@ -2,7 +2,7 @@
 
 namespace ShieldCLI.Models.Protect
 {
-    public class ProtectOptions
+    public class OldProtectOptions : ShieldSettings
     {
         [Name("k", "keyproject"), Required, DefaultValue("default"), Description("Key of the project.")]
         public string ProjectKey { get; set; }

@@ -5,11 +5,11 @@ using Spectre.Console;
 
 namespace ShieldCLI.Commands.Auth
 {
-    public class AuthCommand : Command<GlobalOptions, AuthOptions>
+    public class OldAuthCommand : Command<GlobalOptions, AuthOptions>
     {
         public ShieldCommands ShieldCommands { get; set; }
 
-        public AuthCommand(ShieldCommands shieldCommands)
+        public OldAuthCommand(ShieldCommands shieldCommands)
         
          =>   ShieldCommands = shieldCommands;
         
