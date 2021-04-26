@@ -1,18 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console.Cli;
 
 namespace ShieldCLI
 {
-    class TypeRegistar : ITypeRegistrar
+    internal class TypeRegistrar : ITypeRegistrar
     {
         private readonly IServiceCollection _builder;
 
-        public TypeRegistar(IServiceCollection builder)
+        public TypeRegistrar(IServiceCollection builder)
         {
             _builder = builder;
         }

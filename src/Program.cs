@@ -26,7 +26,7 @@ namespace ShieldCLI
 
             services.AddSingleton<ShieldCommands>();
 
-            var registrar = new TypeRegistar(services);
+            var registrar = new TypeRegistrar(services);
 
             var dotnetsafer = new CommandApp(registrar);
 
