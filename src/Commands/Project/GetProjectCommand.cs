@@ -24,7 +24,7 @@ namespace ShieldCLI.Commands.Project
             ShieldCommands.AuthHasCredentials();
 
             var project = getProjectOptions.Key != null ?
-                await ShieldCommands.ProjectFindOrCreateByIdAsync(getProjectOptions.Name, getProjectOptions.Key)
+                await ShieldCommands.FindOrCreateProjectByIdAsync(getProjectOptions.Name, getProjectOptions.Key)
                 : await ShieldCommands.FindOrCreateProjectByNameAsync(getProjectOptions.Name);
 
             ShieldCommands.PrintProject(project.Name, project.Key);

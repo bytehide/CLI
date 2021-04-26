@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security.Authentication;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Shield.Client.Extensions;
 using Shield.Client.Models;
 using Shield.Client.Models.API.Application;
@@ -42,39 +44,44 @@ namespace ShieldCLI.Commands
         /// <see cref="https://dotnetsafer.com/docs/shield-cli/authentication"/>
         public bool AuthLogin(string apiKey)
         {
-            if (apiKey is null)
-            {
-                AnsiConsole.MarkupLine("[blue]Insert your API Key[/]");
-                apiKey = Console.ReadLine();
-            }
+            apiKey ??= AnsiConsole.Ask<string>("[blue]Insert your API Key[/]");
 
             if (ClientManager.IsValidKey(apiKey))
             {
                 ClientManager.UpdateKey(apiKey);
-                AnsiConsole.Markup("[lime]Logged in Correctly [/]");
+                AnsiConsole.MarkupLine(
+                    "[lime]Logged in correctly. Your session has been saved, to delete it use [dim]auth --clear[/][/]");
+                AnsiConsole.WriteLine("");
                 return true;
             }
 
             //TODO: Sr-l show help to user
-            AnsiConsole.Markup("[red]NOT logged in. Please review the API Key[/]");
+            AnsiConsole.MarkupLine("[red]NOT logged in. Please review the API Key.[/]");
+            AnsiConsole.MarkupLine(AnsiConsole.Profile.Capabilities.Links
+                ? "[green] Read about CLI authentication at:[/] [link=https://dotnetsafer.com/docs/shield-cli/authentication]https://dotnetsafer.com/docs/shield-cli/authentication[/]"
+                : "[green] Read about CLI authentication at:[/] https://dotnetsafer.com/docs/shield-cli/authentication");
+            AnsiConsole.WriteLine("");
             return false;
         }
 
         /// <summary>
         ///     Checks if user is logged in.
         /// </summary>
-        public bool AuthHasCredentials()
+        public bool AuthHasCredentials(bool throwException = true)
         {
+            const string exMessage = "User is not logged into dotnetsafer.";
+
             if (ClientManager.HasValidClient()) return true;
 
-            AnsiConsole.MarkupLine("[red]You are NOT logged in. \nYou must be logged in to use Dotnetsafer.[/]");
-            Console.WriteLine("");
+            AnsiConsole.MarkupLine("[red]You are NOT logged in. \nYou must be logged in to use Dotnetsafer CLI.[/]");
+            AnsiConsole.WriteLine("");
 
             if (!AnsiConsole.Confirm("[blue]Do you want to logged in now? [/]"))
-                return false;
+                return !throwException ? false : throw new AuthenticationException(exMessage);
 
-            Console.WriteLine("");
-            return AuthLogin(null);
+            AnsiConsole.WriteLine("");
+            var login = AuthLogin(null);
+            return login ? true : (throwException ? throw new AuthenticationException(exMessage) : false);
         }
 
         /// <summary>
@@ -85,7 +92,7 @@ namespace ShieldCLI.Commands
             if (!AnsiConsole.Confirm("[red]This action will DELETE your credentials. Are you sure? [/]")) return;
             ClientManager.ClearClient();
             Console.WriteLine("");
-            AnsiConsole.Markup("[red]Credentials deleted. You must to login again to use ShieldCLI [/]");
+            AnsiConsole.MarkupLine("[red]Credentials deleted. You must to login again to use ShieldCLI [/]");
         }
 
 
@@ -152,15 +159,25 @@ namespace ShieldCLI.Commands
                 await DependenciesResolver.GetAssemblyInfoAsync(applicationPath ?? string.Empty);
 
             if (!isValid)
-                throw new Exception("Invalid .NET Assembly");
+                throw new Exception(
+                    "Invalid .NET Assembly. The application is not a .NET module, remember that if it is .NET Core you must protect the compiled .dll (NOT .exe).");
 
             var requiredDep = requiredDependencies.ToList();
 
-            AnsiConsole.Markup("[green]Resolving dependencies locally...[/]");
-            AnsiConsole.WriteLine();
+            List<string> dependencies = null;
 
-            var dependencies = DependenciesResolver.GetUnresolved(module,
-                createdContext, requiredDep).ToList();
+
+            //AnsiConsole.Markup("[green]Resolving dependencies locally...[/]");
+
+            AnsiConsole.Status()
+                .Start("[green]Resolving dependencies locally...[/]", ctx =>
+                {
+                    ctx.Spinner(Spinner.Known.BoxBounce);
+                    ctx.SpinnerStyle(Style.Parse("green"));
+
+                    dependencies = DependenciesResolver.GetUnresolved(module,
+                        createdContext, requiredDep).ToList();
+                });
 
             var length = dependencies.Count;
 
@@ -179,24 +196,26 @@ namespace ShieldCLI.Commands
 
                     resolverTask.MaxValue = length;
 
-                    foreach (var (name, version, _) in from string assembly in requiredDep
-                            .Where(dep => dep.Item2 is null).ToList()
-                        select Utils.SplitAssemblyInfo(assembly))
+                    foreach (var (assembly, _) in requiredDep.Where(dep => dep.Item2 is null).ToList())
                     {
+                        var info = Utils.SplitAssemblyInfo(assembly);
+
                         await DependenciesResolver.GetUnresolvedWithNuget(
                             module,
-                            createdContext, requiredDep, name,
-                            version);
+                            createdContext, requiredDep, info.name,
+                            info.version);
 
                         resolverTask.Increment(1);
                     }
+
+                    resolverTask.StopTask();
                 });
 
             while (requiredDep.ToList().Any(dep => string.IsNullOrEmpty(dep.Item2)))
             {
                 var unresolved = requiredDep.Where(dep => string.IsNullOrEmpty(dep.Item2)).ToList();
 
-                AnsiConsole.Markup(
+                AnsiConsole.MarkupLine(
                     $"The following dependencies [red]({unresolved.Count})[/] are required to process the application:");
                 AnsiConsole.WriteLine();
 
@@ -215,13 +234,17 @@ namespace ShieldCLI.Commands
 
                 AnsiConsole.Render(table);
 
+                AnsiConsole.WriteLine("");
+
                 unresolved.ForEach(dep =>
                     userPath.Add(AnsiConsole.Ask<string>(
                         $"Enter the path of the [yellow]{Utils.SplitAssemblyInfo(dep.Item1).name}[/] library:")));
 
                 _ = DependenciesResolver.GetUnresolved(module,
-                    createdContext, requiredDep, userPath.Select(Path.GetDirectoryName).ToArray());
+                    createdContext, requiredDep, userPath.ToArray());
             }
+
+            AnsiConsole.MarkupLine("[green]The dependencies have been resolved.[/]");
 
             return requiredDep;
         }
@@ -382,16 +405,38 @@ namespace ShieldCLI.Commands
         }
 
         public async Task<ProjectDto> FindOrCreateProjectByNameAsync(string name)
-            => await ClientManager.Client.Project.FindOrCreateExternalProjectAsync(name);
+        {
+            ProjectDto result = null;
+
+            await AnsiConsole.Status()
+                .Spinner(Spinner.Known.BoxBounce2)
+                .SpinnerStyle(Style.Parse("green bold"))
+                .StartAsync("Loading project...",
+                    async ctx =>
+                    {
+                        result = await ClientManager.Client.Project.FindOrCreateExternalProjectAsync(name);
+                    });
+
+            return result;
+        }
+
 
 
         public async Task<ProjectDto> FindOrCreateProjectByIdAsync(string name, string key)
         {
-            var project =
-                await ClientManager.Client.Project.FindByIdOrCreateExternalProjectAsync(name ?? "default", key);
-            AnsiConsole.Markup("[lime]Project Found [/]");
+            ProjectDto result = null;
 
-            return project;
+            await AnsiConsole.Status()
+                .Spinner(Spinner.Known.BoxBounce2)
+                .SpinnerStyle(Style.Parse("green bold"))
+                .StartAsync("Looking for project...", async ctx =>
+                {
+                    result = await ClientManager.Client.Project.FindByIdOrCreateExternalProjectAsync(name ?? "default",
+                        key);
+                    AnsiConsole.Markup("[lime]Project found.[/]");
+                });
+
+            return result;
         }
 
         /// <summary>
@@ -401,15 +446,21 @@ namespace ShieldCLI.Commands
         /// <param name="keyProject"></param>
         /// <returns></returns>
         public async Task<DirectUploadDto> UploadApplicationAsync(string path, string keyProject)
-
         {
-
             var dependencies = await ResolveDependenciesAsync(path);
 
-            var appUpload = await ClientManager.Client.Application.UploadApplicationDirectlyAsync(keyProject,
-                path, dependencies.Select(dep => dep.Item2).ToList());
+            DirectUploadDto result = null;
 
-            return appUpload;
+            await AnsiConsole.Status()
+                .Spinner(Spinner.Known.BoxBounce2)
+                .SpinnerStyle(Style.Parse("green bold"))
+                .StartAsync("Processing application...", async ctx =>
+                {
+                    result = await ClientManager.Client.Application.UploadApplicationDirectlyAsync(keyProject,
+                        path, dependencies.Select(dep => dep.Item2).ToList());
+                });
+
+            return result;
         }
 
 
@@ -444,23 +495,32 @@ namespace ShieldCLI.Commands
         /// </summary>
         /// <param name="projectKey"></param>
         /// <param name="path"></param>
+        /// <param name="applicationName"></param>
         /// <returns></returns>
-        public ApplicationConfigurationDto CreateConfigurationFile(string projectKey, string path)
+        public ApplicationConfigurationDto CreateConfigurationFile(string projectKey, string path,
+            string applicationName = null)
         {
             ApplicationConfigurationDto configurationDto = null;
 
             var protection = ChooseConfigurationSource();
-            var configName = AnsiConsole.Ask<string>("Enter the config file name");
+
+            var text = new TextPrompt<string>("Enter the config file name");
+            if (!string.IsNullOrEmpty(applicationName))
+                text.DefaultValue(applicationName);
+
+            var configName =
+                AnsiConsole.Prompt(text);
+
             AnsiConsole.WriteLine("");
 
             switch (protection)
             {
                 case "Load from a config file":
                 {
-                    var configPath = AnsiConsole.Ask<string>("Config File Path?");
-
+                    var configPath = AnsiConsole.Ask<string>("Provide the configuration file path:");
 
                     configurationDto = GetApplicationConfiguration(configPath, configName, false);
+
                     break;
                 }
                 case "Use a preset":
@@ -496,53 +556,66 @@ namespace ShieldCLI.Commands
         public async Task ProtectApplicationAsync(string projectKey, string fileBlob,
             ApplicationConfigurationDto config, string path)
         {
-            var connection = ClientManager.Client.Connector.CreateHubConnection();
-            var hub = await ClientManager.Client.Connector.InstanceHubConnectorWithLoggerAsync(connection);
-            await hub.StartAsync();
-
-            ProtectionResult result = null;
-
             await AnsiConsole.Status()
-                .Spinner(Spinner.Known.Balloon2).StartAsync("We are protecting your application...", async ctx =>
+                .Spinner(Spinner.Known.Balloon2).StartAsync("The application is being protected...", async ctx =>
                 {
+                    var connection = ClientManager.Client.Connector.CreateHubConnection();
+                    var hub = await ClientManager.Client.Connector.InstanceHubConnectorWithLoggerAsync(connection);
+                    await hub.StartAsync();
 
-
-                    result = await ClientManager.Client.Tasks.ProtectSingleFileAsync(projectKey, fileBlob, connection,
+                    var result = await ClientManager.Client.Tasks.ProtectSingleFileAsync(projectKey, fileBlob, connection,
                         config);
 
+                    hub.OnLog(connection.OnLogger, (string date, string message, string level) =>
+                    {
+                        _ = Enum.TryParse<LogLevel>(level, out var logLevel);
 
+                        const LogLevel minimumLevel = LogLevel.Information;
 
-                    //hub.OnLog(connection.OnLogger, (string s, string s1, string s2) =>
-                    //{
-                    //    AnsiConsole.WriteLine(s2);
+                        var color = logLevel switch
+                        {
+                            LogLevel.Trace => Color.Cyan3.ToString(),
+                            LogLevel.Debug => Color.DarkViolet.ToString(),
+                            LogLevel.Information => Color.DodgerBlue3.ToString(),
+                            LogLevel.Warning => Color.DarkOrange.ToString(),
+                            LogLevel.Error => Color.DarkRed.ToString(),
+                            LogLevel.Critical => Color.Red.ToString(),
+                            LogLevel.None => Color.Black.ToString(),
+                            _ => throw new ArgumentOutOfRangeException()
+                        };
 
-                    //});
+                        if (logLevel < minimumLevel)
+                            return;
+
+                        AnsiConsole.MarkupLine("["+color+"] > {0}[/]", message.EscapeMarkup());
+                    });
+
+                    result.OnSuccess(hub, async (application) =>
+                        {
+                            AnsiConsole.MarkupLine(
+                                $"[lime]The application has been PROTECTED SUCESSFULLY with {application.Preset} protection. [/]");
+                            AnsiConsole.MarkupLine("");
+                            var downloaded =
+                                await ClientManager.Client.Application.DownloadApplicationAsArrayAsync(application);
+                            downloaded.SaveOn(path, true);
+                            var savedDir = Path.GetDirectoryName(path);
+                            AnsiConsole.MarkupLine(
+                                $"[lime]Application SAVED SUCESSFULLY in [/][darkorange]{savedDir}[/]");
+                        }
+                    );
+
+                    var semaphore = new Semaphore(0, 1);
+
+                    result.OnError(hub, AnsiConsole.Write);
+
+                    result.OnClose(hub, (s) =>
+                    {
+                        semaphore.Release();
+                        AnsiConsole.Markup($"[lime]{s} [/]");
+                    });
+
+                    semaphore.WaitOne();
                 });
-
-            result.OnSuccess(hub, async (application) =>
-                {
-                    AnsiConsole.MarkupLine(
-                        $"[lime]The application has been PROTECTED SUCESSFULLY with {application.Preset} protection. [/]");
-                    AnsiConsole.MarkupLine("");
-                    var downloaded =
-                        await ClientManager.Client.Application.DownloadApplicationAsArrayAsync(application);
-                    downloaded.SaveOn(path, true);
-                    var savedDir = Path.GetDirectoryName(path);
-                    AnsiConsole.MarkupLine($"[lime]Application SAVED SUCESSFULLY in [/][darkorange]{savedDir}[/]");
-                }
-            );
-
-            var semaphore = new Semaphore(0, 1);
-
-            result.OnError(hub, AnsiConsole.Write);
-
-            result.OnClose(hub, (s) =>
-            {
-                semaphore.Release();
-                AnsiConsole.Markup($"[lime]{s} [/]");
-            });
-
-            semaphore.WaitOne();
         }
     }
 }

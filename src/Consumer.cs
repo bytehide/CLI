@@ -22,7 +22,7 @@ namespace ShieldCLI
             //CommandLineParser.DiscoverCommands(Assembly.GetExecutingAssembly());
 
             var result = await CommandLineParser.ParseAsync(args);
-
+            
             if (result.HasErrors)
             {
                 return;

@@ -1,4 +1,5 @@
-﻿using MatthiWare.CommandLine;
+﻿using System;
+using MatthiWare.CommandLine;
 using ShieldCLI.Models;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,9 +15,6 @@ namespace ShieldCLI
     {
         private static async Task Main(string[] args)
         {
-
-
-
             //var font = FigletFont.Load("starwars.flf");
             //AnsiConsole.Render(
             //new FigletText(font, "Shield CLI")
@@ -36,7 +34,7 @@ namespace ShieldCLI
 
             services.AddSingleton<DependenciesResolver>();
 
-            services.AddLogging(configure => configure.AddConsole().SetMinimumLevel(LogLevel.Information))
+            services.AddLogging(configure => configure.AddConsole().SetMinimumLevel(LogLevel.None))
                 .AddTransient<Consumer>();
 
             services.AddSingleton<ClientManager>();
@@ -48,8 +46,6 @@ namespace ShieldCLI
             await using var provider = services.BuildServiceProvider();
 
             var app = provider.GetService<Consumer>();
-
-
 
             await app!.Run(args);
         }

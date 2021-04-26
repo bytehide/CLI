@@ -11,9 +11,8 @@ namespace ShieldCLI.Commands.App
 
         private ShieldCommands ShieldCommands { get; }
 
-
         public AddAppCommand(ShieldCommands shieldCommands)
-        
+
         => ShieldCommands = shieldCommands;
 
         public override void OnConfigure(ICommandConfigurationBuilder builder)
