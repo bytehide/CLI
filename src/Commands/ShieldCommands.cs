@@ -29,6 +29,7 @@ namespace ShieldCLI.Commands
         private ClientManager ClientManager { get; }
         private DependenciesResolver DependenciesResolver { get; }
 
+
         /// <summary>
         ///     Open DotnetSafer web to register a new user
         /// </summary>
@@ -120,6 +121,7 @@ namespace ShieldCLI.Commands
             else if (create)
                 applicationConfig = MakeApplicationConfiguration(path, "balance", name, null);
 
+
             return applicationConfig;
 
         }
@@ -133,16 +135,33 @@ namespace ShieldCLI.Commands
         /// <returns></returns>
         public ProjectConfigurationDto GetProjectConfiguration(string path, string name, bool create)
         {
-            var fullFilePath = $"{path}/shield.project.${name}.json";
+            var configName = $"Shield.Project.{name}.json";
+
+            var fullFilePath =
+                Path.Combine(
+                    Path.GetDirectoryName(path) ??
+                    throw new InvalidOperationException("The provided directory path doesn't exists."), configName);
 
             ProjectConfigurationDto projectConfig = null;
 
             if (File.Exists(fullFilePath))
+            {
+
+
                 projectConfig =
                     ClientManager.Client.Configuration.LoadProjectConfigurationFromFileOrDefault(fullFilePath);
+            }
+            else if (create)
+            {
 
-            if ((!File.Exists(fullFilePath)) && create)
+
                 projectConfig = MakeProjectConfiguration(path, "balance", name, null);
+            }
+
+
+            Console.WriteLine(fullFilePath);
+
+            ///TODO: @Sr-l Read file and show info. 
 
             return projectConfig;
 
@@ -257,7 +276,7 @@ namespace ShieldCLI.Commands
         /// <returns></returns>
         public string ChooseProtectionPreset(string preset)
         {
-            string[] presets = {"maximum", "balance", "custom", "optimized"};
+            string[] presets = { "maximum", "balance", "custom", "optimized" };
 
             if (presets.All(pr => pr != preset))
                 preset = AnsiConsole.Prompt(
@@ -364,9 +383,15 @@ namespace ShieldCLI.Commands
                 ? ClientManager.Client.Configuration.MakeApplicationCustomConfiguration(protectionsId)
                 : ClientManager.Client.Configuration.MakeApplicationConfiguration(preset.ToPreset());
 
+            if (File.Exists(Path.Combine(path, name)))
+            {
+                File.Delete(Path.Combine(path, name));
+            }
+
+
             applicationConfig.SaveToFile(path, name);
 
-            AnsiConsole.Markup("[lime]Configuration file created sucessfully.[/]");
+            AnsiConsole.MarkupLine("[lime]Application configuration file created sucessfully.[/]");
 
             return applicationConfig;
 
@@ -382,9 +407,13 @@ namespace ShieldCLI.Commands
                 ? ClientManager.Client.Configuration.MakeProjectCustomConfiguration(protectionsId)
                 : ClientManager.Client.Configuration.MakeProjectConfiguration(preset.ToPreset());
 
+            if (File.Exists(Path.Combine(path, name)))
+            {
+                File.Delete(Path.Combine(path, name));
+            }
 
-            AnsiConsole.Markup("[lime]Configuration file created sucessfully.[/]");
             projectConfig.SaveToFile(path, name);
+            AnsiConsole.MarkupLine("[lime]Project configuration file created sucessfully.[/]");
 
             return projectConfig;
         }
@@ -392,14 +421,14 @@ namespace ShieldCLI.Commands
         public ProjectDto FindOrCreateProjectByName(string name)
         {
             var project = ClientManager.Client.Project.FindOrCreateExternalProject(name);
-            AnsiConsole.Markup("[lime]Project Found [/]");
+            AnsiConsole.MarkupLine("[lime]Project Found [/]");
             return project;
         }
 
         public ProjectDto FindOrCreateProjectById(string name, string key)
         {
             var project = ClientManager.Client.Project.FindByIdOrCreateExternalProject(name ?? "default", key);
-            AnsiConsole.Markup("[lime]Project Found [/]");
+            AnsiConsole.MarkupLine("[lime]Project Found [/]");
 
             return project;
         }
@@ -516,29 +545,29 @@ namespace ShieldCLI.Commands
             switch (protection)
             {
                 case "Load from a config file":
-                {
-                    var configPath = AnsiConsole.Ask<string>("Provide the configuration file path:");
+                    {
+                        var configPath = AnsiConsole.Ask<string>("Provide the configuration file path:");
 
-                    configurationDto = GetApplicationConfiguration(configPath, configName, false);
+                        configurationDto = GetApplicationConfiguration(configPath, configName, false);
 
-                    break;
-                }
+                        break;
+                    }
                 case "Use a preset":
-                {
-                    string[] protectionsId = { };
-                    var preset = ChooseProtectionPreset("default");
-                    if (preset == "custom")
-                        protectionsId = ChooseCustomProtections(projectKey);
-                    configurationDto = MakeApplicationConfiguration(path, preset, configName, protectionsId);
-                    break;
-                }
+                    {
+                        string[] protectionsId = { };
+                        var preset = ChooseProtectionPreset("default");
+                        if (preset == "custom")
+                            protectionsId = ChooseCustomProtections(projectKey);
+                        configurationDto = MakeApplicationConfiguration(path, preset, configName, protectionsId);
+                        break;
+                    }
                 case "Make a custom":
-                {
-                    const string preset = "custom";
-                    var protectionsId = ChooseCustomProtections(projectKey);
-                    configurationDto = MakeApplicationConfiguration(path, preset, configName, protectionsId);
-                    break;
-                }
+                    {
+                        const string preset = "custom";
+                        var protectionsId = ChooseCustomProtections(projectKey);
+                        configurationDto = MakeApplicationConfiguration(path, preset, configName, protectionsId);
+                        break;
+                    }
             }
 
             return configurationDto;
@@ -549,6 +578,7 @@ namespace ShieldCLI.Commands
         /// 
         /// </summary>
         /// <param name="projectKey"></param>
+        /// <param name="appName"></param>
         /// <param name="fileBlob"></param>
         /// <param name="config"></param>
         /// <param name="path"></param>
@@ -587,7 +617,7 @@ namespace ShieldCLI.Commands
                         if (logLevel < minimumLevel)
                             return;
 
-                        AnsiConsole.MarkupLine("["+color+"] > {0}[/]", message.EscapeMarkup());
+                        AnsiConsole.MarkupLine("[" + color + "] > {0}[/]", message.EscapeMarkup());
                     });
 
                     result.OnSuccess(hub, async (application) =>
@@ -596,12 +626,14 @@ namespace ShieldCLI.Commands
                             AnsiConsole.MarkupLine(
                                 $"[lime] > The application has been protected successfully with {application.Preset} protection.[/]");
                             AnsiConsole.MarkupLine("");
-                             var downloaded =
-                                await ClientManager.Client.Application.DownloadApplicationAsArrayAsync(application);
+                            var downloaded =
+                               await ClientManager.Client.Application.DownloadApplicationAsArrayAsync(application);
+
+
                             downloaded.SaveOn(path, true);
-                            var savedDir = Path.GetDirectoryName(path);
+
                             AnsiConsole.MarkupLine(
-                                $"[lime]Application saved successfully in [/][darkorange]{savedDir}[/]");
+                                $"[lime]Application saved successfully in [/][darkorange]{Path.GetDirectoryName(path)}[/]");
                         }
                     );
 

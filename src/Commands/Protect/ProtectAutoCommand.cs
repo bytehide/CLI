@@ -23,7 +23,7 @@ namespace ShieldCLI.Commands.Protect
         {
             try
             {
-                ShieldCommands.AuthHasCredentials();
+                _ = ShieldCommands.AuthHasCredentials();
 
                 var name = AnsiConsole.Ask<string>("[darkorange]Enter the project Name[/]");
 
@@ -42,6 +42,7 @@ namespace ShieldCLI.Commands.Protect
 
                 var directory = Path.GetDirectoryName(path);
                 var filename = Path.GetFileNameWithoutExtension(path);
+                var appName = Path.GetFileName(path);
 
                 var config = ClientManager.Client.Configuration.FindApplicationConfiguration(directory, filename);
 
@@ -51,7 +52,6 @@ namespace ShieldCLI.Commands.Protect
                     AnsiConsole.MarkupLine("[darkorange]We detected an application config file[/]");
                     if (!AnsiConsole.Confirm("Do you want to use it? "))
                         config = ShieldCommands.CreateConfigurationFile(project.Key, directory, filename);
-
                 }
                 else
                 {

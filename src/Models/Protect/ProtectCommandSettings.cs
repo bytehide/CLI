@@ -10,13 +10,13 @@ namespace ShieldCLI.Models.Protect
         [CommandArgument(0, "<PROJECT>"), Description("Name of the dotnetsafer shield project or Key if flag --key is true.")]
         public string Project { get; set; }
 
-        [CommandArgument(0, "<APPLICATION PATH>"), Description("Path of the application.")]
+        [CommandArgument(1, "<APPLICATION PATH>"), Description("Path of the application.")]
         public string ApplicationPath { get; set; }
 
-        [CommandArgument(1, "<CONFIGURATION PATH>"), Description("Path of the application shield configuration.")]
-        public string ConfigurationPath  { get; set; }
+        [CommandArgument(2, "<CONFIGURATION PATH>"), Description("Path of the application shield configuration.")]
+        public string ConfigurationPath { get; set; }
 
-        [CommandArgument(2, "<OUTPUT DIRECTORY PATH>"), Description("Path of teh output directory.")]
+        [CommandArgument(3, "<OUTPUT DIRECTORY PATH>"), Description("Path of teh output directory.")]
         public string OutputPath { get; set; }
 
         [CommandOption("--key|-k"), Description("Set true if <PROJECT> is the key of the project."), DefaultValue(false)]
@@ -26,8 +26,8 @@ namespace ShieldCLI.Models.Protect
         {
             if (!File.Exists(ApplicationPath))
                 return ValidationResult.Error("The path provided for the application is invalid.");
-            return !File.Exists(ConfigurationPath) ? 
-                ValidationResult.Error("The path provided for the shield application configuration is invalid.") 
+            return !File.Exists(ConfigurationPath) ?
+                ValidationResult.Error("The path provided for the shield application configuration is invalid.")
                 : ValidationResult.Success();
         }
     }

@@ -26,9 +26,9 @@ namespace ShieldCLI.Commands.Protect
         }
 
         public override void OnConfigure(ICommandConfigurationBuilder builder)
-        
-        =>    builder.Name("protect:auto").Description("Protect an application.");
-        
+
+        => builder.Name("protect:auto").Description("Protect an application.");
+
 
         public override async Task OnExecuteAsync(GlobalOptions option, OldProtectAutoOptions options, CancellationToken cancellationToken)
         {
@@ -62,7 +62,7 @@ namespace ShieldCLI.Commands.Protect
                     AnsiConsole.MarkupLine("[darkorange]We detected an application config file[/]");
                     if (!AnsiConsole.Confirm("Do you want to use it? "))
                         config = ShieldCommands.CreateConfigurationFile(project.Key, directory, filename);
-                    
+
                 }
                 else
                 {
@@ -73,7 +73,7 @@ namespace ShieldCLI.Commands.Protect
 
                 var savePath = AnsiConsole.Ask<string>("[darkorange]Enter a path where protected app will be saved[/]");
 
-                await ShieldCommands.ProtectApplicationAsync(project.Key, appUpload.ApplicationBlob, config, savePath);
+               // await ShieldCommands.ProtectApplicationAsync(project.Key, appUpload.ApplicationBlob, config, savePath);
             }
             catch (Exception ex)
             {

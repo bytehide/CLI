@@ -4,11 +4,11 @@ using ShieldCLI.Models.Config;
 
 namespace ShieldCLI.Commands.Config
 {
-    public class GetConfigCommand : Command<GlobalOptions, GetConfigOptions>
+    public class oldGetConfigCommand : Command<GlobalOptions, GetConfigOptions>
     {
         public ShieldCommands ShieldCommands { get; set; }
 
-        public GetConfigCommand(ShieldCommands shieldCommands)
+        public oldGetConfigCommand(ShieldCommands shieldCommands)
         {
             ShieldCommands = shieldCommands;
         }

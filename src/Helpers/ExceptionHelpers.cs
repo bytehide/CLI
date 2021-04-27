@@ -18,6 +18,8 @@ namespace ShieldCLI.Helpers
                         ? "[green] Please read about CLI authentication at:[/] [link=https://dotnetsafer.com/docs/shield-cli/authentication]https://dotnetsafer.com/docs/shield-cli/authentication[/]"
                         : "[green] Please read about CLI authentication at:[/] https://dotnetsafer.com/docs/shield-cli/authentication");
                     return;
+
+
             }
             AnsiConsole.WriteLine("");
 #if DEBUG
