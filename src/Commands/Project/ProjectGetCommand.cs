@@ -16,14 +16,15 @@ namespace ShieldCLI.Commands.Project
         {
             ShieldCommands = shieldCommands;
         }
-        public async override Task<int> ExecuteAsync(CommandContext context, ProjectGetCommandSettings settings)
-        {
 
+        public override async Task<int> ExecuteAsync(CommandContext context, ProjectGetCommandSettings settings)
+        {
             try
             {
                 _ = ShieldCommands.AuthHasCredentials();
                 var project = !settings.IsProjectKey ?
-                         await ShieldCommands.FindOrCreateProjectByNameAsync(settings.Project) : await ShieldCommands.FindOrCreateProjectByIdAsync("default", settings.Project);
+                         await ShieldCommands.FindOrCreateProjectByNameAsync(settings.Project) :
+                         await ShieldCommands.FindOrCreateProjectByIdAsync("default", settings.Project);
 
                 ShieldCommands.PrintProject(project.Name, project.Key);
 

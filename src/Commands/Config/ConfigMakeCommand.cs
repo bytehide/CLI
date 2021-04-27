@@ -4,6 +4,7 @@ using Spectre.Console;
 using Spectre.Console.Cli;
 using System;
 using System.Diagnostics.CodeAnalysis;
+using ShieldCLI.Models.Config;
 
 namespace ShieldCLI
 {
@@ -26,21 +27,21 @@ namespace ShieldCLI
 
                 var type = ShieldCommands.ChooseConfigurationType(settings.Type);
                 var preset = ShieldCommands.ChooseProtectionPreset(settings.Preset);
-                string[] protectionsID = { };
+                string[] protectionsId = { };
                 if (preset == "custom")
                 {
                     var projectKey = ShieldCommands.FindOrCreateProjectByName("default").Key;
 
-                    protectionsID = ShieldCommands.ChooseCustomProtections(projectKey);
+                    protectionsId = ShieldCommands.ChooseCustomProtections(projectKey);
                 }
 
                 if (type == "application")
                 {
-                    _ = ShieldCommands.MakeApplicationConfiguration(settings.Path, preset, settings.Name, protectionsID);
+                    _ = ShieldCommands.MakeApplicationConfiguration(settings.Path, preset, settings.Name, protectionsId);
                 }
                 else
                 {
-                    _ = ShieldCommands.MakeProjectConfiguration(settings.Path, preset, settings.Name, protectionsID);
+                    _ = ShieldCommands.MakeProjectConfiguration(settings.Path, preset, settings.Name, protectionsId);
                 }
 
                 return 0;

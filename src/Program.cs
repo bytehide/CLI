@@ -8,7 +8,6 @@ using ShieldCLI.Commands.Auth;
 using ShieldCLI.Commands.Protect;
 using Spectre.Console.Cli;
 using ShieldCLI.Commands.Project;
-using Spectre.Console;
 using ShieldCLI.Commands.Config;
 
 namespace ShieldCLI

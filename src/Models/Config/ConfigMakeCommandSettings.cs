@@ -1,14 +1,14 @@
-﻿using Spectre.Console.Cli;
-using System.ComponentModel;
+﻿using System.ComponentModel;
+using Spectre.Console.Cli;
 
-namespace ShieldCLI
+namespace ShieldCLI.Models.Config
 {
     internal class ConfigMakeCommandSettings : Branches.ShieldSettings
     {
 
         [CommandArgument(0, "<NAME>"), Description("Name of the Shield protection config file")]
         public string Name { get; set; }
-        [CommandArgument(1, "<PATH>"), Description("Path of the  file")]
+        [CommandArgument(1, "<DIRECTORY PATH>"), Description("Output direcroty path where configuration file will be saved.")]
         public string Path { get; set; }
         [CommandArgument(2, "[TYPE]"), Description("Type of the protection config file."), DefaultValue("project")]
         public string Type { get; set; }
