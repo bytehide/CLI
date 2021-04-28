@@ -51,7 +51,7 @@ namespace ShieldCLI.Commands
             {
                 ClientManager.UpdateKey(apiKey);
                 AnsiConsole.MarkupLine(
-                    "[lime]Logged in correctly. Your session has been saved, to delete it use [dim]auth --clear[/][/]");
+                    "[lime]Logged in correctly. Your session has been saved, to delete you credentials use [dim]clear[/][/]");
                 AnsiConsole.WriteLine("");
                 return true;
             }
@@ -74,7 +74,7 @@ namespace ShieldCLI.Commands
 
             if (ClientManager.HasValidClient()) return true;
 
-            AnsiConsole.MarkupLine("[red]You are NOT logged in. \nYou must be logged in to use Dotnetsafer CLI.[/]");
+            AnsiConsole.MarkupLine("[red]You are NOT logged in. \nYou must be logged in to use Shield CLI.[/]");
             AnsiConsole.WriteLine("");
 
             if (!AnsiConsole.Confirm("[blue]Do you want to logged in now? [/]"))
@@ -97,6 +97,80 @@ namespace ShieldCLI.Commands
         }
 
 
+
+        public string CreateFullPath(string dirPath, string name)
+        {
+
+
+            var separator = Path.DirectorySeparatorChar;
+
+            var configPath = Path.EndsInDirectorySeparator(dirPath) ? dirPath : $"{dirPath}{separator}";
+            var fullFilePath =
+                Path.Combine(
+                    Path.GetDirectoryName(configPath) ??
+                    throw new InvalidOperationException("The provided directory path doesn't exists."), name);
+
+
+            return fullFilePath;
+        }
+
+        public string GetFilesConfig(string path)
+        {
+            var applicationsFiles = Directory.GetFiles(path, "shield.application.*.json").ToArray();
+            var projectFiles = Directory.GetFiles(path, "shield.project.*.json").ToArray();
+
+            var allConfigFiles = applicationsFiles.Concat(projectFiles);
+
+            if (allConfigFiles.Count() == 0)
+            {
+                AnsiConsole.MarkupLine($"[darkorange]There is no config files in this path[/]");
+                return "";
+            }
+            string fullConfigName = allConfigFiles.First();
+
+            if (allConfigFiles.Count() != 1)
+            {
+                var file = AnsiConsole.Prompt(
+                       new MultiSelectionPrompt<string>()
+                      .Title("Choose the Config File")
+                      .PageSize(12)
+                      .AddChoices(allConfigFiles));
+
+                fullConfigName = file.First();
+            }
+
+
+
+            return fullConfigName;
+        }
+
+        public void PrintConfigFiles(string path, string preset, List<string> protections)
+        {
+            var name = Path.GetFileName(path);
+
+            AnsiConsole.MarkupLine("[lime] Config File has the follow info: [/] ");
+
+            var root = new Tree(name).Style("lime").Guide(TreeGuide.DoubleLine);
+
+
+            var presetbranch = root.AddNode("[darkorange]Preset[/]");
+
+            presetbranch.AddNode(preset);
+
+            if (preset == "custom")
+            {
+                var protectionsBranch = root.AddNode("[darkorange]Protections[/]");
+
+                foreach (string protection in protections)
+                {
+                    protectionsBranch.AddNode(protection);
+
+                }
+            }
+            AnsiConsole.Render(root);
+
+        }
+
         /// <summary>
         ///     Gets the configuration file of an application, or creates if <param name="create">create</param> is true.
         /// </summary>
@@ -104,13 +178,10 @@ namespace ShieldCLI.Commands
         /// <param name="path">Directory path of config file</param>
         /// <param name="name">Name of the application</param>
         /// <param name="create">If <value>true</value> creates the configuration file is not exists</param>
-        public ApplicationConfigurationDto GetApplicationConfiguration(string path, string name, bool create)
+        public ApplicationConfigurationDto GetApplicationConfiguration(string fullFilePath, bool create)
         {
-            var configName = $"Shield.Application.{name}.json";
-            var fullFilePath =
-                Path.Combine(
-                    Path.GetDirectoryName(path) ??
-                    throw new InvalidOperationException("The provided directory path doesn't exists."), configName);
+
+
 
             ApplicationConfigurationDto applicationConfig = null;
 
@@ -118,8 +189,8 @@ namespace ShieldCLI.Commands
                 applicationConfig =
                     ClientManager.Client.Configuration.LoadApplicationConfigurationFromFileOrDefault(fullFilePath);
 
-            else if (create)
-                applicationConfig = MakeApplicationConfiguration(path, "balance", name, null);
+            //else if (create)
+            //    applicationConfig = MakeApplicationConfiguration(path, "balance", name, null);
 
 
             return applicationConfig;
@@ -133,37 +204,26 @@ namespace ShieldCLI.Commands
         /// <param name="name"></param>
         /// <param name="create"></param>
         /// <returns></returns>
-        public ProjectConfigurationDto GetProjectConfiguration(string path, string name, bool create)
+        public ProjectConfigurationDto GetProjectConfiguration(string fullFilePath, bool create)
         {
-            var configName = $"Shield.Project.{name}.json";
 
-            var fullFilePath =
-                Path.Combine(
-                    Path.GetDirectoryName(path) ??
-                    throw new InvalidOperationException("The provided directory path doesn't exists."), configName);
 
             ProjectConfigurationDto projectConfig = null;
 
             if (File.Exists(fullFilePath))
             {
-
-
                 projectConfig =
                     ClientManager.Client.Configuration.LoadProjectConfigurationFromFileOrDefault(fullFilePath);
             }
-            else if (create)
-            {
+            //else if (create)
+            //{
 
 
-                projectConfig = MakeProjectConfiguration(path, "balance", name, null);
-            }
-
-
-            Console.WriteLine(fullFilePath);
-
-            ///TODO: @Sr-l Read file and show info. 
+            //    projectConfig = MakeProjectConfiguration(path, "balance", name, null);
+            //}
 
             return projectConfig;
+            ///TODO: @Sr-l Read file and show info. 
 
         }
 
@@ -318,7 +378,7 @@ namespace ShieldCLI.Commands
             var value = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
 
-                    .Title("[dodgerblue3]Choose the source of protection to use[/]")
+                    .Title("[darkorange]Choose the source of protection to use[/]")
                     .PageSize(3)
                     .AddChoice("Load from a config file")
                     .AddChoice("Use a preset")
@@ -450,7 +510,6 @@ namespace ShieldCLI.Commands
         }
 
 
-
         public async Task<ProjectDto> FindOrCreateProjectByIdAsync(string name, string key)
         {
             ProjectDto result = null;
@@ -476,6 +535,7 @@ namespace ShieldCLI.Commands
         /// <returns></returns>
         public async Task<DirectUploadDto> UploadApplicationAsync(string path, string keyProject)
         {
+
             var dependencies = await ResolveDependenciesAsync(path);
 
             DirectUploadDto result = null;
@@ -489,7 +549,10 @@ namespace ShieldCLI.Commands
                         path, dependencies.Select(dep => dep.Item2).ToList());
                 });
 
+            Console.WriteLine("");
+            AnsiConsole.MarkupLine("[lime]Application Uploaded Succesfully[/]");
             return result;
+
         }
 
 
@@ -533,7 +596,7 @@ namespace ShieldCLI.Commands
 
             var protection = ChooseConfigurationSource();
 
-            var text = new TextPrompt<string>("Enter the config file name");
+            var text = new TextPrompt<string>("[lime]Enter the config file name[/]");
             if (!string.IsNullOrEmpty(applicationName))
                 text.DefaultValue(applicationName);
 
@@ -546,9 +609,9 @@ namespace ShieldCLI.Commands
             {
                 case "Load from a config file":
                     {
-                        var configPath = AnsiConsole.Ask<string>("Provide the configuration file path:");
+                        var configPath = AnsiConsole.Ask<string>("[lime]Provide the configuration file path:[/]");
 
-                        configurationDto = GetApplicationConfiguration(configPath, configName, false);
+                        configurationDto = GetApplicationConfiguration(configPath, false);
 
                         break;
                     }

@@ -16,7 +16,7 @@ namespace ShieldCLI.Models.Protect
         [CommandArgument(2, "<CONFIGURATION PATH>"), Description("Path of the application shield configuration.")]
         public string ConfigurationPath { get; set; }
 
-        [CommandArgument(3, "<OUTPUT DIRECTORY PATH>"), Description("Path of teh output directory.")]
+        [CommandArgument(3, "<OUTPUT DIRECTORY PATH>"), Description("Path of the output application protected.")]
         public string OutputPath { get; set; }
 
         [CommandOption("--key|-k"), Description("Set true if <PROJECT> is the key of the project."), DefaultValue(false)]

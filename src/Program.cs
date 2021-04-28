@@ -9,6 +9,7 @@ using ShieldCLI.Commands.Protect;
 using Spectre.Console.Cli;
 using ShieldCLI.Commands.Project;
 using ShieldCLI.Commands.Config;
+using ShieldCLI.Commands.App;
 
 namespace ShieldCLI
 {
@@ -51,6 +52,7 @@ namespace ShieldCLI
                     shield.AddCommand<ProtectAutoCommand>("protect:auto").WithDescription("Protect your application with an interactive flow that will ask you for parameters in real time.");
                     shield.AddCommand<ProjectGetCommand>("project:find").WithDescription("Search for a project in Shield");
                     shield.AddCommand<ProjectCreateCommand>("project:make").WithDescription("Create a new project in Shield");
+                    shield.AddCommand<AppAddCommand>("application:add").WithDescription("Upload an application to a project in Shield");
                     shield.AddCommand<ConfigGetCommand>("config:find").WithDescription("Search for a config file in Shield");
                     shield.AddCommand<ConfigMakeCommand>("config:make").WithDescription("Make a config file to use in Shield protection");
 

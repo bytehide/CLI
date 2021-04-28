@@ -7,12 +7,12 @@ namespace ShieldCLI.Commands.Config
 
     internal class ConfigGetCommandSettings : Branches.ShieldSettings
     {
-        [CommandArgument(0, "<NAME>"), Description("Name of the protection config file")]
+        [CommandArgument(1, "[NAME]"), Description("Name of the protection config file")]
         public string Name { get; set; }
-        [CommandArgument(1, "<PATH>"), Description("Path of the protection config file")]
+        [CommandArgument(0, "<PATH>"), Description("Path of the protection config file")]
         public string Path { get; set; }
 
-        [CommandArgument(2, "[TYPE]"), Description("Type of the protection config file."), DefaultValue("project")]
+        [CommandArgument(2, "[TYPE]"), Description("Type of the protection config file.(Project default)"), DefaultValue("project")]
         public string Type { get; set; }
 
         [CommandOption("--create"), Description("Create a config file if not exist."), DefaultValue(false)]

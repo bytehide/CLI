@@ -35,10 +35,11 @@ namespace ShieldCLI.Commands.Protect
 
                 var appUpload = await ShieldCommands.UploadApplicationAsync(path, project.Key);
 
-                Console.WriteLine("");
-                AnsiConsole.MarkupLine("[lime]Application Uploaded Succesfully[/]");
+               
 
                 ShieldCommands.PrintApplication(Path.GetFileName(path), appUpload.ApplicationBlob, project.Key);
+
+
 
                 var directory = Path.GetDirectoryName(path);
                 var filename = Path.GetFileNameWithoutExtension(path);

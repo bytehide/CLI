@@ -1,6 +1,7 @@
 ﻿using Shield.Client.Models.API.Application;
 using Shield.Client.Models.API.Project;
 using ShieldCLI.Helpers;
+using Spectre.Console;
 using Spectre.Console.Cli;
 using System;
 
@@ -20,18 +21,29 @@ namespace ShieldCLI.Commands.Config
             try
             {
                 var type = ShieldCommands.ChooseConfigurationType(settings.Type);
+                var configName = $"shield.{type}.{settings.Name}.json";
+
+                if (settings.Name is null)
+                {
+                    configName = ShieldCommands.GetFilesConfig(settings.Path);
+                    if (configName == "") return 0;
+
+                }
+
+
+                var fullPath = ShieldCommands.CreateFullPath(settings.Path, configName);
+
 
                 if (type == "application")
                 {
-                    ApplicationConfigurationDto appConfig = ShieldCommands.GetApplicationConfiguration(settings.Path, settings.Name, settings.Create);
+                    ApplicationConfigurationDto appConfig = ShieldCommands.GetApplicationConfiguration(fullPath, settings.Create);
 
-                    Console.WriteLine("archivo de application");
+                    ShieldCommands.PrintConfigFiles(configName, appConfig.ProjectPreset, appConfig.Protections);
                 }
                 else
                 {
-
-                    ProjectConfigurationDto proConfig = ShieldCommands.GetProjectConfiguration(settings.Path, settings.Name, settings.Create);
-                    Console.WriteLine("archivo de project");
+                    ProjectConfigurationDto projectConfig = ShieldCommands.GetProjectConfiguration(fullPath, settings.Create);
+                    ShieldCommands.PrintConfigFiles(configName, projectConfig.ProjectPreset, projectConfig.Protections);
 
                 }
 

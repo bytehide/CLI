@@ -19,8 +19,6 @@ namespace ShieldCLI.Commands.Protect
         {
             var projectKey = settings.Project;
             var pathApp = settings.ApplicationPath;
-            var configName = Path.GetFileName(settings.ConfigurationPath);
-            var configDirectory = Path.GetDirectoryName(settings.ConfigurationPath);
             var pathOutput = settings.OutputPath;
 
             if (!settings.IsProjectKey)
@@ -28,16 +26,10 @@ namespace ShieldCLI.Commands.Protect
                 var project = await ShieldCommands.FindOrCreateProjectByIdAsync("default", projectKey);
                 projectKey = project.Key;
             }
-
-            if (Path.GetDirectoryName(settings.ConfigurationPath) == "")
-            {
-                configName = $"Shield.Application.{settings.ConfigurationPath}.json";
-                configDirectory = Path.GetDirectoryName(pathApp);
-            }
-
             var appUpload = await ShieldCommands.UploadApplicationAsync(pathApp, projectKey);
 
-            var config = ShieldCommands.GetApplicationConfiguration(configDirectory, configName, true);
+            var config = ShieldCommands.GetApplicationConfiguration(settings.ConfigurationPath, true);
+
 
             await ShieldCommands.ProtectApplicationAsync(projectKey, appUpload.ApplicationBlob, config, pathOutput);
 

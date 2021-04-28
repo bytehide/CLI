@@ -23,7 +23,7 @@ namespace ShieldCLI.Commands.Project
         {
             try
             {
-                ShieldCommands.AuthHasCredentials();
+                _ = ShieldCommands.AuthHasCredentials();
 
                 var project = await ShieldCommands.FindOrCreateProjectByNameAsync(settings.Project);
 
