@@ -308,8 +308,8 @@ namespace ShieldCLI.Commands
 
                 unresolved.ForEach(dep =>
                     table.AddRow(
-                        $"[yellow]{Utils.SplitAssemblyInfo(dep.Item1).name}[/]",
-                        $"[yellow]{Utils.SplitAssemblyInfo(dep.Item1).version}[/]"));
+                        $"[darkorange]{Utils.SplitAssemblyInfo(dep.Item1).name}[/]",
+                        $"[darkorange]{Utils.SplitAssemblyInfo(dep.Item1).version}[/]"));
 
                 AnsiConsole.Render(table);
 
@@ -317,13 +317,13 @@ namespace ShieldCLI.Commands
 
                 unresolved.ForEach(dep =>
                     userPath.Add(AnsiConsole.Ask<string>(
-                        $"Enter the path of the [yellow]{Utils.SplitAssemblyInfo(dep.Item1).name}[/] library:")));
+                        $"[darkorange]Enter the path of the [red]{Utils.SplitAssemblyInfo(dep.Item1).name}[/] library:[/]")));
 
                 _ = DependenciesResolver.GetUnresolved(module,
                     createdContext, requiredDep, userPath.ToArray());
             }
 
-            AnsiConsole.MarkupLine("[green]The dependencies have been resolved.[/]");
+            AnsiConsole.MarkupLine("[lime]The dependencies have been resolved.[/]");
 
             return requiredDep;
         }
