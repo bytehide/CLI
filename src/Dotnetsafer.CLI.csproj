@@ -5,12 +5,33 @@
     <TargetFramework>net5.0</TargetFramework>
     <AssemblyName>Dotnetsafer</AssemblyName>
     <ApplicationIcon>favicon.ico</ApplicationIcon>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Product>Dotnetsafer CLI</Product>
+    <Description>Protect your .NET applications from the terminal, use Shield and other products with a few commands.</Description>
+    <Copyright>Dotnetsafer 2021</Copyright>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageProjectUrl>https://dotnetsafer.com</PackageProjectUrl>
+    <PackageIcon>dotnetsafer.png</PackageIcon>
+    <RepositoryUrl>https://github.com/dotnetsafer/CLI</RepositoryUrl>
+    <PackageTags>Security, Code Protection, Obfuscation, Dotnetsafer, Code Security, Compilation, Web Security, Application Security, Packages Security, Protection, Packer</PackageTags>
+    <PackageReleaseNotes>This version of the Dotnetsafer Console includes beta products, the next update will include tested versions.</PackageReleaseNotes>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>dotnetsafer</ToolCommandName>
+    <PackageOutputPath>./nupkg</PackageOutputPath>
   </PropertyGroup>
 
   <ItemGroup>
     <Compile Remove="System\**" />
     <EmbeddedResource Remove="System\**" />
     <None Remove="System\**" />
+    <None Include="..\..\..\..\..\Downloads\dotnetsafer.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+    <None Include="..\license.md">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
@@ -23,11 +44,45 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Shield.Dotnet.Client\Client\Shield.Client.csproj" />
+    <ProjectReference PrivateAssets="All" Include="..\Shield.Dotnet.Client\Client\Shield.Client.csproj"></ProjectReference>
   </ItemGroup>
+
+  <PropertyGroup>
+    <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
+    <PackageId>Dotnetsafer</PackageId>
+    <SignAssembly>false</SignAssembly>
+    <PackageLicenseExpression></PackageLicenseExpression>
+    <PackageLicenseFile>license.md</PackageLicenseFile>
+    <DelaySign>false</DelaySign>
+    <AssemblyVersion>1.0.0.1</AssemblyVersion>
+    <FileVersion>1.0.0.1</FileVersion>
+    <Version>1.0.0.1</Version>
+  </PropertyGroup>
+
+  <Target Name="CopyProjectReferencesToPackage" DependsOnTargets="BuildOnlySettings;ResolveReferences">
+    <ItemGroup>
+      <!-- Filter out unnecessary files -->
+      <_ReferenceCopyLocalPaths Include="@(ReferenceCopyLocalPaths-&gt;WithMetadataValue('ReferenceSourceTarget', 'ProjectReference')-&gt;WithMetadataValue('PrivateAssets', 'All'))" />
+    </ItemGroup>
+
+    <!-- Print batches for debug purposes -->
+    <Message Text="Batch for .nupkg: ReferenceCopyLocalPaths = @(_ReferenceCopyLocalPaths), ReferenceCopyLocalPaths.DestinationSubDirectory = %(_ReferenceCopyLocalPaths.DestinationSubDirectory) Filename = %(_ReferenceCopyLocalPaths.Filename) Extension = %(_ReferenceCopyLocalPaths.Extension)" Importance="High" Condition="'@(_ReferenceCopyLocalPaths)' != ''" />
+
+    <ItemGroup>
+      <!-- Add file to package with consideration of sub folder. If empty, the root folder is chosen. -->
+      <BuildOutputInPackage Include="@(_ReferenceCopyLocalPaths)" TargetPath="%(_ReferenceCopyLocalPaths.DestinationSubDirectory)" />
+    </ItemGroup>
+  </Target>
+
 
   <ItemGroup>
     <Folder Include="Properties\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="AppSettings.json" Pack="true">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties properties_4launchsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>

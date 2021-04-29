@@ -9,6 +9,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "submodules", "submodules", 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shield.Client", "Shield.Dotnet.Client\Client\Shield.Client.csproj", "{897A0E18-1AC3-494A-8BED-4A1E83D7FE84}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F30135CB-11FF-4411-B89E-545CCDBAACAE}"
+	ProjectSection(SolutionItems) = preProject
+		license.md = license.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
