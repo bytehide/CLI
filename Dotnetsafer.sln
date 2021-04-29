@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31025.194
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ShieldCLI", "src\ShieldCLI.csproj", "{8485AC89-1F69-4604-A85D-4BAAEA9433A5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Dotnetsafer.CLI", "src\Dotnetsafer.CLI.csproj", "{8485AC89-1F69-4604-A85D-4BAAEA9433A5}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "submodules", "submodules", "{B5BE5A3C-6FF1-441A-AB08-E8D6DBA8E4EF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shield.Client", "Shield.Dotnet.Client\Client\Shield.Client.csproj", "{897A0E18-1AC3-494A-8BED-4A1E83D7FE84}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,9 +19,16 @@ Global
 		{8485AC89-1F69-4604-A85D-4BAAEA9433A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8485AC89-1F69-4604-A85D-4BAAEA9433A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8485AC89-1F69-4604-A85D-4BAAEA9433A5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{897A0E18-1AC3-494A-8BED-4A1E83D7FE84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{897A0E18-1AC3-494A-8BED-4A1E83D7FE84}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{897A0E18-1AC3-494A-8BED-4A1E83D7FE84}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{897A0E18-1AC3-494A-8BED-4A1E83D7FE84}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{897A0E18-1AC3-494A-8BED-4A1E83D7FE84} = {B5BE5A3C-6FF1-441A-AB08-E8D6DBA8E4EF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6BE8ACC8-D068-4B08-8C14-70D51BA758B1}

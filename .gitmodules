@@ -1,0 +1,3 @@
+[submodule "Shield.Dotnet.Client"]
+	path = Shield.Dotnet.Client
+	url = https://github.com/dotnetsafer/Shield.Dotnet.Client

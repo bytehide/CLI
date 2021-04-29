@@ -1,48 +1,70 @@
-﻿using MatthiWare.CommandLine;
-using ShieldCLI.Commands;
-using ShieldCLI.Models;
-using System;
-using System.Reflection;
+﻿using System;
 using System.Threading.Tasks;
-using MatthiWare.CommandLine.Abstractions;
+using Dotnetsafer.CLI.Commands;
+using Dotnetsafer.CLI.Commands.App;
+using Dotnetsafer.CLI.Commands.Auth;
+using Dotnetsafer.CLI.Commands.Config;
+using Dotnetsafer.CLI.Commands.Project;
+using Dotnetsafer.CLI.Commands.Protect;
+using Dotnetsafer.CLI.Helpers;
+using Dotnetsafer.CLI.Repos;
 using Microsoft.Extensions.DependencyInjection;
-using SecureLocalStorage;
-using ShieldCLI.Repos;
+using Microsoft.Extensions.Logging;
+using Spectre.Console.Cli;
 
-namespace ShieldCLI
+namespace Dotnetsafer.CLI
 {
-    class Program
+    public class Program
     {
-        static async Task Main(string[] args)
+        private static async Task Main(string[] args)
         {
-            var options = new CommandLineParserOptions
-            {
-                AppName = "ds"
-            };
+
+            Console.Title = "Dotnetsafer CLI";
 
             var services = new ServiceCollection();
 
-            services.AddScoped<KeyManager>();
+            services.AddSingleton<NugetResolver>();
 
-            services.AddCommandLineParser<GlobalOptions>(options);
+            services.AddSingleton<DependenciesResolver>();
 
-            var provider = services.BuildServiceProvider();
+            services.AddLogging(configure => configure.AddConsole().SetMinimumLevel(LogLevel.None)).AddTransient<Program>();
 
-            var parser = provider.GetRequiredService<ICommandLineParser<GlobalOptions>>();
+            services.AddSingleton<ClientManager>();
 
-            parser.DiscoverCommands(Assembly.GetExecutingAssembly());
+            services.AddSingleton<ShieldCommands>();
 
-            var result = await parser.ParseAsync(args);
+            var registrar = new TypeRegistrar(services);
 
-            if (result.HasErrors)
+            var dotnetsafer = new CommandApp(registrar);
+
+
+            dotnetsafer.Configure(config =>
             {
-                return;
-            }
+                //Dotnetsafer commands:
+                config.AddCommand<HelloCommand>("hello").IsHidden();
 
-            if (result.Result.Verbose)
-            {
-                Console.WriteLine("Verbose specified!");
-            }
+                config.AddCommand<AuthLoginCommand>("login").WithDescription("Log into your dotnetsafer account.");
+                config.AddCommand<AuthRegisterCommand>("register").WithDescription("Sign up for dotnetsafer.");
+                config.AddCommand<AuthClearCommand>("clear").WithDescription("Delete your stored dotnetsafer credentials.");
+                config.AddCommand<AuthCheckCommand>("check").WithDescription("Check if your stored credentials are valid.");
+
+                //Dotnetsafer Shield Commands:
+                config.AddBranch<ShieldSettings>("shield", shield =>
+                {
+
+                    shield.SetDescription("All the functions that dotnetsafer shield offers.");
+                    shield.AddCommand<ProtectCommand>("protect").WithDescription("Protect your application with a single execution, ideal for configuring your scripts and automating msbuilds.");
+                    shield.AddCommand<ProtectAutoCommand>("protect:auto").WithDescription("Protect your application with an interactive flow that will ask you for parameters in real time.");
+                    shield.AddCommand<ProjectGetCommand>("project:find").WithDescription("Search for a project in Shield");
+                    shield.AddCommand<ProjectCreateCommand>("project:make").WithDescription("Create a new project in Shield");
+                    shield.AddCommand<AppAddCommand>("application:add").WithDescription("Upload an application to a project in Shield");
+                    shield.AddCommand<ConfigGetCommand>("config:find").WithDescription("Search for a config file in Shield");
+                    shield.AddCommand<ConfigMakeCommand>("config:make").WithDescription("Make a config file to use in Shield protection");
+
+                });
+            });
+
+            await dotnetsafer.RunAsync(args);
         }
     }
 }

@@ -1,12 +1,7 @@
-﻿using MatthiWare.CommandLine.Abstractions.Command;
-using ShieldCLI.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Dotnetsafer.CLI.Models;
+using MatthiWare.CommandLine.Abstractions.Command;
 
-namespace ShieldCLI.Commands
+namespace Dotnetsafer.CLI.Commands.Project
 {
     public class DeleteProjectCommand : Command<GlobalOptions>
     {
@@ -15,6 +10,8 @@ namespace ShieldCLI.Commands
             builder.Name("project:delete").Description("Delete project");
         }
 
+
+        //TODO @Sr-l  method to delete projects in client
     }
 
 }
