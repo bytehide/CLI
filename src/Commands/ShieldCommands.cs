@@ -42,7 +42,7 @@ namespace Dotnetsafer.CLI.Commands
         ///     Log in the current user whit an apiKey.
         /// </summary>
         /// <param name="apiKey">Dotnetsafer Personal Api Token (required to use the CLI)</param>
-        /// <see cref="https://dotnetsafer.com/docs/shield-cli/authentication"/>
+        /// <see cref="https://dotnetsafer.com/docs/cli/1.0/authentication"/>
         public bool AuthLogin(string apiKey)
         {
             apiKey ??= AnsiConsole.Ask<string>("[blue]Insert your API Key[/]");
@@ -59,8 +59,8 @@ namespace Dotnetsafer.CLI.Commands
             //TODO: Sr-l show help to user
             AnsiConsole.MarkupLine("[red]NOT logged in. Please review the API Key.[/]");
             AnsiConsole.MarkupLine(AnsiConsole.Profile.Capabilities.Links
-                ? "[green] Read about CLI authentication at:[/] [link=https://dotnetsafer.com/docs/shield-cli/authentication]https://dotnetsafer.com/docs/shield-cli/authentication[/]"
-                : "[green] Read about CLI authentication at:[/] https://dotnetsafer.com/docs/shield-cli/authentication");
+                ? "[green] Read about CLI authentication at:[/] [link=https://dotnetsafer.com/docs/cli/1.0/authentication]https://dotnetsafer.com/docs/cli/1.0/authentication[/]"
+                : "[green] Read about CLI authentication at:[/] https://dotnetsafer.com/docs/cli/1.0/authentication");
             AnsiConsole.WriteLine("");
             return false;
         }
