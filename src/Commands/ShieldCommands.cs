@@ -5,16 +5,16 @@ using System.Linq;
 using System.Security.Authentication;
 using System.Threading;
 using System.Threading.Tasks;
+using Dotnetsafer.CLI.Helpers;
+using Dotnetsafer.CLI.Repos;
 using Microsoft.Extensions.Logging;
 using Shield.Client.Extensions;
 using Shield.Client.Models;
 using Shield.Client.Models.API.Application;
 using Shield.Client.Models.API.Project;
-using ShieldCLI.Helpers;
-using ShieldCLI.Repos;
 using Spectre.Console;
 
-namespace ShieldCLI.Commands
+namespace Dotnetsafer.CLI.Commands
 {
     public class ShieldCommands
 

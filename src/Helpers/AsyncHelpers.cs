@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace ShieldCLI.Helpers
+namespace Dotnetsafer.CLI.Helpers
 {
     public static class AsyncHelpers
     {

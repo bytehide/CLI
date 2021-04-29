@@ -1,12 +1,10 @@
-﻿using ShieldCLI.Helpers;
-using Spectre.Console.Cli;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System;
 using System.Threading.Tasks;
+using Dotnetsafer.CLI.Helpers;
+using Dotnetsafer.CLI.Models.Project;
+using Spectre.Console.Cli;
 
-namespace ShieldCLI.Commands.Project
+namespace Dotnetsafer.CLI.Commands.Project
 {
     internal class ProjectGetCommand : AsyncCommand<ProjectGetCommandSettings>, ICommandLimiter<ShieldSettings>
     {

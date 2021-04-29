@@ -1,10 +1,10 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using Dotnetsafer.CLI.Models;
+using Dotnetsafer.CLI.Models.Project;
 using MatthiWare.CommandLine.Abstractions.Command;
-using ShieldCLI.Models;
-using ShieldCLI.Models.Project;
 
-namespace ShieldCLI.Commands.Project
+namespace Dotnetsafer.CLI.Commands.Project
 {
     public class GetProjectCommand : Command<GlobalOptions, GetProjectOptions>
     {

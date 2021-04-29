@@ -1,10 +1,10 @@
 ﻿using System;
+using Dotnetsafer.CLI.Models;
 using Microsoft.Extensions.Logging;
 using SecureLocalStorage;
 using Shield.Client;
-using ShieldCLI.Models;
 
-namespace ShieldCLI.Repos
+namespace Dotnetsafer.CLI.Repos
 {
     public class ClientManager
     {

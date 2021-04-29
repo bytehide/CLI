@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using Spectre.Console.Cli;
 
-namespace ShieldCLI.Models.Config
+namespace Dotnetsafer.CLI.Models.Config
 {
     internal class ConfigMakeCommandSettings : Branches.ShieldSettings
     {

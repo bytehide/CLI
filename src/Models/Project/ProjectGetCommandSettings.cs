@@ -1,7 +1,7 @@
-﻿using Spectre.Console.Cli;
-using System.ComponentModel;
+﻿using System.ComponentModel;
+using Spectre.Console.Cli;
 
-namespace ShieldCLI.Commands.Project
+namespace Dotnetsafer.CLI.Models.Project
 {
     internal class ProjectGetCommandSettings : Branches.ShieldSettings
     {

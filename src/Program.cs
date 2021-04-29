@@ -1,22 +1,26 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
+using Dotnetsafer.CLI.Commands;
+using Dotnetsafer.CLI.Commands.App;
+using Dotnetsafer.CLI.Commands.Auth;
+using Dotnetsafer.CLI.Commands.Config;
+using Dotnetsafer.CLI.Commands.Project;
+using Dotnetsafer.CLI.Commands.Protect;
+using Dotnetsafer.CLI.Helpers;
+using Dotnetsafer.CLI.Repos;
 using Microsoft.Extensions.DependencyInjection;
-using ShieldCLI.Repos;
 using Microsoft.Extensions.Logging;
-using ShieldCLI.Helpers;
-using ShieldCLI.Commands;
-using ShieldCLI.Commands.Auth;
-using ShieldCLI.Commands.Protect;
 using Spectre.Console.Cli;
-using ShieldCLI.Commands.Project;
-using ShieldCLI.Commands.Config;
-using ShieldCLI.Commands.App;
 
-namespace ShieldCLI
+namespace Dotnetsafer.CLI
 {
     public class Program
     {
         private static async Task Main(string[] args)
         {
+
+            Console.Title = "Dotnetsafer CLI";
+
             var services = new ServiceCollection();
 
             services.AddSingleton<NugetResolver>();
@@ -37,6 +41,7 @@ namespace ShieldCLI
             dotnetsafer.Configure(config =>
             {
                 //Dotnetsafer commands:
+                config.AddCommand<HelloCommand>("hello").IsHidden();
 
                 config.AddCommand<AuthLoginCommand>("login").WithDescription("Log into your dotnetsafer account.");
                 config.AddCommand<AuthRegisterCommand>("register").WithDescription("Sign up for dotnetsafer.");
@@ -57,7 +62,6 @@ namespace ShieldCLI
                     shield.AddCommand<ConfigMakeCommand>("config:make").WithDescription("Make a config file to use in Shield protection");
 
                 });
-
             });
 
             await dotnetsafer.RunAsync(args);

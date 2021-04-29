@@ -1,14 +1,11 @@
-﻿using ShieldCLI.Helpers;
-using ShieldCLI.Models.App;
-using ShieldCLI.Repos;
-using Spectre.Console.Cli;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System;
 using System.Threading.Tasks;
+using Dotnetsafer.CLI.Helpers;
+using Dotnetsafer.CLI.Models.App;
+using Dotnetsafer.CLI.Repos;
+using Spectre.Console.Cli;
 
-namespace ShieldCLI.Commands.App
+namespace Dotnetsafer.CLI.Commands.App
 {
     internal class AppAddCommand : AsyncCommand<AppAddCommandSettings>, ICommandLimiter<ShieldSettings>
 

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.ComponentModel;
-using ShieldCLI.Helpers;
+using Dotnetsafer.CLI.Helpers;
 using Spectre.Console.Cli;
 
-namespace ShieldCLI.Commands.Auth
+namespace Dotnetsafer.CLI.Commands.Auth
 {
     internal class AuthLoginCommand : Command<AuthLoginCommand.AuthLoginCommandSettings>, ICommandLimiter<ShieldSettings>
     {

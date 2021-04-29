@@ -1,18 +1,16 @@
-﻿using MatthiWare.CommandLine.Abstractions.Command;
-using Shield.Client.Models.API.Application;
-using ShieldCLI.Models;
-using ShieldCLI.Repos;
-using Spectre.Console;
-using System;
+﻿using System;
 using System.IO;
-using System.Security.Authentication;
 using System.Threading;
 using System.Threading.Tasks;
-using ShieldCLI.Helpers;
-using ShieldCLI.Models.Protect;
+using Dotnetsafer.CLI.Helpers;
+using Dotnetsafer.CLI.Models;
+using Dotnetsafer.CLI.Models.Protect;
+using Dotnetsafer.CLI.Repos;
+using MatthiWare.CommandLine.Abstractions.Command;
+using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace ShieldCLI.Commands.Protect
+namespace Dotnetsafer.CLI.Commands.Protect
 {
     public class ProtectAuto : Command<GlobalOptions, OldProtectAutoOptions>
     {

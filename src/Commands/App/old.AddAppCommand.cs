@@ -1,10 +1,10 @@
-using ShieldCLI.Models;
-using ShieldCLI.Models.App;
 using System.Threading;
 using System.Threading.Tasks;
+using Dotnetsafer.CLI.Models;
+using Dotnetsafer.CLI.Models.App;
 using MatthiWare.CommandLine.Abstractions.Command;
 
-namespace ShieldCLI.Commands.App
+namespace Dotnetsafer.CLI.Commands.App
 {
     public class AddAppCommand : Command<GlobalOptions, AddAppOptions>
     {

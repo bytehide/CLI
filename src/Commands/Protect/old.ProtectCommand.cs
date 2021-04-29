@@ -1,14 +1,8 @@
-﻿using MatthiWare.CommandLine.Abstractions.Command;
-using ShieldCLI.Models;
-using ShieldCLI.Models.Protect;
-using ShieldCLI.Repos;
-using Spectre.Console;
-using System.Threading;
-using System.IO;
-using System.Threading.Tasks;
-using Shield.Client.Models.API.Project;
+﻿using Dotnetsafer.CLI.Models.Protect;
+using Dotnetsafer.CLI.Repos;
+using MatthiWare.CommandLine.Abstractions.Command;
 
-namespace ShieldCLI.Commands.Protect
+namespace Dotnetsafer.CLI.Commands.Protect
 {
     public class OldProtectCommand : Command<OldProtectOptions>
     {

@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
 
-namespace ShieldCLI.Helpers
+namespace Dotnetsafer.CLI.Helpers
 {
     public static class UsefulHelpers
     {

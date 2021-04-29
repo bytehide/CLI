@@ -1,6 +1,6 @@
 ﻿using MatthiWare.CommandLine.Core.Attributes;
 
-namespace ShieldCLI.Models.App
+namespace Dotnetsafer.CLI.Models.App
 {
     public class AddAppOptions
     {

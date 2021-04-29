@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace ShieldCLI.Models
+namespace Dotnetsafer.CLI.Models
 {
     public class UserConfig
     {

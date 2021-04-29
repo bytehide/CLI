@@ -1,8 +1,8 @@
-﻿using MatthiWare.CommandLine.Abstractions.Command;
-using ShieldCLI.Models;
-using ShieldCLI.Models.Config;
+﻿using Dotnetsafer.CLI.Models;
+using Dotnetsafer.CLI.Models.Config;
+using MatthiWare.CommandLine.Abstractions.Command;
 
-namespace ShieldCLI.Commands.Config
+namespace Dotnetsafer.CLI.Commands.Config
 {
     public class oldGetConfigCommand : Command<GlobalOptions, GetConfigOptions>
     {

@@ -1,7 +1,7 @@
-﻿using ShieldCLI.Commands.Auth;
-using ShieldCLI.Commands.Protect;
+﻿using Dotnetsafer.CLI.Commands.Auth;
+using Dotnetsafer.CLI.Commands.Protect;
 
-namespace ShieldCLI.Models
+namespace Dotnetsafer.CLI.Models
 
 {
     //TODO: REMOVE

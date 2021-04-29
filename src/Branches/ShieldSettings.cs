@@ -1,6 +1,6 @@
 ﻿using Spectre.Console.Cli;
 
-namespace ShieldCLI.Branches
+namespace Dotnetsafer.CLI.Branches
 {
     internal class ShieldSettings : CommandSettings { }
 }

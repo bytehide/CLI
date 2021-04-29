@@ -3,7 +3,7 @@ using System.IO;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace ShieldCLI.Models.Protect
+namespace Dotnetsafer.CLI.Models.Protect
 {
     internal class ProtectCommandSettings : Branches.ShieldSettings
     {

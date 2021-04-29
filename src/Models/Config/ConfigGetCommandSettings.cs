@@ -1,7 +1,7 @@
-﻿using Spectre.Console.Cli;
-using System.ComponentModel;
+﻿using System.ComponentModel;
+using Spectre.Console.Cli;
 
-namespace ShieldCLI.Commands.Config
+namespace Dotnetsafer.CLI.Models.Config
 {
 
 

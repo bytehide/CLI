@@ -1,7 +1,7 @@
-﻿using MatthiWare.CommandLine.Abstractions.Command;
-using ShieldCLI.Models;
+﻿using Dotnetsafer.CLI.Models;
+using MatthiWare.CommandLine.Abstractions.Command;
 
-namespace ShieldCLI.Commands.Project
+namespace Dotnetsafer.CLI.Commands.Project
 {
     public class ListProjectsCommand : Command<GlobalOptions>
     {

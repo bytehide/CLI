@@ -1,6 +1,6 @@
 ﻿using MatthiWare.CommandLine.Core.Attributes;
 
-namespace ShieldCLI.Models.Project
+namespace Dotnetsafer.CLI.Models.Project
 {
     public class GetProjectOptions
     {

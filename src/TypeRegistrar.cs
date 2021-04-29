@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Spectre.Console.Cli;
 
-namespace ShieldCLI
+namespace Dotnetsafer.CLI
 {
     internal class TypeRegistrar : ITypeRegistrar
     {

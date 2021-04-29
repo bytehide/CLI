@@ -9,7 +9,7 @@ using NuGet.Common;
 using NuGet.Configuration;
 using NuGet.Protocol.Core.Types;
 
-namespace ShieldCLI.Helpers
+namespace Dotnetsafer.CLI.Helpers
 {
     public class NugetResolver
     {

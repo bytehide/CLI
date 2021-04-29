@@ -1,12 +1,9 @@
-﻿using ShieldCLI.Commands;
-using ShieldCLI.Helpers;
-using Spectre.Console;
+﻿using System;
+using Dotnetsafer.CLI.Helpers;
+using Dotnetsafer.CLI.Models.Config;
 using Spectre.Console.Cli;
-using System;
-using System.Diagnostics.CodeAnalysis;
-using ShieldCLI.Models.Config;
 
-namespace ShieldCLI
+namespace Dotnetsafer.CLI.Commands.Config
 {
     internal class ConfigMakeCommand : Command<ConfigMakeCommandSettings>, ICommandLimiter<ShieldSettings>
     {

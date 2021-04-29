@@ -1,6 +1,6 @@
 ﻿using MatthiWare.CommandLine.Core.Attributes;
 
-namespace ShieldCLI.Models.Auth
+namespace Dotnetsafer.CLI.Models.Auth
 {
     public class AuthOptions
     {

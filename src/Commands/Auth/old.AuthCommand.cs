@@ -1,9 +1,9 @@
-﻿using MatthiWare.CommandLine.Abstractions.Command;
-using ShieldCLI.Models;
-using ShieldCLI.Models.Auth;
+﻿using Dotnetsafer.CLI.Models;
+using Dotnetsafer.CLI.Models.Auth;
+using MatthiWare.CommandLine.Abstractions.Command;
 using Spectre.Console;
 
-namespace ShieldCLI.Commands.Auth
+namespace Dotnetsafer.CLI.Commands.Auth
 {
     public class OldAuthCommand : Command<GlobalOptions, AuthOptions>
     {

@@ -1,6 +1,6 @@
 ﻿using MatthiWare.CommandLine.Core.Attributes;
 
-namespace ShieldCLI.Models.Config
+namespace Dotnetsafer.CLI.Models.Config
 {
     public class GetConfigOptions
     {

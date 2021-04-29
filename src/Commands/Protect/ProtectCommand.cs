@@ -1,10 +1,8 @@
-﻿using System.IO;
-using System.Threading.Tasks;
-using ShieldCLI.Branches;
-using ShieldCLI.Models.Protect;
+﻿using System.Threading.Tasks;
+using Dotnetsafer.CLI.Models.Protect;
 using Spectre.Console.Cli;
 
-namespace ShieldCLI.Commands.Protect
+namespace Dotnetsafer.CLI.Commands.Protect
 {
     internal class ProtectCommand : AsyncCommand<ProtectCommandSettings>, ICommandLimiter<ShieldSettings>
     {

@@ -1,9 +1,9 @@
 ﻿using System;
-using ShieldCLI.Helpers;
+using Dotnetsafer.CLI.Helpers;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace ShieldCLI.Commands.Auth
+namespace Dotnetsafer.CLI.Commands.Auth
 {
     internal class AuthCheckCommand : Command, ICommandLimiter<ShieldSettings>
     {

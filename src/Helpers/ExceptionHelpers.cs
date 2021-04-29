@@ -2,7 +2,7 @@
 using System.Security.Authentication;
 using Spectre.Console;
 
-namespace ShieldCLI.Helpers
+namespace Dotnetsafer.CLI.Helpers
 {
     public static class ExceptionHelpers
     {

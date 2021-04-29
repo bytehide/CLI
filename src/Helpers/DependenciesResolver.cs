@@ -8,7 +8,7 @@ using System.Xml;
 using dnlib.DotNet;
 using SecureLocalStorage;
 
-namespace ShieldCLI.Helpers
+namespace Dotnetsafer.CLI.Helpers
 {
     internal class DependenciesCache<T> : List<T>
     {

@@ -1,14 +1,9 @@
-﻿using Spectre.Console;
-using Spectre.Console.Cli;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Spectre.Console;
+using Spectre.Console.Cli;
 
-namespace ShieldCLI.Models.App
+namespace Dotnetsafer.CLI.Models.App
 {
     internal class AppAddCommandSettings : Branches.ShieldSettings
     {

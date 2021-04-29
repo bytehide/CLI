@@ -1,11 +1,11 @@
-﻿using Shield.Client.Models.API.Application;
+﻿using System;
+using Dotnetsafer.CLI.Helpers;
+using Dotnetsafer.CLI.Models.Config;
+using Shield.Client.Models.API.Application;
 using Shield.Client.Models.API.Project;
-using ShieldCLI.Helpers;
-using Spectre.Console;
 using Spectre.Console.Cli;
-using System;
 
-namespace ShieldCLI.Commands.Config
+namespace Dotnetsafer.CLI.Commands.Config
 {
     internal class ConfigGetCommand : Command<ConfigGetCommandSettings>, ICommandLimiter<ShieldSettings>
     {

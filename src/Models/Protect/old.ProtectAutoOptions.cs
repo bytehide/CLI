@@ -1,4 +1,4 @@
-﻿namespace ShieldCLI.Models.Protect
+﻿namespace Dotnetsafer.CLI.Models.Protect
 {
     public class OldProtectAutoOptions
     {
