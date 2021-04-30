@@ -7,7 +7,7 @@
 > Integrate tools like Dotnetsafer Shield with a few commands, extend the security of your application and reduce time when developing safely.
 
 ## Official documentation 📚
-Read the documentation to learn more: [https://dotnetsafer.com/docs/cli/1.0/](https://dotnetsafer.com/docs/cli/1.0/)
+Read the documentation to learn more: [https://dotnetsafer.com/docs/product/cli/1.0/](https://dotnetsafer.com/docs/product/cli/1.0/)
 
 ### 🏠 [Homepage](https://dotnetsafer.com)
 
