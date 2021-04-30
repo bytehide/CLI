@@ -325,6 +325,8 @@ namespace Dotnetsafer.CLI.Commands
 
             AnsiConsole.MarkupLine("[lime]The dependencies have been resolved.[/]");
 
+            DependenciesResolver.FixInvalidResolutions(requiredDep);
+
             return requiredDep;
         }
 
