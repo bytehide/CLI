@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 using dnlib.DotNet;
+using Microsoft.Extensions.Azure;
 using SecureLocalStorage;
 
 namespace Dotnetsafer.CLI.Helpers
@@ -1393,6 +1394,7 @@ namespace Dotnetsafer.CLI.Helpers
         }
     }
 
+
     public class DependenciesResolver
     {
         internal DependenciesCache<(string fullname, string path)> LocalCache =
@@ -1506,6 +1508,19 @@ namespace Dotnetsafer.CLI.Helpers
             }
 
             return unresolved;
+        }
+
+        public void FixInvalidResolutions(List<(string, string)> currentDependencies)
+        {
+            var defaultNetCore = new[] { "netstandard,", "System.Runtime," };
+            foreach (var dependency in currentDependencies.ToList().Where(dep=>dep.Item2.ToLowerInvariant().Contains("gac")))
+            {
+                foreach (var version in defaultNetCore)
+                {
+                    if (dependency.Item1.Contains(version))
+                        currentDependencies.Remove(dependency);
+                }
+            }
         }
     }
 }
