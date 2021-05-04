@@ -692,7 +692,7 @@ namespace Dotnetsafer.CLI.Commands
                                 $"[lime] > The application has been protected successfully with {application.Preset} protection.[/]");
                             AnsiConsole.MarkupLine("");
                             var downloaded =
-                               await ClientManager.Client.Application.DownloadApplicationAsArrayAsync(application);
+                               ClientManager.Client.Application.DownloadApplicationAsArray(application);
 
 
                             downloaded.SaveOn(path, true);
