@@ -11,7 +11,7 @@
     <Copyright>Dotnetsafer 2021</Copyright>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageProjectUrl>https://dotnetsafer.com</PackageProjectUrl>
-    <PackageIcon>dotnetsafer.png</PackageIcon>
+    <PackageIcon>dotnetsafer_icon.png</PackageIcon>
     <RepositoryUrl>https://github.com/dotnetsafer/CLI</RepositoryUrl>
     <PackageTags>Security, Code Protection, Obfuscation, Dotnetsafer, Code Security, Compilation, Web Security, Application Security, Packages Security, Protection, Packer</PackageTags>
     <PackageReleaseNotes>This version of the Dotnetsafer Console includes beta products, the next update will include tested versions.</PackageReleaseNotes>
@@ -24,7 +24,7 @@
     <Compile Remove="System\**" />
     <EmbeddedResource Remove="System\**" />
     <None Remove="System\**" />
-    <None Include="..\..\..\..\..\Downloads\dotnetsafer.png">
+    <None Include=".\dotnetsafer_icon.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
@@ -54,9 +54,9 @@
     <PackageLicenseExpression></PackageLicenseExpression>
     <PackageLicenseFile>license.md</PackageLicenseFile>
     <DelaySign>false</DelaySign>
-    <AssemblyVersion>1.0.0.5</AssemblyVersion>
-    <FileVersion>1.0.0.5</FileVersion>
-    <Version>1.0.0.5</Version>
+    <AssemblyVersion>1.0.0.6</AssemblyVersion>
+    <FileVersion>1.0.0.6</FileVersion>
+    <Version>1.0.0.6</Version>
   </PropertyGroup>
 
   <Target Name="CopyProjectReferencesToPackage" DependsOnTargets="BuildOnlySettings;ResolveReferences">
