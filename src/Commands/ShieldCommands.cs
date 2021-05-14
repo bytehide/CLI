@@ -551,8 +551,7 @@ namespace Dotnetsafer.CLI.Commands
                         path, dependencies.Select(dep => dep.Item2).ToList());
                 });
 
-            Console.WriteLine("");
-            AnsiConsole.MarkupLine("[lime]Application Uploaded Succesfully[/]");
+
             return result;
 
         }

@@ -35,7 +35,16 @@ namespace Dotnetsafer.CLI.Commands.Protect
 
                 var appUpload = await ShieldCommands.UploadApplicationAsync(path, project.Key);
 
-               
+                if (appUpload.ApplicationBlob is null)
+                {
+                    AnsiConsole.MarkupLine($"[darkorange]{appUpload.Message}[/]");
+                    return 0;
+                }
+
+
+
+                AnsiConsole.MarkupLine($"[lime]App Upload Succesfully[/]");
+
 
                 ShieldCommands.PrintApplication(Path.GetFileName(path), appUpload.ApplicationBlob, project.Key);
 
