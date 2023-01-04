@@ -1,10 +1,10 @@
 using System.Threading;
 using System.Threading.Tasks;
-using Dotnetsafer.CLI.Models;
-using Dotnetsafer.CLI.Models.App;
+using Bytehide.CLI.Models;
+using Bytehide.CLI.Models.App;
 using MatthiWare.CommandLine.Abstractions.Command;
 
-namespace Dotnetsafer.CLI.Commands.App
+namespace Bytehide.CLI.Commands.App
 {
     public class AddAppCommand : Command<GlobalOptions, AddAppOptions>
     {

@@ -1,9 +1,9 @@
-﻿using Dotnetsafer.CLI.Models;
-using Dotnetsafer.CLI.Models.Auth;
+﻿using Bytehide.CLI.Models;
+using Bytehide.CLI.Models.Auth;
 using MatthiWare.CommandLine.Abstractions.Command;
 using Spectre.Console;
 
-namespace Dotnetsafer.CLI.Commands.Auth
+namespace Bytehide.CLI.Commands.Auth
 {
     public class OldAuthCommand : Command<GlobalOptions, AuthOptions>
     {

@@ -9,7 +9,7 @@ using NuGet.Common;
 using NuGet.Configuration;
 using NuGet.Protocol.Core.Types;
 
-namespace Dotnetsafer.CLI.Helpers
+namespace Bytehide.CLI.Helpers
 {
     public class NugetResolver
     {

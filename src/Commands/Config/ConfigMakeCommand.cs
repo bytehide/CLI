@@ -1,9 +1,9 @@
 ﻿using System;
-using Dotnetsafer.CLI.Helpers;
-using Dotnetsafer.CLI.Models.Config;
+using Bytehide.CLI.Helpers;
+using Bytehide.CLI.Models.Config;
 using Spectre.Console.Cli;
 
-namespace Dotnetsafer.CLI.Commands.Config
+namespace Bytehide.CLI.Commands.Config
 {
     internal class ConfigMakeCommand : Command<ConfigMakeCommandSettings>, ICommandLimiter<ShieldSettings>
     {

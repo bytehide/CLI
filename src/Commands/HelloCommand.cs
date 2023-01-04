@@ -3,7 +3,7 @@ using Spectre.Console;
 using Spectre.Console.Cli;
 
 
-namespace Dotnetsafer.CLI.Commands
+namespace Bytehide.CLI.Commands
 {
     internal class HelloCommand : Command, ICommandLimiter<ShieldSettings>
     {
@@ -17,7 +17,7 @@ namespace Dotnetsafer.CLI.Commands
         {
             AnsiConsole.MarkupLine(
                 @"
-        [blue]Welcome to the dotnetsafer console, keep your .NET software safe with a few commands!
+        [blue]Welcome to the ByteHide console, keep your .NET software safe with a few commands!
     __________________
                       \
                        \
@@ -34,7 +34,7 @@ namespace Dotnetsafer.CLI.Commands
             table.AddColumn("Website");
             table.AddColumn("Documentation");
             table.AddColumn("Version");
-            table.AddRow("[link=https://dotnetsafer.com]https://dotnetsafer.com[/]", "[link=https://dotnetsafer.com/docs/cli]https://dotnetsafer.com/docs/cli[/]", CurrentVersion);
+            table.AddRow("[link=https://bytehide.com]https://bytehide.com[/]", "[link=https://docs.bytehide.com/platforms/dotnet/products/shield/cli-quick-start]https://docs.bytehide.com/platforms/dotnet/products/shield/cli-quick-start[/]", CurrentVersion);
             AnsiConsole.Render(table);
 
             AnsiConsole.MarkupLine(@"
@@ -67,7 +67,7 @@ namespace Dotnetsafer.CLI.Commands
      @@@@@@@@@@@@@@@@@@@@@@@@@@@########################  [/]
             
 [blue]Use:[/]
-[lime] > dotnetsafer shield --help[/] to discover the options.
+[lime] > bytehide shield --help[/] to discover the options.
 ");
             return 0;
         }

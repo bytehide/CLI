@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Dotnetsafer.CLI.Helpers
+namespace Bytehide.CLI.Helpers
 {
     public static class AsyncHelpers
     {

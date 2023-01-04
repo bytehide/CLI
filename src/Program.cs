@@ -1,25 +1,25 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Dotnetsafer.CLI.Commands;
-using Dotnetsafer.CLI.Commands.App;
-using Dotnetsafer.CLI.Commands.Auth;
-using Dotnetsafer.CLI.Commands.Config;
-using Dotnetsafer.CLI.Commands.Project;
-using Dotnetsafer.CLI.Commands.Protect;
-using Dotnetsafer.CLI.Helpers;
-using Dotnetsafer.CLI.Repos;
+using Bytehide.CLI.Commands;
+using Bytehide.CLI.Commands.App;
+using Bytehide.CLI.Commands.Auth;
+using Bytehide.CLI.Commands.Config;
+using Bytehide.CLI.Commands.Project;
+using Bytehide.CLI.Commands.Protect;
+using Bytehide.CLI.Helpers;
+using Bytehide.CLI.Repos;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Spectre.Console.Cli;
 
-namespace Dotnetsafer.CLI
+namespace Bytehide.CLI
 {
     public class Program
     {
         private static async Task Main(string[] args)
         {
 
-            Console.Title = "Dotnetsafer CLI";
+            Console.Title = "ByteHide CLI";
 
             var services = new ServiceCollection();
 
@@ -35,24 +35,24 @@ namespace Dotnetsafer.CLI
 
             var registrar = new TypeRegistrar(services);
 
-            var dotnetsafer = new CommandApp(registrar);
+            var bytehide = new CommandApp(registrar);
 
 
-            dotnetsafer.Configure(config =>
+            bytehide.Configure(config =>
             {
-                //Dotnetsafer commands:
+                //Bytehide commands:
                 config.AddCommand<HelloCommand>("hello").IsHidden();
 
-                config.AddCommand<AuthLoginCommand>("login").WithDescription("Log into your dotnetsafer account.");
-                config.AddCommand<AuthRegisterCommand>("register").WithDescription("Sign up for dotnetsafer.");
-                config.AddCommand<AuthClearCommand>("clear").WithDescription("Delete your stored dotnetsafer credentials.");
+                config.AddCommand<AuthLoginCommand>("login").WithDescription("Log into your Bytehide account.");
+                config.AddCommand<AuthRegisterCommand>("register").WithDescription("Sign up for Bytehide.");
+                config.AddCommand<AuthClearCommand>("clear").WithDescription("Delete your stored Bytehide credentials.");
                 config.AddCommand<AuthCheckCommand>("check").WithDescription("Check if your stored credentials are valid.");
 
-                //Dotnetsafer Shield Commands:
+                //Bytehide Shield Commands:
                 config.AddBranch<ShieldSettings>("shield", shield =>
                 {
 
-                    shield.SetDescription("All the functions that dotnetsafer shield offers.");
+                    shield.SetDescription("All the functions that Bytehide shield offers.");
                     shield.AddCommand<ProtectCommand>("protect").WithDescription("Protect your application with a single execution, ideal for configuring your scripts and automating msbuilds.");
                     shield.AddCommand<ProtectAutoCommand>("protect:auto").WithDescription("Protect your application with an interactive flow that will ask you for parameters in real time.");
                     shield.AddCommand<ProjectGetCommand>("project:find").WithDescription("Search for a project in Shield");
@@ -64,7 +64,7 @@ namespace Dotnetsafer.CLI
                 });
             });
 
-            await dotnetsafer.RunAsync(args);
+            await bytehide.RunAsync(args);
         }
     }
 }

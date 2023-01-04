@@ -2,15 +2,15 @@
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using Dotnetsafer.CLI.Helpers;
-using Dotnetsafer.CLI.Models;
-using Dotnetsafer.CLI.Models.Protect;
-using Dotnetsafer.CLI.Repos;
+using Bytehide.CLI.Helpers;
+using Bytehide.CLI.Models;
+using Bytehide.CLI.Models.Protect;
+using Bytehide.CLI.Repos;
 using MatthiWare.CommandLine.Abstractions.Command;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace Dotnetsafer.CLI.Commands.Protect
+namespace Bytehide.CLI.Commands.Protect
 {
     public class ProtectAuto : Command<GlobalOptions, OldProtectAutoOptions>
     {

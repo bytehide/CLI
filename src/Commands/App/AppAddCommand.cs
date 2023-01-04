@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Dotnetsafer.CLI.Helpers;
-using Dotnetsafer.CLI.Models.App;
-using Dotnetsafer.CLI.Repos;
+using Bytehide.CLI.Helpers;
+using Bytehide.CLI.Models.App;
+using Bytehide.CLI.Repos;
 using Spectre.Console.Cli;
 
-namespace Dotnetsafer.CLI.Commands.App
+namespace Bytehide.CLI.Commands.App
 {
     internal class AppAddCommand : AsyncCommand<AppAddCommandSettings>, ICommandLimiter<ShieldSettings>
 

@@ -1,8 +1,8 @@
-﻿using Dotnetsafer.CLI.Models;
-using Dotnetsafer.CLI.Models.Config;
+﻿using Bytehide.CLI.Models;
+using Bytehide.CLI.Models.Config;
 using MatthiWare.CommandLine.Abstractions.Command;
 
-namespace Dotnetsafer.CLI.Commands.Config
+namespace Bytehide.CLI.Commands.Config
 {
     public class oldGetConfigCommand : Command<GlobalOptions, GetConfigOptions>
     {

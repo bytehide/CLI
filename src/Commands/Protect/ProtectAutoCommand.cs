@@ -1,12 +1,12 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-using Dotnetsafer.CLI.Helpers;
-using Dotnetsafer.CLI.Repos;
+using Bytehide.CLI.Helpers;
+using Bytehide.CLI.Repos;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace Dotnetsafer.CLI.Commands.Protect
+namespace Bytehide.CLI.Commands.Protect
 {
     internal class ProtectAutoCommand : AsyncCommand, ICommandLimiter<ShieldSettings>
     {

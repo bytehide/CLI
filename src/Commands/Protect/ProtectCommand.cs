@@ -1,8 +1,8 @@
 ﻿using System.Threading.Tasks;
-using Dotnetsafer.CLI.Models.Protect;
+using Bytehide.CLI.Models.Protect;
 using Spectre.Console.Cli;
 
-namespace Dotnetsafer.CLI.Commands.Protect
+namespace Bytehide.CLI.Commands.Protect
 {
     internal class ProtectCommand : AsyncCommand<ProtectCommandSettings>, ICommandLimiter<ShieldSettings>
     {

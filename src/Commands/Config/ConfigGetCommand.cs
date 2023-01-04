@@ -1,11 +1,11 @@
 ﻿using System;
-using Dotnetsafer.CLI.Helpers;
-using Dotnetsafer.CLI.Models.Config;
+using Bytehide.CLI.Helpers;
+using Bytehide.CLI.Models.Config;
 using Shield.Client.Models.API.Application;
 using Shield.Client.Models.API.Project;
 using Spectre.Console.Cli;
 
-namespace Dotnetsafer.CLI.Commands.Config
+namespace Bytehide.CLI.Commands.Config
 {
     internal class ConfigGetCommand : Command<ConfigGetCommandSettings>, ICommandLimiter<ShieldSettings>
     {

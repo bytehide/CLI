@@ -5,8 +5,8 @@ using System.Linq;
 using System.Security.Authentication;
 using System.Threading;
 using System.Threading.Tasks;
-using Dotnetsafer.CLI.Helpers;
-using Dotnetsafer.CLI.Repos;
+using Bytehide.CLI.Helpers;
+using Bytehide.CLI.Repos;
 using Microsoft.Extensions.Logging;
 using Shield.Client.Extensions;
 using Shield.Client.Models;
@@ -14,7 +14,7 @@ using Shield.Client.Models.API.Application;
 using Shield.Client.Models.API.Project;
 using Spectre.Console;
 
-namespace Dotnetsafer.CLI.Commands
+namespace Bytehide.CLI.Commands
 {
     public class ShieldCommands
 
@@ -31,18 +31,18 @@ namespace Dotnetsafer.CLI.Commands
 
 
         /// <summary>
-        ///     Open DotnetSafer web to register a new user
+        ///     Open Bytehide web to register a new user
         /// </summary>
         public void AuthRegister()
 
-            => UsefulHelpers.OpenBrowser("https://my.dotnetsafer.com/register");
+            => UsefulHelpers.OpenBrowser("https://cloud.bytehide.com/register");
 
 
         /// <summary>
         ///     Log in the current user whit an apiKey.
         /// </summary>
         /// <param name="apiKey">Dotnetsafer Personal Api Token (required to use the CLI)</param>
-        /// <see cref="https://dotnetsafer.com/docs/cli/1.0/authentication"/>
+        /// <see cref="https://docs.bytehide.com/platforms/dotnet/products/shield/cli-authentication"/>
         public bool AuthLogin(string apiKey)
         {
             apiKey ??= AnsiConsole.Ask<string>("[blue]Insert your API Key[/]");
@@ -59,8 +59,8 @@ namespace Dotnetsafer.CLI.Commands
             //TODO: Sr-l show help to user
             AnsiConsole.MarkupLine("[red]NOT logged in. Please review the API Key.[/]");
             AnsiConsole.MarkupLine(AnsiConsole.Profile.Capabilities.Links
-                ? "[green] Read about CLI authentication at:[/] [link=https://dotnetsafer.com/docs/cli/1.0/authentication]https://dotnetsafer.com/docs/cli/1.0/authentication[/]"
-                : "[green] Read about CLI authentication at:[/] https://dotnetsafer.com/docs/cli/1.0/authentication");
+                ? "[green] Read about CLI authentication at:[/] [link=https://docs.bytehide.com/platforms/dotnet/products/shield/cli-authentication]https://docs.bytehide.com/platforms/dotnet/products/shield/cli-authentication[/]"
+                : "[green] Read about CLI authentication at:[/] https://docs.bytehide.com/platforms/dotnet/products/shield/cli-authentication");
             AnsiConsole.WriteLine("");
             return false;
         }
@@ -70,7 +70,7 @@ namespace Dotnetsafer.CLI.Commands
         /// </summary>
         public bool AuthHasCredentials(bool throwException = true)
         {
-            const string exMessage = "User is not logged into dotnetsafer.";
+            const string exMessage = "User is not logged into Bytehide.";
 
             if (ClientManager.HasValidClient()) return true;
 

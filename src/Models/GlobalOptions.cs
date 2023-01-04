@@ -1,7 +1,7 @@
-﻿using Dotnetsafer.CLI.Commands.Auth;
-using Dotnetsafer.CLI.Commands.Protect;
+﻿using Bytehide.CLI.Commands.Auth;
+using Bytehide.CLI.Commands.Protect;
 
-namespace Dotnetsafer.CLI.Models
+namespace Bytehide.CLI.Models
 
 {
     //TODO: REMOVE

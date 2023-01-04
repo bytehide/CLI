@@ -1,9 +1,9 @@
-﻿using Dotnetsafer.CLI.Models;
-using Dotnetsafer.CLI.Models.Config;
-using Dotnetsafer.CLI.Repos;
+﻿using Bytehide.CLI.Models;
+using Bytehide.CLI.Models.Config;
+using Bytehide.CLI.Repos;
 using MatthiWare.CommandLine.Abstractions.Command;
 
-namespace Dotnetsafer.CLI.Commands.Config
+namespace Bytehide.CLI.Commands.Config
 {
     public class MakeConfigCommand : Command<GlobalOptions, MakeConfigOptions>
     {

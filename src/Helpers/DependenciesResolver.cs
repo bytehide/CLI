@@ -9,7 +9,7 @@ using dnlib.DotNet;
 using Microsoft.Extensions.Azure;
 using SecureLocalStorage;
 
-namespace Dotnetsafer.CLI.Helpers
+namespace Bytehide.CLI.Helpers
 {
     internal class DependenciesCache<T> : List<T>
     {
@@ -1410,7 +1410,7 @@ namespace Dotnetsafer.CLI.Helpers
 
             var storage =
                 new SecureLocalStorage.SecureLocalStorage(new CustomLocalStorageConfig(null,
-                    "dotnetsafer_shield_cli_cache", "public"));
+                    "bytehide_shield_cli_cache", "public"));
 
             if (storage.Exists(cacheName))
                 LocalCache.AddRange(storage.Get<DependenciesCache<(string, string)>>(cacheName));

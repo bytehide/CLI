@@ -1,7 +1,7 @@
-﻿using Dotnetsafer.CLI.Models;
+﻿using Bytehide.CLI.Models;
 using MatthiWare.CommandLine.Abstractions.Command;
 
-namespace Dotnetsafer.CLI.Commands.Project
+namespace Bytehide.CLI.Commands.Project
 {
     public class ListProjectsCommand : Command<GlobalOptions>
     {

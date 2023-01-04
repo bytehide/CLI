@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net7.0</TargetFramework>
     <AssemblyName>Dotnetsafer</AssemblyName>
     <ApplicationIcon>favicon.ico</ApplicationIcon>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -11,7 +11,6 @@
     <Copyright>Dotnetsafer 2021</Copyright>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageProjectUrl>https://dotnetsafer.com</PackageProjectUrl>
-    <PackageIcon>dotnetsafer.png</PackageIcon>
     <RepositoryUrl>https://github.com/dotnetsafer/CLI</RepositoryUrl>
     <PackageTags>Security, Code Protection, Obfuscation, Dotnetsafer, Code Security, Compilation, Web Security, Application Security, Packages Security, Protection, Packer</PackageTags>
     <PackageReleaseNotes>This version of the Dotnetsafer Console includes beta products, the next update will include tested versions.</PackageReleaseNotes>
@@ -24,10 +23,7 @@
     <Compile Remove="System\**" />
     <EmbeddedResource Remove="System\**" />
     <None Remove="System\**" />
-    <None Include="..\..\..\..\..\Downloads\dotnetsafer.png">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
+    
     <None Include="..\license.md">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
@@ -35,10 +31,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="dnlib" Version="3.3.2" />
-    <PackageReference Include="MatthiWare.CommandLineParser" Version="0.6.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="5.0.0" />
-    <PackageReference Include="NuGet.Protocol" Version="5.9.1" />
+    <PackageReference Include="dnlib" Version="3.6.0" />
+    <PackageReference Include="MatthiWare.CommandLineParser" Version="0.7.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="7.0.0" />
+    <PackageReference Include="NuGet.Protocol" Version="6.4.0" />
     <PackageReference Include="SecureLocalStorage" Version="1.0.0" />
     <PackageReference Include="Spectre.Console" Version="0.38.0" />
   </ItemGroup>
@@ -59,6 +55,12 @@
     <Version>1.0.0.5</Version>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\net7.0</OutputPath>
+    <WarningLevel>4</WarningLevel>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AssemblyName>Bytehide</AssemblyName>
+  </PropertyGroup>
   <Target Name="CopyProjectReferencesToPackage" DependsOnTargets="BuildOnlySettings;ResolveReferences">
     <ItemGroup>
       <!-- Filter out unnecessary files -->
@@ -77,12 +79,6 @@
 
   <ItemGroup>
     <Folder Include="Properties\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="AppSettings.json" Pack="true">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </EmbeddedResource>
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties properties_4launchsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>

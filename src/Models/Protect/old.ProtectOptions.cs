@@ -1,6 +1,6 @@
 ﻿using MatthiWare.CommandLine.Core.Attributes;
 
-namespace Dotnetsafer.CLI.Models.Protect
+namespace Bytehide.CLI.Models.Protect
 {
     public class OldProtectOptions : ShieldSettings
     {

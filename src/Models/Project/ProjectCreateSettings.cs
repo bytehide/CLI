@@ -2,11 +2,11 @@
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace Dotnetsafer.CLI.Models.Project
+namespace Bytehide.CLI.Models.Project
 {
     internal class ProjectCreateCommandSettings : Branches.ShieldSettings
     {
-        [CommandArgument(0, "<PROJECT>"), Description("Name of the dotnetsafer shield project that will be create.")]
+        [CommandArgument(0, "<PROJECT>"), Description("Name of the Bytehide shield project that will be create.")]
         public string Project { get; set; }
 
         public override ValidationResult Validate()

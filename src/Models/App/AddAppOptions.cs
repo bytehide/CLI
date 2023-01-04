@@ -1,6 +1,6 @@
 ﻿using MatthiWare.CommandLine.Core.Attributes;
 
-namespace Dotnetsafer.CLI.Models.App
+namespace Bytehide.CLI.Models.App
 {
     public class AddAppOptions
     {

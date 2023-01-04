@@ -1,4 +1,4 @@
-﻿namespace Dotnetsafer.CLI.Models.Protect
+﻿namespace Bytehide.CLI.Models.Protect
 {
     public class OldProtectAutoOptions
     {

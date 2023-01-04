@@ -1,6 +1,6 @@
 ﻿using MatthiWare.CommandLine.Core.Attributes;
 
-namespace Dotnetsafer.CLI.Models.Auth
+namespace Bytehide.CLI.Models.Auth
 {
     public class AuthOptions
     {

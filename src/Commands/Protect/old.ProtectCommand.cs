@@ -1,8 +1,8 @@
-﻿using Dotnetsafer.CLI.Models.Protect;
-using Dotnetsafer.CLI.Repos;
+﻿using Bytehide.CLI.Models.Protect;
+using Bytehide.CLI.Repos;
 using MatthiWare.CommandLine.Abstractions.Command;
 
-namespace Dotnetsafer.CLI.Commands.Protect
+namespace Bytehide.CLI.Commands.Protect
 {
     public class OldProtectCommand : Command<OldProtectOptions>
     {

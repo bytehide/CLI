@@ -1,9 +1,9 @@
 ﻿using System;
 using System.ComponentModel;
-using Dotnetsafer.CLI.Helpers;
+using Bytehide.CLI.Helpers;
 using Spectre.Console.Cli;
 
-namespace Dotnetsafer.CLI.Commands.Auth
+namespace Bytehide.CLI.Commands.Auth
 {
     internal class AuthLoginCommand : Command<AuthLoginCommand.AuthLoginCommandSettings>, ICommandLimiter<ShieldSettings>
     {
@@ -11,7 +11,7 @@ namespace Dotnetsafer.CLI.Commands.Auth
 
         internal class AuthLoginCommandSettings : Branches.ShieldSettings
         {
-            [CommandArgument(0, "<API TOKEN>"), Description("Your Dotnetsafer personal api token.")]
+            [CommandArgument(0, "<API TOKEN>"), Description("Your Bytehide personal api token.")]
             public string ApiToken { get; set; }
         }
 

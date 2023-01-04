@@ -1,6 +1,6 @@
 ﻿using MatthiWare.CommandLine.Core.Attributes;
 
-namespace Dotnetsafer.CLI.Models.Config
+namespace Bytehide.CLI.Models.Config
 {
     public class GetConfigOptions
     {

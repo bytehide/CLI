@@ -1,10 +1,10 @@
 ﻿using System;
-using Dotnetsafer.CLI.Models;
+using Bytehide.CLI.Models;
 using Microsoft.Extensions.Logging;
 using SecureLocalStorage;
 using Shield.Client;
 
-namespace Dotnetsafer.CLI.Repos
+namespace Bytehide.CLI.Repos
 {
     public class ClientManager
     {
@@ -19,12 +19,12 @@ namespace Dotnetsafer.CLI.Repos
         private readonly string _userConfig = "user_config";
 
         /// <summary>
-        /// Used for manage local storage user properties such a dotnetsafer api key and account setting.
+        /// Used for manage local storage user properties such a Bytehide api key and account setting.
         /// </summary>
         public ClientManager(ILogger<Program> iLogger)
         {
             _iLogger = iLogger;
-            Storage = new SecureLocalStorage.SecureLocalStorage(new CustomLocalStorageConfig(null, "dotnetsafer_shield_cli")
+            Storage = new SecureLocalStorage.SecureLocalStorage(new CustomLocalStorageConfig(null, "bytehide_shield_cli")
                 .WithDefaultKeyBuilder());
 
             UserConfig = Storage.Exists(_userConfig) ? Storage.Get<UserConfig>(_userConfig) ?? new UserConfig() : new UserConfig();
@@ -42,7 +42,7 @@ namespace Dotnetsafer.CLI.Repos
         }
 
         /// <summary>
-        /// Gets if current computer user has any dotnetsafer key stored.
+        /// Gets if current computer user has any Bytehide key stored.
         /// </summary>
         /// <returns></returns>
         public bool HasKey() =>
@@ -77,7 +77,7 @@ namespace Dotnetsafer.CLI.Repos
         public string Key => UserConfig.ApiKey;
 
         /// <summary>
-        /// Update current local user dotnetsafer key and instance client.
+        /// Update current local user Bytehide key and instance client.
         /// </summary>
         /// <param name="key"></param>
         public void UpdateKey(string key)

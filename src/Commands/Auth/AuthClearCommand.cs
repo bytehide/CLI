@@ -1,8 +1,8 @@
 ﻿using System;
-using Dotnetsafer.CLI.Helpers;
+using Bytehide.CLI.Helpers;
 using Spectre.Console.Cli;
 
-namespace Dotnetsafer.CLI.Commands.Auth
+namespace Bytehide.CLI.Commands.Auth
 {
     internal class AuthClearCommand : Command, ICommandLimiter<ShieldSettings>
     {

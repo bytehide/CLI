@@ -1,6 +1,6 @@
 ﻿using MatthiWare.CommandLine.Core.Attributes;
 
-namespace Dotnetsafer.CLI.Models.Project
+namespace Bytehide.CLI.Models.Project
 {
     public class GetProjectOptions
     {

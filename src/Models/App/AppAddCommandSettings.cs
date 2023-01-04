@@ -3,11 +3,11 @@ using System.IO;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace Dotnetsafer.CLI.Models.App
+namespace Bytehide.CLI.Models.App
 {
     internal class AppAddCommandSettings : Branches.ShieldSettings
     {
-        [CommandArgument(0, "<PROJECT>"), Description("Name of the dotnetsafer shield project or Key if flag --key is true.")]
+        [CommandArgument(0, "<PROJECT>"), Description("Name of the Bytehide shield project or Key if flag --key is true.")]
         public string Project { get; set; }
 
         [CommandArgument(1, "<APPLICATION PATH>"), Description("Full path of the application that will be uploaded.")]

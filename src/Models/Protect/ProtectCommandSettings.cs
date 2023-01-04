@@ -3,11 +3,11 @@ using System.IO;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
-namespace Dotnetsafer.CLI.Models.Protect
+namespace Bytehide.CLI.Models.Protect
 {
     internal class ProtectCommandSettings : Branches.ShieldSettings
     {
-        [CommandArgument(0, "<PROJECT>"), Description("Name of the dotnetsafer shield project or Key if flag --key is true.")]
+        [CommandArgument(0, "<PROJECT>"), Description("Name of the Bytehide shield project or Key if flag --key is true.")]
         public string Project { get; set; }
 
         [CommandArgument(1, "<APPLICATION PATH>"), Description("Path of the application.")]

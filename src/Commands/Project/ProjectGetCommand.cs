@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Dotnetsafer.CLI.Helpers;
-using Dotnetsafer.CLI.Models.Project;
+using Bytehide.CLI.Helpers;
+using Bytehide.CLI.Models.Project;
 using Spectre.Console.Cli;
 
-namespace Dotnetsafer.CLI.Commands.Project
+namespace Bytehide.CLI.Commands.Project
 {
     internal class ProjectGetCommand : AsyncCommand<ProjectGetCommandSettings>, ICommandLimiter<ShieldSettings>
     {

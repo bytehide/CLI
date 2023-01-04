@@ -1,10 +1,10 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Dotnetsafer.CLI.Models;
-using Dotnetsafer.CLI.Models.Project;
+using Bytehide.CLI.Models;
+using Bytehide.CLI.Models.Project;
 using MatthiWare.CommandLine.Abstractions.Command;
 
-namespace Dotnetsafer.CLI.Commands.Project
+namespace Bytehide.CLI.Commands.Project
 {
     public class GetProjectCommand : Command<GlobalOptions, GetProjectOptions>
     {

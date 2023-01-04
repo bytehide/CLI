@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Dotnetsafer.CLI.Models
+namespace Bytehide.CLI.Models
 {
     public class UserConfig
     {

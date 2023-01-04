@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
 
-namespace Dotnetsafer.CLI.Helpers
+namespace Bytehide.CLI.Helpers
 {
     public static class UsefulHelpers
     {
