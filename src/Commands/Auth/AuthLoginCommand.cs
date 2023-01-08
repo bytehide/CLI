@@ -11,7 +11,7 @@ namespace Bytehide.CLI.Commands.Auth
 
         internal class AuthLoginCommandSettings : Branches.ShieldSettings
         {
-            [CommandArgument(0, "<API TOKEN>"), Description("Your Bytehide personal api token.")]
+            [CommandOption("--token|-t"), Description("Your ByteHide API token if want to login with token, if not skip this option to connect an app."), DefaultValue(null)]
             public string ApiToken { get; set; }
         }
 

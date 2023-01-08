@@ -1,18 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Security.Authentication;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Bytehide.CLI.Helpers;
 using Bytehide.CLI.Repos;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
+using Shield.Client;
 using Shield.Client.Extensions;
 using Shield.Client.Models;
 using Shield.Client.Models.API.Application;
 using Shield.Client.Models.API.Project;
 using Spectre.Console;
+using static Bytehide.CLI.Helpers.AuthHelper;
 
 namespace Bytehide.CLI.Commands
 {
@@ -45,6 +52,136 @@ namespace Bytehide.CLI.Commands
         /// <see cref="https://docs.bytehide.com/platforms/dotnet/products/shield/cli-authentication"/>
         public bool AuthLogin(string apiKey)
         {
+            // Generates state and PKCE values.
+            string state = randomDataBase64url(32);
+            string code_verifier = randomDataBase64url(32);
+            string code_challenge = base64urlencodeNoPadding(sha256(code_verifier));
+            const string code_challenge_method = "SHA256";
+
+            // Creates a redirect URI using an available port on the loopback address.
+            string redirectURI = string.Format("http://{0}:{1}/", IPAddress.Loopback, GetRandomUnusedPort());
+
+            // Creates an HttpListener to listen for requests on that redirect URI.
+            var http = new HttpListener();
+            http.Prefixes.Add(redirectURI);
+
+            http.Start();
+
+            // Creates the OAuth 2.0 authorization request.
+            string authorizationRequest = string.Format("{0}?redirect_uri={1}&client_id={2}&state={3}&code_challenge={4}&code_challenge_method={5}",
+                AuthHelper.authorizationEndpoint,
+                Uri.EscapeDataString(redirectURI),
+                clientID,
+                state,
+                code_challenge,
+                code_challenge_method);
+
+            // Opens request in the browser.
+            try
+            {
+                Process browser = UsefulHelpers.OpenBrowser(authorizationRequest);
+            }
+            catch
+            {
+                AnsiConsole.MarkupLine(AnsiConsole.Profile.Capabilities.Links
+               ? $"[red] Failed to open the browser, open the given url in your browser:[/] [link={authorizationRequest}]{authorizationRequest}[/]"
+               : $"[red] Failed to open the browser, open the given url in your browser:[/] {authorizationRequest}");
+                AnsiConsole.WriteLine("");
+            }
+
+            
+            AnsiConsole.WriteLine("Waiting for the request to be accepted...");
+
+            // Waits for the OAuth authorization response.
+            var context =  http.GetContextAsync().Result;
+
+
+            // Sends an HTTP response to the browser.
+            var response = context.Response;
+            string responseString = string.Format("<html><head><meta http-equiv='refresh' content='10;url=https://bytehide.com'></head><body>Please return to the ByteHide CLI.</body></html>");
+            var buffer = Encoding.UTF8.GetBytes(responseString);
+            response.ContentLength64 = buffer.Length;
+            var responseOutput = response.OutputStream;
+            Task responseTask = responseOutput.WriteAsync(buffer, 0, buffer.Length).ContinueWith((task) =>
+            {
+                responseOutput.Close();
+                http.Stop();
+                AnsiConsole.MarkupLine(
+                    "[lime]Response received.[/]");
+                AnsiConsole.WriteLine("");
+            });
+
+            var status = context.Request.QueryString.Get("status");
+
+            // Checks for errors.
+            if (status != null && status == "revoked")
+            {
+                AnsiConsole.MarkupLine(
+                    "[red]The request was revoked. Cancelling.[/]");
+                AnsiConsole.WriteLine("");
+                return false;
+            }
+
+            if (context.Request.QueryString.Get("auth") == null
+                || context.Request.QueryString.Get("state") == null
+                 || context.Request.QueryString.Get("endpoint") == null)
+            {
+                AnsiConsole.MarkupLine(
+                   "[red]Malformed authorization response.[/]");
+                AnsiConsole.WriteLine("");
+                return false;
+            }
+
+            // extracts the code
+            var auth = context.Request.QueryString.Get("auth");
+            var incoming_state = context.Request.QueryString.Get("state");
+
+            // Compares the receieved state to the expected value, to ensure that
+            // this app made the request which resulted in authorization.
+            if (incoming_state != state)
+            {
+                AnsiConsole.MarkupLine(
+                   $"[red]Received request with invalid state ({incoming_state})[/]");
+                AnsiConsole.WriteLine("");
+                return false;
+            }
+
+            HttpClient httpClient = new HttpClient();
+            HttpResponseMessage endpointResponse = httpClient.GetAsync(string.Format("{0}&code={1}&scope[]={2}", context.Request.QueryString.Get("endpoint"), code_verifier, "shield")).Result;
+
+            string responseBody =  endpointResponse.Content.ReadAsStringAsync().Result;
+
+            if (!endpointResponse.IsSuccessStatusCode)
+            {
+                AnsiConsole.MarkupLine(
+                   $"[red]This application could not be authorized: ({responseBody})[/]");
+                AnsiConsole.WriteLine("");
+                return false;
+            }
+
+            var appResponse = JsonConvert.DeserializeObject<ApplicationResponse>(responseBody);
+
+            var token = appResponse.token;
+
+            if (ClientManager.IsValidKey(token))
+            {
+                var user = "";
+                try
+                {
+                    var info = ClientManager.Client.GetSession();
+                    user = info.Email;
+                }
+                catch { }
+                ClientManager.UpdateKey(token);
+                AnsiConsole.MarkupLine(
+                    $"[lime]Logged in correctly under the account {user}. Your session has been saved, to delete you credentials use [dim]clear[/][/]");
+                AnsiConsole.WriteLine("");
+                return true;
+            }
+
+           
+
+
             apiKey ??= AnsiConsole.Ask<string>("[blue]Insert your API Key[/]");
 
             if (ClientManager.IsValidKey(apiKey))
@@ -56,7 +193,6 @@ namespace Bytehide.CLI.Commands
                 return true;
             }
 
-            //TODO: Sr-l show help to user
             AnsiConsole.MarkupLine("[red]NOT logged in. Please review the API Key.[/]");
             AnsiConsole.MarkupLine(AnsiConsole.Profile.Capabilities.Links
                 ? "[green] Read about CLI authentication at:[/] [link=https://docs.bytehide.com/platforms/dotnet/products/shield/cli-authentication]https://docs.bytehide.com/platforms/dotnet/products/shield/cli-authentication[/]"
