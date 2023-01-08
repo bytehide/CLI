@@ -35,7 +35,7 @@
     <PackageReference Include="MatthiWare.CommandLineParser" Version="0.7.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="7.0.0" />
     <PackageReference Include="NuGet.Protocol" Version="6.4.0" />
-    <PackageReference Include="SecureLocalStorage" Version="1.0.0" />
+    <PackageReference Include="SecureLocalStorage" Version="2.0.0" />
     <PackageReference Include="Spectre.Console" Version="0.38.0" />
   </ItemGroup>
 
@@ -58,7 +58,6 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>bin\Debug\net7.0</OutputPath>
     <WarningLevel>4</WarningLevel>
-    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AssemblyName>Bytehide</AssemblyName>
   </PropertyGroup>
   <Target Name="CopyProjectReferencesToPackage" DependsOnTargets="BuildOnlySettings;ResolveReferences">
