@@ -6,16 +6,16 @@
     <AssemblyName>Dotnetsafer</AssemblyName>
     <ApplicationIcon>favicon.ico</ApplicationIcon>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Product>Dotnetsafer CLI</Product>
+    <Product>Bytehide CLI</Product>
     <Description>Protect your .NET applications from the terminal, use Shield and other products with a few commands.</Description>
-    <Copyright>Dotnetsafer 2021</Copyright>
+    <Copyright>ByteHide Solutions S.L</Copyright>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <PackageProjectUrl>https://dotnetsafer.com</PackageProjectUrl>
+    <PackageProjectUrl>https://bytehide.com</PackageProjectUrl>
     <RepositoryUrl>https://github.com/dotnetsafer/CLI</RepositoryUrl>
     <PackageTags>Security, Code Protection, Obfuscation, Dotnetsafer, Code Security, Compilation, Web Security, Application Security, Packages Security, Protection, Packer</PackageTags>
     <PackageReleaseNotes>This version of the Dotnetsafer Console includes beta products, the next update will include tested versions.</PackageReleaseNotes>
     <PackAsTool>true</PackAsTool>
-    <ToolCommandName>dotnetsafer</ToolCommandName>
+    <ToolCommandName>bytehide</ToolCommandName>
     <PackageOutputPath>./nupkg</PackageOutputPath>
   </PropertyGroup>
 
@@ -45,14 +45,17 @@
 
   <PropertyGroup>
     <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
-    <PackageId>Dotnetsafer</PackageId>
+    <PackageId>Bytehide</PackageId>
     <SignAssembly>false</SignAssembly>
     <PackageLicenseExpression></PackageLicenseExpression>
     <PackageLicenseFile>license.md</PackageLicenseFile>
     <DelaySign>false</DelaySign>
-    <AssemblyVersion>1.0.0.5</AssemblyVersion>
-    <FileVersion>1.0.0.5</FileVersion>
-    <Version>1.0.0.5</Version>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <FileVersion>2.0.0.0</FileVersion>
+    <Version>2.0.0.0</Version>
+    <Title>Bytehide</Title>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageReadmeFile>readme.md</PackageReadmeFile>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -78,6 +81,18 @@
 
   <ItemGroup>
     <Folder Include="Properties\" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <None Update="icon.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Update="readme.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties properties_4launchsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
