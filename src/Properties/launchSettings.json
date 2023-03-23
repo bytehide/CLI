@@ -2,7 +2,7 @@
   "profiles": {
     "ShieldCLI": {
       "commandName": "Project",
-      "commandLineArgs": "shield config:make \"Testing a good project\" . application custom"
+      "commandLineArgs": "shield config:find ."
     }
   }
 }

@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Linq;
 using Bytehide.CLI.Helpers;
 using Bytehide.CLI.Models.Config;
+using Shield.Client.Models.API;
 using Shield.Client.Models.API.Application;
 using Shield.Client.Models.API.Project;
 using Spectre.Console.Cli;
@@ -15,40 +17,24 @@ namespace Bytehide.CLI.Commands.Config
         {
             ShieldCommands = shieldCommands;
         }
-
         public override int Execute(CommandContext context, ConfigGetCommandSettings settings)
         {
             ShieldCommands.AuthHasCredentials();
-
             try
             {
-                var type = ShieldCommands.ChooseConfigurationType(settings.Type);
-                var configName = $"shield.{type}.{settings.Name}.json";
+                ProtectionConfigurationDTO config = null;
 
                 if (settings.Name is null)
-                {
-                    configName = ShieldCommands.GetFilesConfig(settings.Path);
-                    if (configName == "") return 0;
+                    config = ShieldCommands.GetFilesConfig(settings.Path);
+                else
+                    config = ShieldCommands.GetFileConfig(settings.Path, settings.Name);
 
-                }
+                if (config is null) return 0;
 
+                if (string.IsNullOrEmpty(config.Name) || string.IsNullOrWhiteSpace(config.Name))
+                    config = config.Rename("Empty name");
 
-                var fullPath = ShieldCommands.CreateFullPath(settings.Path, configName);
-
-                //TODO
-                //if (type == "application")
-                //{
-                //    ApplicationConfigurationDto appConfig = ShieldCommands.GetApplicationConfiguration(fullPath, settings.Create);
-
-                //    ShieldCommands.PrintConfigFiles(configName, appConfig.ProjectPreset, appConfig.Protections);
-                //}
-                //else
-                {
-                    ProjectConfigurationDto projectConfig = ShieldCommands.GetProjectConfiguration(fullPath, settings.Create);
-                    ShieldCommands.PrintConfigFiles(configName, projectConfig.ProjectPreset, projectConfig.Protections);
-
-                }
-
+                 ShieldCommands.PrintConfigFiles(config.Name, config.Preset, config.ConfigurationType.ToString(), config.Protections);
 
                 return 0;
             }

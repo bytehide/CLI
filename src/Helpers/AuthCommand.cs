@@ -1,14 +1,8 @@
 ﻿using Bytehide.CLI.Commands;
 using Bytehide.CLI.Models.Config;
 using Spectre.Console.Cli;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Bytehide.CLI.Helpers
 {
@@ -21,6 +15,12 @@ namespace Bytehide.CLI.Helpers
             ShieldCommands = shieldCommands;
         }
 
+        /// <summary>
+        /// Checks for authentication before exec the original command
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="settings"></param>
+        /// <returns></returns>
         public override int Execute(CommandContext context, ConfigMakeCommandSettings settings)
         {
             var method = new StackTrace().GetFrame(1).GetMethod();

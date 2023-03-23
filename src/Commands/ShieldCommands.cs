@@ -292,60 +292,84 @@ namespace Bytehide.CLI.Commands
             return fullFilePath;
         }
 
-        public string GetFilesConfig(string path)
+        public ProtectionConfigurationDTO GetFilesConfig(string path)
         {
-            var applicationsFiles = Directory.GetFiles(path, "shield.application.*.json").ToArray();
-            var projectFiles = Directory.GetFiles(path, "shield.project.*.json").ToArray();
+            var configs = ClientManager.Client.Configuration.FindConfigurations(path);
 
-            var allConfigFiles = applicationsFiles.Concat(projectFiles);
-
-            if (allConfigFiles.Count() == 0)
+            if (configs is null || configs.Count == 0)
             {
                 MarkupLine($"[darkorange]There is no config files in this path[/]");
-                return "";
+                return null;
             }
+
+            var allConfigFiles = configs.Select(config => (string.IsNullOrWhiteSpace(config.Name) || string.IsNullOrEmpty(config.Name)) ? $"Empty name [{config.ConfigurationType.ToString().ToUpperFirst()}]" : $"{config.Name} [{config.ConfigurationType.ToString().ToUpperFirst()}]" ).ToList();
 
             string fullConfigName = allConfigFiles.First();
 
-            if (allConfigFiles.Count() != 1)
-            {
-                var file = AnsiConsole.Prompt(
+            var file = AnsiConsole.Prompt(
                        new MultiSelectionPrompt<string>()
-                      .Title("Choose the Config File")
+                      .Title("Choose the configuration file:")
                       .PageSize(12)
                       .AddChoices(allConfigFiles));
 
-                fullConfigName = file.First();
-            }
+            var fileIndex = allConfigFiles.IndexOf(file.First());
 
-            return fullConfigName;
+            return configs[fileIndex];
         }
 
-        public void PrintConfigFiles(string path, string preset, List<string> protections)
+        public ProtectionConfigurationDTO GetFileConfig(string path, string name)
         {
-            var name = Path.GetFileName(path);
+            var config = ClientManager.Client.Configuration.FindConfiguration(path, name);
 
-            MarkupLine("[lime] Config File has the follow info: [/] ");
+            if (config is null)
+            {
+                MarkupLine($"[darkorange]There is no config files in this path with the name '{name}'[/]");
+                return null;
+            }
+
+            return config;
+        }
+
+        public void PrintConfigFiles(string name, string preset, string type, Dictionary<string, ProtectionRules> protections)
+        {
+            MarkupLine("[lime]Config File has the follow info:[/]");
+            WriteLine();
 
             var root = new Tree(name).Style("lime").Guide(TreeGuide.DoubleLine);
 
+            var presetBranch = root.AddNode("[darkorange]Preset[/]");
 
-            var presetbranch = root.AddNode("[darkorange]Preset[/]");
+            presetBranch.AddNode(preset.ToUpperFirst());
 
-            presetbranch.AddNode(preset);
+            var typeBranch = root.AddNode("[darkorange]Type[/]");
+
+            typeBranch.AddNode(type.ToUpperFirst());
 
             if (preset == "custom")
             {
                 var protectionsBranch = root.AddNode("[darkorange]Protections[/]");
 
-                foreach (string protection in protections)
+                if (protections is not null && protections.Count > 0)
                 {
-                    protectionsBranch.AddNode(protection);
+                    foreach (var protection in protections)
+                    {
+                        var protectionBranch = protectionsBranch.AddNode(protection.Key);
 
+                        if (protection.Value is not null && protection.Value.Count > 0)
+                        {
+                            var optionsBranch = protectionBranch.AddNode("[darkorange]Options[/]");
+
+                            foreach (var option in protection.Value)
+                            {
+                                optionsBranch.AddNode($"{option.Key.ToUpperFirst()} [lime]→[/] {option.Value.ToString().ToLowerInvariant()}");
+                            }
+                        }
+                    }
                 }
-            }
-            AnsiConsole.Render(root);
 
+            }
+
+            AnsiConsole.Render(root);
         }
 
         /// <summary>

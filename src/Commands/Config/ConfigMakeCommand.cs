@@ -6,11 +6,11 @@ using Spectre.Console.Cli;
 
 namespace Bytehide.CLI.Commands.Config
 {
-    internal class ConfigMakeCommand : AuthShieldCommand
+    internal class ConfigMakeCommand : AuthenticableShieldCommand
     {
         public ConfigMakeCommand(ShieldCommands shieldCommands) : base(shieldCommands){}
 
-       
+        [AuthRequired]
         public override int Execute(CommandContext context, ConfigMakeCommandSettings settings)
         {
             try

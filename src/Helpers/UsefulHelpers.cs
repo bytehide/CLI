@@ -14,5 +14,16 @@ namespace Bytehide.CLI.Helpers
             else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX)) return Process.Start("open", url); // Not tested
             return null;
         }
+
+        public static string ToUpperFirst(this string s)
+        {
+            if (string.IsNullOrEmpty(s))
+            {
+                return string.Empty;
+            }
+            char[] a = s.ToCharArray();
+            a[0] = char.ToUpper(a[0]);
+            return new string(a);
+        }
     }
 }
