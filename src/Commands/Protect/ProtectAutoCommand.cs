@@ -35,10 +35,8 @@ namespace Bytehide.CLI.Commands.Protect
 
                 var appUpload = await ShieldCommands.UploadApplicationAsync(path, project.Key);
 
-               
 
                 ShieldCommands.PrintApplication(Path.GetFileName(path), appUpload.ApplicationBlob, project.Key);
-
 
 
                 var directory = Path.GetDirectoryName(path);

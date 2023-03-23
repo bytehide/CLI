@@ -35,7 +35,6 @@ namespace Bytehide.CLI.Commands.App
 
                 await ShieldCommands.UploadApplicationAsync(settings.ApplicationPath, projectKey);
 
-
                 return 0;
             }
             catch (Exception ex)

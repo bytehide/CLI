@@ -15,9 +15,11 @@ namespace Bytehide.CLI.Commands.Config
         {
             ShieldCommands = shieldCommands;
         }
+
         public override int Execute(CommandContext context, ConfigGetCommandSettings settings)
         {
             ShieldCommands.AuthHasCredentials();
+
             try
             {
                 var type = ShieldCommands.ChooseConfigurationType(settings.Type);
@@ -33,14 +35,14 @@ namespace Bytehide.CLI.Commands.Config
 
                 var fullPath = ShieldCommands.CreateFullPath(settings.Path, configName);
 
+                //TODO
+                //if (type == "application")
+                //{
+                //    ApplicationConfigurationDto appConfig = ShieldCommands.GetApplicationConfiguration(fullPath, settings.Create);
 
-                if (type == "application")
-                {
-                    ApplicationConfigurationDto appConfig = ShieldCommands.GetApplicationConfiguration(fullPath, settings.Create);
-
-                    ShieldCommands.PrintConfigFiles(configName, appConfig.ProjectPreset, appConfig.Protections);
-                }
-                else
+                //    ShieldCommands.PrintConfigFiles(configName, appConfig.ProjectPreset, appConfig.Protections);
+                //}
+                //else
                 {
                     ProjectConfigurationDto projectConfig = ShieldCommands.GetProjectConfiguration(fullPath, settings.Create);
                     ShieldCommands.PrintConfigFiles(configName, projectConfig.ProjectPreset, projectConfig.Protections);

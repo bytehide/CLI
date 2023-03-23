@@ -10,11 +10,10 @@ namespace Bytehide.CLI.Models.Config
         public string Name { get; set; }
         [CommandArgument(1, "<DIRECTORY PATH>"), Description("Output direcroty path where configuration file will be saved.")]
         public string Path { get; set; }
-        [CommandArgument(2, "[TYPE]"), Description("Type of the protection config file."), DefaultValue("project")]
+        [CommandArgument(2, "[TYPE]"), Description("Type of the protection config file."), DefaultValue("application")]
         public string Type { get; set; }
-        [CommandArgument(2, "[PRESET]"), Description("Shield preset for the protection config file."), DefaultValue("project")]
+        [CommandArgument(3, "[PRESET]"), Description("Shield preset for the protection config file."), DefaultValue("balance")]
         public string Preset { get; set; }
-
 
     }
 }

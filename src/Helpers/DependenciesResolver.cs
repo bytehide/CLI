@@ -1439,7 +1439,7 @@ namespace Bytehide.CLI.Helpers
                 };
                 var asm = ModuleDefMD.Load(file, context);
 
-                var requiredDependencies = asm.GetAssemblyRefs()
+                var requiredDependencies = asm.GetAssemblyRefs().Where(assemblyRef=> assemblyRef.Version != new Version(0,0,0,0))
                     .Select(assemblyRef => ((string, string))(assemblyRef.FullName, null)).ToList();
 
                 return (true, requiredDependencies, (asm, context));
@@ -1489,6 +1489,9 @@ namespace Bytehide.CLI.Helpers
                 var assemblyRef = refs.FirstOrDefault(rf => rf.FullName.Equals(dependency));
 
                 if (assemblyRef is null)
+                    continue; //Not necessary
+
+                if(assemblyRef.Version == new Version(0, 0, 0, 0))
                     continue; //Not necessary
 
                 var resolved = ((CustomResolver)context.AssemblyResolver).Resolve(assemblyRef, module, out var path);

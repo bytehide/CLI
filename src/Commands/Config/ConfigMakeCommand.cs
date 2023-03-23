@@ -1,45 +1,36 @@
 ﻿using System;
 using Bytehide.CLI.Helpers;
 using Bytehide.CLI.Models.Config;
+using Shield.Client.Models.API;
 using Spectre.Console.Cli;
 
 namespace Bytehide.CLI.Commands.Config
 {
-    internal class ConfigMakeCommand : Command<ConfigMakeCommandSettings>, ICommandLimiter<ShieldSettings>
+    internal class ConfigMakeCommand : AuthShieldCommand
     {
+        public ConfigMakeCommand(ShieldCommands shieldCommands) : base(shieldCommands){}
 
-        public ShieldCommands ShieldCommands { get; }
-
-
-        public ConfigMakeCommand(ShieldCommands shieldCommands)
-        {
-            ShieldCommands = shieldCommands;
-
-        }
+       
         public override int Execute(CommandContext context, ConfigMakeCommandSettings settings)
         {
             try
             {
-                _ = ShieldCommands.AuthHasCredentials();
+                base.Execute(context, settings);
 
                 var type = ShieldCommands.ChooseConfigurationType(settings.Type);
+
                 var preset = ShieldCommands.ChooseProtectionPreset(settings.Preset);
-                string[] protectionsId = { };
+
+                string[] protectionsId = Array.Empty<string>();
+
                 if (preset == "custom")
                 {
-                    var projectKey = ShieldCommands.FindOrCreateProjectByName("default").Key;
+                    var projectKey = ShieldCommands.AsMute().FindOrCreateProjectByName("default").Key;
 
                     protectionsId = ShieldCommands.ChooseCustomProtections(projectKey);
                 }
 
-                if (type == "application")
-                {
-                    _ = ShieldCommands.MakeApplicationConfiguration(settings.Path, preset, settings.Name, protectionsId);
-                }
-                else
-                {
-                    _ = ShieldCommands.MakeProjectConfiguration(settings.Path, preset, settings.Name, protectionsId);
-                }
+                _ = ShieldCommands.MakeUniversalConfiguration(settings.Path, settings.Name, preset, type ?? ConfigurationType.Application, protectionsId);
 
                 return 0;
             }

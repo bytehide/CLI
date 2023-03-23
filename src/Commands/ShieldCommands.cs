@@ -13,9 +13,9 @@ using Bytehide.CLI.Helpers;
 using Bytehide.CLI.Repos;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using Shield.Client;
 using Shield.Client.Extensions;
 using Shield.Client.Models;
+using Shield.Client.Models.API;
 using Shield.Client.Models.API.Application;
 using Shield.Client.Models.API.Project;
 using Spectre.Console;
@@ -23,9 +23,7 @@ using static Bytehide.CLI.Helpers.AuthHelper;
 
 namespace Bytehide.CLI.Commands
 {
-    public class ShieldCommands
-
-
+    public class ShieldCommands : ICloneable
     {
         public ShieldCommands(ClientManager clientManager, DependenciesResolver dependenciesResolver)
         {
@@ -33,9 +31,55 @@ namespace Bytehide.CLI.Commands
             DependenciesResolver = dependenciesResolver;
         }
 
+        /// <summary>
+        /// Clone the current instance and disables the console outputs.
+        /// </summary>
+        /// <returns></returns>
+        public ShieldCommands AsMute()
+        {
+            var cloned = Clone() as ShieldCommands;
+
+            cloned.DoNotDisturb = true;
+
+            return cloned;
+        }
+
+        /// <summary>
+        /// Disable any console log output.
+        /// </summary>
+        internal bool DoNotDisturb { get; set; } = false;
+
         private ClientManager ClientManager { get; }
         private DependenciesResolver DependenciesResolver { get; }
 
+        internal void MarkupLine(string text, params object[] args)
+        {
+            if (DoNotDisturb) 
+                return;
+            AnsiConsole.MarkupLine(text, args);
+        }
+
+        internal void MarkupLine(string text)
+        {
+            if (DoNotDisturb)
+                return;
+            AnsiConsole.MarkupLine(text);
+        }
+
+        internal void WriteLine(string text = null)
+        {
+            if (DoNotDisturb)
+                return;
+
+            if (text is null)
+            {
+                AnsiConsole.WriteLine();
+            }
+            else
+            {
+                AnsiConsole.WriteLine(text);
+            }
+        }
 
         /// <summary>
         ///     Open Bytehide web to register a new user
@@ -83,14 +127,14 @@ namespace Bytehide.CLI.Commands
             }
             catch
             {
-                AnsiConsole.MarkupLine(AnsiConsole.Profile.Capabilities.Links
+                MarkupLine(AnsiConsole.Profile.Capabilities.Links
                ? $"[red] Failed to open the browser, open the given url in your browser:[/] [link={authorizationRequest}]{authorizationRequest}[/]"
                : $"[red] Failed to open the browser, open the given url in your browser:[/] {authorizationRequest}");
-                AnsiConsole.WriteLine("");
+                WriteLine("");
             }
 
             
-            AnsiConsole.WriteLine("Waiting for the request to be accepted...");
+            WriteLine("Waiting for the request to be accepted...");
 
             // Waits for the OAuth authorization response.
             var context =  http.GetContextAsync().Result;
@@ -106,9 +150,9 @@ namespace Bytehide.CLI.Commands
             {
                 responseOutput.Close();
                 http.Stop();
-                AnsiConsole.MarkupLine(
+                MarkupLine(
                     "[lime]Response received.[/]");
-                AnsiConsole.WriteLine("");
+                WriteLine("");
             });
 
             var status = context.Request.QueryString.Get("status");
@@ -116,9 +160,9 @@ namespace Bytehide.CLI.Commands
             // Checks for errors.
             if (status != null && status == "revoked")
             {
-                AnsiConsole.MarkupLine(
+                MarkupLine(
                     "[red]The request was revoked. Cancelling.[/]");
-                AnsiConsole.WriteLine("");
+                WriteLine("");
                 return false;
             }
 
@@ -126,9 +170,9 @@ namespace Bytehide.CLI.Commands
                 || context.Request.QueryString.Get("state") == null
                  || context.Request.QueryString.Get("endpoint") == null)
             {
-                AnsiConsole.MarkupLine(
+                MarkupLine(
                    "[red]Malformed authorization response.[/]");
-                AnsiConsole.WriteLine("");
+                WriteLine("");
                 return false;
             }
 
@@ -140,22 +184,22 @@ namespace Bytehide.CLI.Commands
             // this app made the request which resulted in authorization.
             if (incoming_state != state)
             {
-                AnsiConsole.MarkupLine(
+                MarkupLine(
                    $"[red]Received request with invalid state ({incoming_state})[/]");
-                AnsiConsole.WriteLine("");
+                WriteLine("");
                 return false;
             }
 
-            HttpClient httpClient = new HttpClient();
+            HttpClient httpClient = new();
             HttpResponseMessage endpointResponse = httpClient.GetAsync(string.Format("{0}&code={1}&scope[]={2}", context.Request.QueryString.Get("endpoint"), code_verifier, "shield")).Result;
 
             string responseBody =  endpointResponse.Content.ReadAsStringAsync().Result;
 
             if (!endpointResponse.IsSuccessStatusCode)
             {
-                AnsiConsole.MarkupLine(
+                MarkupLine(
                    $"[red]This application could not be authorized: ({responseBody})[/]");
-                AnsiConsole.WriteLine("");
+                WriteLine("");
                 return false;
             }
 
@@ -165,6 +209,7 @@ namespace Bytehide.CLI.Commands
 
             if (ClientManager.IsValidKey(token))
             {
+                ClientManager.UpdateKey(token);
                 var user = "";
                 try
                 {
@@ -172,32 +217,29 @@ namespace Bytehide.CLI.Commands
                     user = info.Email;
                 }
                 catch { }
-                ClientManager.UpdateKey(token);
-                AnsiConsole.MarkupLine(
+               
+                MarkupLine(
                     $"[lime]Logged in correctly under the account {user}. Your session has been saved, to delete you credentials use [dim]clear[/][/]");
-                AnsiConsole.WriteLine("");
+                WriteLine("");
                 return true;
             }
-
-           
-
 
             apiKey ??= AnsiConsole.Ask<string>("[blue]Insert your API Key[/]");
 
             if (ClientManager.IsValidKey(apiKey))
             {
                 ClientManager.UpdateKey(apiKey);
-                AnsiConsole.MarkupLine(
+                MarkupLine(
                     "[lime]Logged in correctly. Your session has been saved, to delete you credentials use [dim]clear[/][/]");
-                AnsiConsole.WriteLine("");
+                WriteLine("");
                 return true;
             }
 
-            AnsiConsole.MarkupLine("[red]NOT logged in. Please review the API Key.[/]");
-            AnsiConsole.MarkupLine(AnsiConsole.Profile.Capabilities.Links
+            MarkupLine("[red]NOT logged in. Please review the API Key.[/]");
+            MarkupLine(AnsiConsole.Profile.Capabilities.Links
                 ? "[green] Read about CLI authentication at:[/] [link=https://docs.bytehide.com/platforms/dotnet/products/shield/cli-authentication]https://docs.bytehide.com/platforms/dotnet/products/shield/cli-authentication[/]"
                 : "[green] Read about CLI authentication at:[/] https://docs.bytehide.com/platforms/dotnet/products/shield/cli-authentication");
-            AnsiConsole.WriteLine("");
+            WriteLine("");
             return false;
         }
 
@@ -210,13 +252,13 @@ namespace Bytehide.CLI.Commands
 
             if (ClientManager.HasValidClient()) return true;
 
-            AnsiConsole.MarkupLine("[red]You are NOT logged in. \nYou must be logged in to use Shield CLI.[/]");
-            AnsiConsole.WriteLine("");
+            MarkupLine("[red]You are NOT logged in. \nYou must be logged in to use Shield CLI.[/]");
+            WriteLine("");
 
             if (!AnsiConsole.Confirm("[blue]Do you want to logged in now? [/]"))
                 return !throwException ? false : throw new AuthenticationException(exMessage);
 
-            AnsiConsole.WriteLine("");
+            WriteLine("");
             var login = AuthLogin(null);
             return login ? true : (throwException ? throw new AuthenticationException(exMessage) : false);
         }
@@ -229,12 +271,12 @@ namespace Bytehide.CLI.Commands
             if (!AnsiConsole.Confirm("[red]This action will DELETE your credentials. Are you sure? [/]")) return;
             ClientManager.ClearClient();
             Console.WriteLine("");
-            AnsiConsole.MarkupLine("[red]Credentials deleted. You must to login again to use ShieldCLI [/]");
+            MarkupLine("[red]Credentials deleted. You must to login again to use ShieldCLI [/]");
         }
 
 
 
-        public string CreateFullPath(string dirPath, string name)
+        public static string CreateFullPath(string dirPath, string name)
         {
 
 
@@ -259,9 +301,10 @@ namespace Bytehide.CLI.Commands
 
             if (allConfigFiles.Count() == 0)
             {
-                AnsiConsole.MarkupLine($"[darkorange]There is no config files in this path[/]");
+                MarkupLine($"[darkorange]There is no config files in this path[/]");
                 return "";
             }
+
             string fullConfigName = allConfigFiles.First();
 
             if (allConfigFiles.Count() != 1)
@@ -275,8 +318,6 @@ namespace Bytehide.CLI.Commands
                 fullConfigName = file.First();
             }
 
-
-
             return fullConfigName;
         }
 
@@ -284,7 +325,7 @@ namespace Bytehide.CLI.Commands
         {
             var name = Path.GetFileName(path);
 
-            AnsiConsole.MarkupLine("[lime] Config File has the follow info: [/] ");
+            MarkupLine("[lime] Config File has the follow info: [/] ");
 
             var root = new Tree(name).Style("lime").Guide(TreeGuide.DoubleLine);
 
@@ -430,9 +471,9 @@ namespace Bytehide.CLI.Commands
             {
                 var unresolved = requiredDep.Where(dep => string.IsNullOrEmpty(dep.Item2)).ToList();
 
-                AnsiConsole.MarkupLine(
+                MarkupLine(
                     $"The following dependencies [red]({unresolved.Count})[/] are required to process the application:");
-                AnsiConsole.WriteLine();
+                WriteLine();
 
                 var table = new Table();
 
@@ -449,7 +490,7 @@ namespace Bytehide.CLI.Commands
 
                 AnsiConsole.Render(table);
 
-                AnsiConsole.WriteLine("");
+                WriteLine("");
 
                 unresolved.ForEach(dep =>
                     userPath.Add(AnsiConsole.Ask<string>(
@@ -459,7 +500,7 @@ namespace Bytehide.CLI.Commands
                     createdContext, requiredDep, userPath.ToArray());
             }
 
-            AnsiConsole.MarkupLine("[lime]The dependencies have been resolved.[/]");
+            MarkupLine("[lime]The dependencies have been resolved.[/]");
 
             DependenciesResolver.FixInvalidResolutions(requiredDep);
 
@@ -491,9 +532,8 @@ namespace Bytehide.CLI.Commands
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        public string ChooseConfigurationType(string type)
+        public ConfigurationType? ChooseConfigurationType(string type)
         {
-
             if (type != "application" && type != "project")
                 type = AnsiConsole.Prompt(
                     new SelectionPrompt<string>()
@@ -502,8 +542,13 @@ namespace Bytehide.CLI.Commands
                         .PageSize(3)
                         .AddChoice("project")
                         .AddChoice("application"));
-            return type;
 
+            return type switch
+            {
+                "application" => (ConfigurationType?)ConfigurationType.Application,
+                "project" => (ConfigurationType?)ConfigurationType.Project,
+                _ => null,
+            };
         }
 
         /// <summary>
@@ -512,7 +557,7 @@ namespace Bytehide.CLI.Commands
         /// <returns></returns>
         public string ChooseConfigurationSource()
         {
-            AnsiConsole.WriteLine();
+            WriteLine();
             var value = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
 
@@ -550,12 +595,12 @@ namespace Bytehide.CLI.Commands
 
             if (notAvailable.Length > 0)
             {
-                AnsiConsole.MarkupLine(
+                MarkupLine(
                     "[darkorange]Following protections selected will not be apply because they are not in your Shield Edition.[/]");
-                AnsiConsole.MarkupLine("[darkorange]Please Upgrade your edition if you want to use the protections[/]");
-                AnsiConsole.MarkupLine("");
+                MarkupLine("[darkorange]Please Upgrade your edition if you want to use the protections[/]");
+                MarkupLine("");
                 foreach (var invalid in notAvailable)
-                    AnsiConsole.MarkupLine($"[red]{invalid}[/]");
+                    MarkupLine($"[red]{invalid}[/]");
 
             }
 
@@ -572,6 +617,7 @@ namespace Bytehide.CLI.Commands
         /// <param name="name"></param>
         /// <param name="protectionsId"></param>
         /// <returns></returns>
+        [Obsolete("Legacy configuration file",true)]
         public ApplicationConfigurationDto MakeApplicationConfiguration(string path, string preset, string name,
             string[] protectionsId)
 
@@ -589,9 +635,38 @@ namespace Bytehide.CLI.Commands
 
             applicationConfig.SaveToFile(path, name);
 
-            AnsiConsole.MarkupLine("[lime]Application configuration file created sucessfully.[/]");
+            MarkupLine("[lime]Application configuration file created sucessfully.[/]");
 
             return applicationConfig;
+
+        }
+
+        public ProtectionConfigurationDTO MakeUniversalConfiguration(string path, string name,
+            string preset = null, ConfigurationType type = ConfigurationType.Application, string[] protectionsId = null)
+
+        {
+            var isCustom = preset is not null && preset.Equals("custom");
+
+            if(isCustom && protectionsId is null)
+                protectionsId = Array.Empty<string>();
+
+            var config = isCustom ? 
+                ClientManager.Client.Configuration.FromProtections(protectionsId) : 
+                ClientManager.Client.Configuration.Default(preset.ToPreset());
+
+            config.ConfigurationType = type;
+
+            if (name is not null)
+                config.Rename(name);
+
+            if (File.Exists(Path.Combine(path, name)))
+                File.Delete(Path.Combine(path, name));
+
+            config.SaveToFile(ref path, name);
+
+            MarkupLine($"[lime]{type} configuration file created sucessfully in {Path.GetFullPath(path)}.[/]");
+
+            return config;
 
         }
 
@@ -611,7 +686,7 @@ namespace Bytehide.CLI.Commands
             }
 
             projectConfig.SaveToFile(path, name);
-            AnsiConsole.MarkupLine("[lime]Project configuration file created sucessfully.[/]");
+            MarkupLine("[lime]Project configuration file created sucessfully.[/]");
 
             return projectConfig;
         }
@@ -619,14 +694,16 @@ namespace Bytehide.CLI.Commands
         public ProjectDto FindOrCreateProjectByName(string name)
         {
             var project = ClientManager.Client.Project.FindOrCreateExternalProject(name);
-            AnsiConsole.MarkupLine("[lime]Project Found [/]");
+
+            MarkupLine("[lime]Project Found [/]");
+
             return project;
         }
 
         public ProjectDto FindOrCreateProjectById(string name, string key)
         {
             var project = ClientManager.Client.Project.FindByIdOrCreateExternalProject(name ?? "default", key);
-            AnsiConsole.MarkupLine("[lime]Project Found [/]");
+            MarkupLine("[lime]Project Found [/]");
 
             return project;
         }
@@ -688,7 +765,7 @@ namespace Bytehide.CLI.Commands
                 });
 
             Console.WriteLine("");
-            AnsiConsole.MarkupLine("[lime]Application Uploaded Succesfully[/]");
+            MarkupLine("[lime]Application Uploaded Succesfully[/]");
             return result;
 
         }
@@ -741,7 +818,7 @@ namespace Bytehide.CLI.Commands
             var configName =
                 AnsiConsole.Prompt(text);
 
-            AnsiConsole.WriteLine("");
+            WriteLine("");
 
             switch (protection)
             {
@@ -759,14 +836,14 @@ namespace Bytehide.CLI.Commands
                         var preset = ChooseProtectionPreset("default");
                         if (preset == "custom")
                             protectionsId = ChooseCustomProtections(projectKey);
-                        configurationDto = MakeApplicationConfiguration(path, preset, configName, protectionsId);
+                        //TODO: configurationDto = MakeApplicationConfiguration(path, preset, configName, protectionsId);
                         break;
                     }
                 case "Make a custom":
                     {
                         const string preset = "custom";
                         var protectionsId = ChooseCustomProtections(projectKey);
-                        configurationDto = MakeApplicationConfiguration(path, preset, configName, protectionsId);
+                        //TODO: configurationDto = MakeApplicationConfiguration(path, preset, configName, protectionsId);
                         break;
                     }
             }
@@ -818,22 +895,22 @@ namespace Bytehide.CLI.Commands
                         if (logLevel < minimumLevel)
                             return;
 
-                        AnsiConsole.MarkupLine("[" + color + "] > {0}[/]", message.EscapeMarkup());
+                        MarkupLine("[" + color + "] > {0}[/]", message.EscapeMarkup());
                     });
 
                     result.OnSuccess(hub, async (application) =>
                         {
-                            AnsiConsole.MarkupLine("");
-                            AnsiConsole.MarkupLine(
+                            MarkupLine("");
+                            MarkupLine(
                                 $"[lime] > The application has been protected successfully with {application.Preset} protection.[/]");
-                            AnsiConsole.MarkupLine("");
+                            MarkupLine("");
                             var downloaded =
                                ClientManager.Client.Application.DownloadApplicationAsArray(application);
 
 
                             downloaded.SaveOn(path, true);
 
-                            AnsiConsole.MarkupLine(
+                            MarkupLine(
                                 $"[lime]Application saved successfully in [/][darkorange]{Path.GetDirectoryName(path)}[/]");
                         }
                     );
@@ -842,22 +919,27 @@ namespace Bytehide.CLI.Commands
 
                     result.OnError(hub, (error) =>
                     {
-                        AnsiConsole.MarkupLine("");
-                        AnsiConsole.MarkupLine("[red]An error occurred during the protection process:[/]");
-                        AnsiConsole.MarkupLine("[darkorange] > {0}[/]", error.EscapeMarkup());
-                        AnsiConsole.MarkupLine("[darkorange] > The process is still active but may not finish successfully.[/]");
-                        AnsiConsole.MarkupLine("[blue] > The error has been reported and notified to our team, you will soon receive news about the solution.[/]");
+                        MarkupLine("");
+                        MarkupLine("[red]An error occurred during the protection process:[/]");
+                        MarkupLine("[darkorange] > {0}[/]", error.EscapeMarkup());
+                        MarkupLine("[darkorange] > The process is still active but may not finish successfully.[/]");
+                        MarkupLine("[blue] > The error has been reported and notified to our team, you will soon receive news about the solution.[/]");
                     });
 
                     result.OnClose(hub, _ =>
                     {
-                        AnsiConsole.MarkupLine("");
-                        AnsiConsole.MarkupLine("[lime]Protection has ended. [/]");
+                        MarkupLine("");
+                        MarkupLine("[lime]Protection has ended. [/]");
                         semaphore.Release();
                     });
 
                     semaphore.WaitOne();
                 });
+        }
+
+        public object Clone()
+        {
+            return this.MemberwiseClone();
         }
     }
 }
