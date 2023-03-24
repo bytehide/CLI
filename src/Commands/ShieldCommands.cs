@@ -398,6 +398,9 @@ namespace Bytehide.CLI.Commands
 
         }
 
+        public ProtectionConfigurationDTO GetUniversalConfiguration(string fullFilePath)
+        => ClientManager.Client.Configuration.LoadConfigurationFromFile(fullFilePath);
+
         /// <summary>
         /// 
         /// </summary>
@@ -828,21 +831,23 @@ namespace Bytehide.CLI.Commands
         /// <param name="path"></param>
         /// <param name="applicationName"></param>
         /// <returns></returns>
-        public ApplicationConfigurationDto CreateConfigurationFile(string projectKey, string path,
+        public ProtectionConfigurationDTO CreateConfigurationFile(string projectKey, string path,
             string applicationName = null)
         {
-            ApplicationConfigurationDto configurationDto = null;
+            ProtectionConfigurationDTO configurationDto = null;
 
             var protection = ChooseConfigurationSource();
 
             var text = new TextPrompt<string>("[lime]Enter the config file name[/]");
             if (!string.IsNullOrEmpty(applicationName))
-                text.DefaultValue(applicationName);
+                text.DefaultValue(applicationName.MakeValidFileName());
 
             var configName =
                 AnsiConsole.Prompt(text);
 
             WriteLine("");
+
+            string[] protectionsId = { };
 
             switch (protection)
             {
@@ -850,24 +855,29 @@ namespace Bytehide.CLI.Commands
                     {
                         var configPath = AnsiConsole.Ask<string>("[lime]Provide the configuration file path:[/]");
 
-                        configurationDto = GetApplicationConfiguration(configPath, false);
+                        configurationDto = ClientManager.Client.Configuration.LoadConfigurationFromFile(configPath);
+                        
+                        if(configurationDto is null)
+                        {
+                            MarkupLine("[darkorange]The configuration file is invalid or not exists, please create new one:[/]");
+                            goto case "Use a preset";
+                        }
 
                         break;
                     }
                 case "Use a preset":
                     {
-                        string[] protectionsId = { };
                         var preset = ChooseProtectionPreset("default");
                         if (preset == "custom")
-                            protectionsId = ChooseCustomProtections(projectKey);
-                        //TODO: configurationDto = MakeApplicationConfiguration(path, preset, configName, protectionsId);
+                            goto case "Make a custom";
+                        configurationDto = MakeUniversalConfiguration(path, configName, preset, ConfigurationType.Application, protectionsId);
                         break;
                     }
                 case "Make a custom":
                     {
                         const string preset = "custom";
-                        var protectionsId = ChooseCustomProtections(projectKey);
-                        //TODO: configurationDto = MakeApplicationConfiguration(path, preset, configName, protectionsId);
+                        protectionsId = ChooseCustomProtections(projectKey);
+                        configurationDto = MakeUniversalConfiguration(path, configName, preset, ConfigurationType.Application, protectionsId);
                         break;
                     }
             }
@@ -886,7 +896,7 @@ namespace Bytehide.CLI.Commands
         /// <param name="path"></param>
         /// <returns></returns>
         public async Task ProtectApplicationAsync(string projectKey, string fileBlob,
-            ApplicationConfigurationDto config, string path)
+            ProtectionConfigurationDTO config, string path)
         {
             await AnsiConsole.Status()
                 .Spinner(Spinner.Known.Dots2).StartAsync("The application is being protected...", async ctx =>
@@ -896,7 +906,8 @@ namespace Bytehide.CLI.Commands
                     await hub.StartAsync();
 
                     var result = await ClientManager.Client.Tasks.ProtectSingleFileAsync(projectKey, fileBlob, connection,
-                        config);
+                        config
+                       /* ClientManager.Client.Configuration.FromProtections("invalid_code", "constants_mutation", "constants_basic", "anti_ildasm")*/);
 
                     hub.OnLog(connection.OnLogger, (string date, string message, string level) =>
                     {
@@ -931,11 +942,10 @@ namespace Bytehide.CLI.Commands
                             var downloaded =
                                ClientManager.Client.Application.DownloadApplicationAsArray(application);
 
-
                             downloaded.SaveOn(path, true);
 
                             MarkupLine(
-                                $"[lime]Application saved successfully in [/][darkorange]{Path.GetDirectoryName(path)}[/]");
+                                $"[lime]Application saved successfully in [/][darkorange]{Path.GetFullPath(path)}[/]");
                         }
                     );
 

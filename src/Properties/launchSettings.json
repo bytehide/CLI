@@ -2,7 +2,7 @@
   "profiles": {
     "ShieldCLI": {
       "commandName": "Project",
-      "commandLineArgs": "shield config:find ."
+      "commandLineArgs": "shield protect CLI \"C:\\Users\\juan\\Documents\\GitHub\\CLI\\src\\bin\\Debug\\net7.0\\net7.0\\Azure.Core.Amqp.dll\" .\\shield.testing_a_good_project.config.json \".\\protected.dll\" "
     }
   }
 }

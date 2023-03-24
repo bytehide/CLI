@@ -15,6 +15,8 @@ namespace Bytehide.CLI.Commands.Protect
 
         public override async Task<int> ExecuteAsync(CommandContext context, ProtectCommandSettings settings)
         {
+            _ = ShieldCommands.AuthHasCredentials();
+
             var projectKey = settings.Project;
             var pathApp = settings.ApplicationPath;
             var pathOutput = settings.OutputPath;
@@ -24,10 +26,10 @@ namespace Bytehide.CLI.Commands.Protect
                 var project = await ShieldCommands.FindOrCreateProjectByIdAsync("default", projectKey);
                 projectKey = project.Key;
             }
+
             var appUpload = await ShieldCommands.UploadApplicationAsync(pathApp, projectKey);
 
-            var config = ShieldCommands.GetApplicationConfiguration(settings.ConfigurationPath, true);
-
+            var config = ShieldCommands.GetUniversalConfiguration(settings.ConfigurationPath);
 
             await ShieldCommands.ProtectApplicationAsync(projectKey, appUpload.ApplicationBlob, config, pathOutput);
 

@@ -5,6 +5,7 @@ using Bytehide.CLI.Helpers;
 using Bytehide.CLI.Repos;
 using Spectre.Console;
 using Spectre.Console.Cli;
+using Shield.Client.Extensions;
 
 namespace Bytehide.CLI.Commands.Protect
 {
@@ -35,16 +36,13 @@ namespace Bytehide.CLI.Commands.Protect
 
                 var appUpload = await ShieldCommands.UploadApplicationAsync(path, project.Key);
 
-
                 ShieldCommands.PrintApplication(Path.GetFileName(path), appUpload.ApplicationBlob, project.Key);
-
 
                 var directory = Path.GetDirectoryName(path);
                 var filename = Path.GetFileNameWithoutExtension(path);
                 var appName = Path.GetFileName(path);
 
-                var config = ClientManager.Client.Configuration.FindApplicationConfiguration(directory, filename);
-
+                var config = ClientManager.Client.Configuration.FindConfiguration(directory, filename.MakeValidFileName());
 
                 if (config is not null)
                 {
