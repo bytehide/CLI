@@ -3,17 +3,17 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net7.0</TargetFramework>
-    <AssemblyName>Dotnetsafer</AssemblyName>
+    <AssemblyName>ByteHide</AssemblyName>
     <ApplicationIcon>favicon.ico</ApplicationIcon>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Product>Bytehide CLI</Product>
     <Description>Protect your .NET applications from the terminal, use Shield and other products with a few commands.</Description>
     <Copyright>ByteHide Solutions S.L</Copyright>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <PackageProjectUrl>https://bytehide.com</PackageProjectUrl>
+    <PackageProjectUrl>https://www.bytehide.com/docs/platforms/dotnet/products/shield/cli-install</PackageProjectUrl>
     <RepositoryUrl>https://github.com/dotnetsafer/CLI</RepositoryUrl>
-    <PackageTags>Security, Code Protection, Obfuscation, Dotnetsafer, Code Security, Compilation, Web Security, Application Security, Packages Security, Protection, Packer</PackageTags>
-    <PackageReleaseNotes>This version of the Dotnetsafer Console includes beta products, the next update will include tested versions.</PackageReleaseNotes>
+    <PackageTags>Security, Code Protection, Obfuscation, Bytehide, Code Security, Compilation, Web Security, Application Security, Packages Security, Protection, Packer</PackageTags>
+    <PackageReleaseNotes>Now the ByteHide CLI allows you to use all the functions of the platform easily and quickly.</PackageReleaseNotes>
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>bytehide</ToolCommandName>
     <PackageOutputPath>./nupkg</PackageOutputPath>
