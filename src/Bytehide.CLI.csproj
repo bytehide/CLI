@@ -1,100 +1,107 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>Exe</OutputType>
-    <TargetFramework>net7.0</TargetFramework>
-    <AssemblyName>ByteHide</AssemblyName>
-    <ApplicationIcon>favicon.ico</ApplicationIcon>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Product>Bytehide CLI</Product>
-    <Description>Protect your .NET applications from the terminal, use Shield and other products with a few commands.</Description>
-    <Copyright>ByteHide Solutions S.L</Copyright>
-    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-    <PackageProjectUrl>https://www.bytehide.com/docs/platforms/dotnet/products/shield/cli-install</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/dotnetsafer/CLI</RepositoryUrl>
-    <PackageTags>Security, Code Protection, Obfuscation, Bytehide, Code Security, Compilation, Web Security, Application Security, Packages Security, Protection, Packer</PackageTags>
-    <PackageReleaseNotes>Now the ByteHide CLI allows you to use all the functions of the platform easily and quickly.</PackageReleaseNotes>
-    <PackAsTool>true</PackAsTool>
-    <ToolCommandName>bytehide</ToolCommandName>
-    <PackageOutputPath>./nupkg</PackageOutputPath>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>Exe</OutputType>
+		<TargetFrameworks>net5.0;net6.0;net7.0</TargetFrameworks>
+		<AssemblyName>ByteHide</AssemblyName>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<Product>Bytehide CLI</Product>
+		<Description>Protect your .NET applications from the terminal, use Shield and other products with a few commands.</Description>
+		<Copyright>ByteHide Solutions S.L</Copyright>
+		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+		<PackageProjectUrl>https://www.bytehide.com/docs/platforms/dotnet/products/shield/cli-install</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/dotnetsafer/CLI</RepositoryUrl>
+		<PackageTags>Security, Code Protection, Obfuscation, Bytehide, Code Security, Compilation, Web Security, Application Security, Packages Security, Protection, Packer</PackageTags>
+		<PackageReleaseNotes>Now the ByteHide CLI allows you to use all the functions of the platform easily and quickly.</PackageReleaseNotes>
+		<PackAsTool>true</PackAsTool>
+		<ToolCommandName>bytehide</ToolCommandName>
+		<PackageOutputPath>./nupkg</PackageOutputPath>
+		<Version>3.1.0</Version>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="System\**" />
-    <EmbeddedResource Remove="System\**" />
-    <None Remove="System\**" />
-    
-    <None Include="..\license.md">
-      <Pack>True</Pack>
-      <PackagePath></PackagePath>
-    </None>
-  </ItemGroup>
+	<ItemGroup>
+		<Compile Remove="System\**" />
+		<EmbeddedResource Remove="System\**" />
+		<None Remove="System\**" />
+		<None Remove="icon.png" />
+		<None Remove="readme.md" />
 
-  <ItemGroup>
-    <PackageReference Include="dnlib" Version="3.6.0" />
-    <PackageReference Include="MatthiWare.CommandLineParser" Version="0.7.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="7.0.0" />
-    <PackageReference Include="NuGet.Protocol" Version="6.4.0" />
-    <PackageReference Include="SecureLocalStorage" Version="2.0.0" />
-    <PackageReference Include="Spectre.Console" Version="0.38.0" />
-  </ItemGroup>
+		<None Include="..\license.md">
+			<Pack>true</Pack>
+			<PackagePath></PackagePath>
+		</None>
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference PrivateAssets="All" Include="..\Shield.Dotnet.Client\Client\Shield.Client.csproj"></ProjectReference>
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="dnlib" Version="3.6.0" />
+		<PackageReference Include="MatthiWare.CommandLineParser" Version="0.7.0" />
+		<PackageReference Include="Microsoft.Extensions.Logging.Console" Version="7.0.0" />
+		<PackageReference Include="NuGet.Protocol" Version="6.6.1" />
+		<PackageReference Include="SecureLocalStorage" Version="2.0.0" />
+		<PackageReference Include="Spectre.Console" Version="0.38.0" />
+	</ItemGroup>
 
-  <PropertyGroup>
-    <TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
-    <PackageId>Bytehide</PackageId>
-    <SignAssembly>false</SignAssembly>
-    <PackageLicenseExpression></PackageLicenseExpression>
-    <PackageLicenseFile>license.md</PackageLicenseFile>
-    <DelaySign>false</DelaySign>
-    <AssemblyVersion>3.0.0.0</AssemblyVersion>
-    <FileVersion>3.0.0.0</FileVersion>
-    <Version>3.0.0.0</Version>
-    <Title>Bytehide</Title>
-    <PackageIcon>icon.png</PackageIcon>
-    <PackageReadmeFile>readme.md</PackageReadmeFile>
-  </PropertyGroup>
+	<ItemGroup>
+		<ProjectReference PrivateAssets="All" Include="..\Shield.Dotnet.Client\Client\Shield.Client.csproj" />
+	</ItemGroup>
 
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <OutputPath>bin\Debug\net7.0</OutputPath>
-    <WarningLevel>4</WarningLevel>
-    <AssemblyName>Bytehide</AssemblyName>
-  </PropertyGroup>
-  <Target Name="CopyProjectReferencesToPackage" DependsOnTargets="BuildOnlySettings;ResolveReferences">
-    <ItemGroup>
-      <!-- Filter out unnecessary files -->
-      <_ReferenceCopyLocalPaths Include="@(ReferenceCopyLocalPaths-&gt;WithMetadataValue('ReferenceSourceTarget', 'ProjectReference')-&gt;WithMetadataValue('PrivateAssets', 'All'))" />
-    </ItemGroup>
+	<PropertyGroup>
+		<TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
+		<PackageId>Bytehide</PackageId>
+		<SignAssembly>false</SignAssembly>
+		<PackageLicenseExpression></PackageLicenseExpression>
+		<PackageLicenseFile>license.md</PackageLicenseFile>
+		<DelaySign>false</DelaySign>
+		<AssemblyVersion>3.1.0.0</AssemblyVersion>
+		<FileVersion>3.1.0.0</FileVersion>
+		<Title>Bytehide</Title>
+		<PackageIcon>icon.png</PackageIcon>
+		<PackageReadmeFile>readme.md</PackageReadmeFile>
+	</PropertyGroup>
 
-    <!-- Print batches for debug purposes -->
-    <Message Text="Batch for .nupkg: ReferenceCopyLocalPaths = @(_ReferenceCopyLocalPaths), ReferenceCopyLocalPaths.DestinationSubDirectory = %(_ReferenceCopyLocalPaths.DestinationSubDirectory) Filename = %(_ReferenceCopyLocalPaths.Filename) Extension = %(_ReferenceCopyLocalPaths.Extension)" Importance="High" Condition="'@(_ReferenceCopyLocalPaths)' != ''" />
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+		<OutputPath>bin\Debug</OutputPath>
+		<WarningLevel>4</WarningLevel>
+		<AssemblyName>Bytehide</AssemblyName>
+	</PropertyGroup>
 
-    <ItemGroup>
-      <!-- Add file to package with consideration of sub folder. If empty, the root folder is chosen. -->
-      <BuildOutputInPackage Include="@(_ReferenceCopyLocalPaths)" TargetPath="%(_ReferenceCopyLocalPaths.DestinationSubDirectory)" />
-    </ItemGroup>
-  </Target>
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
+		<OutputPath>bin\Release</OutputPath>
+		<WarningLevel>4</WarningLevel>
+		<AssemblyName>Bytehide</AssemblyName>
+	</PropertyGroup>
 
+	<Target Name="CopyProjectReferencesToPackage" DependsOnTargets="BuildOnlySettings;ResolveReferences">
+		<ItemGroup>
+			<_ReferenceCopyLocalPaths Include="@(ReferenceCopyLocalPaths-&gt;WithMetadataValue('ReferenceSourceTarget', 'ProjectReference')-&gt;WithMetadataValue('PrivateAssets', 'All'))" />
+		</ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
+		<Message Text="Batch for .nupkg: ReferenceCopyLocalPaths = @(_ReferenceCopyLocalPaths), ReferenceCopyLocalPaths.DestinationSubDirectory = %(_ReferenceCopyLocalPaths.DestinationSubDirectory) Filename = %(_ReferenceCopyLocalPaths.Filename) Extension = %(_ReferenceCopyLocalPaths.Extension)" Importance="High" Condition="'@(_ReferenceCopyLocalPaths)' != ''" />
 
+		<ItemGroup>
+			<BuildOutputInPackage Include="@(_ReferenceCopyLocalPaths)" TargetPath="%(_ReferenceCopyLocalPaths.DestinationSubDirectory)" />
+		</ItemGroup>
+	</Target>
 
-  <ItemGroup>
-    <None Update="icon.png">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
-    <None Update="readme.md">
-      <Pack>True</Pack>
-      <PackagePath>\</PackagePath>
-    </None>
-  </ItemGroup>
+	<ItemGroup>
+		<Folder Include="Properties\" />
+	</ItemGroup>
 
-  <ProjectExtensions><VisualStudio><UserProperties properties_4launchsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
+	<ItemGroup>
+	  <Content Include="icon.png">
+	    <Pack>true</Pack>
+	    <PackagePath>\</PackagePath>
+	  </Content>
+	  <Content Include="readme.md">
+	    <Pack>true</Pack>
+	    <PackagePath>\</PackagePath>
+	  </Content>
+	</ItemGroup>
+
+	<ProjectExtensions>
+		<VisualStudio>
+			<UserProperties properties_4launchsettings_1json__JsonSchema="" />
+		</VisualStudio>
+	</ProjectExtensions>
 
 </Project>
