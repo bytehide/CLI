@@ -41,10 +41,6 @@
 		<PackageReference Include="Spectre.Console" Version="0.38.0" />
 	</ItemGroup>
 
-	<ItemGroup>
-		<ProjectReference PrivateAssets="All" Include="..\Shield.Dotnet.Client\Client\Shield.Client.csproj" />
-	</ItemGroup>
-
 	<PropertyGroup>
 		<TargetsForTfmSpecificBuildOutput>$(TargetsForTfmSpecificBuildOutput);CopyProjectReferencesToPackage</TargetsForTfmSpecificBuildOutput>
 		<PackageId>Bytehide</PackageId>
@@ -96,6 +92,16 @@
 	    <Pack>true</Pack>
 	    <PackagePath>\</PackagePath>
 	  </Content>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <ProjectReference Include="..\Shield.Dotnet.Client\Client\Shield.Client.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Reference Include="Shield.Client">
+	    <HintPath>..\Shield.Dotnet.Client\Client\bin\Debug\netstandard2.0\Shield.Client.dll</HintPath>
+	  </Reference>
 	</ItemGroup>
 
 	<ProjectExtensions>

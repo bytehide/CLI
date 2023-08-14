@@ -4,16 +4,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 17.5.33414.496
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Bytehide.CLI", "src\Bytehide.CLI.csproj", "{8485AC89-1F69-4604-A85D-4BAAEA9433A5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{897A0E18-1AC3-494A-8BED-4A1E83D7FE84} = {897A0E18-1AC3-494A-8BED-4A1E83D7FE84}
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "submodules", "submodules", "{B5BE5A3C-6FF1-441A-AB08-E8D6DBA8E4EF}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shield.Client", "Shield.Dotnet.Client\Client\Shield.Client.csproj", "{897A0E18-1AC3-494A-8BED-4A1E83D7FE84}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F30135CB-11FF-4411-B89E-545CCDBAACAE}"
 	ProjectSection(SolutionItems) = preProject
 		license.md = license.md
 		README.md = README.md
 	EndProjectSection
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shield.Client", "Shield.Dotnet.Client\Client\Shield.Client.csproj", "{DEF20D80-3F7F-4E51-8F00-E98437055A33}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -25,16 +28,16 @@ Global
 		{8485AC89-1F69-4604-A85D-4BAAEA9433A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8485AC89-1F69-4604-A85D-4BAAEA9433A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8485AC89-1F69-4604-A85D-4BAAEA9433A5}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DEF20D80-3F7F-4E51-8F00-E98437055A33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DEF20D80-3F7F-4E51-8F00-E98437055A33}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DEF20D80-3F7F-4E51-8F00-E98437055A33}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DEF20D80-3F7F-4E51-8F00-E98437055A33}.Release|Any CPU.Build.0 = Release|Any CPU
+		{897A0E18-1AC3-494A-8BED-4A1E83D7FE84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{897A0E18-1AC3-494A-8BED-4A1E83D7FE84}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{897A0E18-1AC3-494A-8BED-4A1E83D7FE84}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{897A0E18-1AC3-494A-8BED-4A1E83D7FE84}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{DEF20D80-3F7F-4E51-8F00-E98437055A33} = {B5BE5A3C-6FF1-441A-AB08-E8D6DBA8E4EF}
+		{897A0E18-1AC3-494A-8BED-4A1E83D7FE84} = {B5BE5A3C-6FF1-441A-AB08-E8D6DBA8E4EF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6BE8ACC8-D068-4B08-8C14-70D51BA758B1}
